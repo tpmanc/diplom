@@ -3,4 +3,18 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+    <!--<bean id="springDataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close" >-->
+        <!--<property name="url" value="jdbc:oracle:thin:@localhost:1521:SPRING_TEST" />-->
+        <!--<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />-->
+        <!--<property name="username" value="root" />-->
+        <!--<property name="password" value="root" />-->
+        <!--<property name="removeAbandonedTimeout" value="60"/>-->
+        <!--<property name="initialSize" value="20" />-->
+        <!--<property name="maxTotal" value="30"/>-->
+        <!--<property name="maxWaitMillis" value="1000"/>-->
+    <!--</bean>-->
+
+    <!--<bean id="employeeDatabaseBean" class="models.BaseModel">-->
+        <!--<property name="dataSource" ref="springDataSource"/>-->
+    <!--</bean>-->
 </beans>
