@@ -1,4 +1,4 @@
-package controllers;
+package controllers.admin;
 
 import exceptions.CustomWebException;
 import models.PropertyModel;

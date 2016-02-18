@@ -6,7 +6,7 @@
     <jsp:param name="activePage" value="categoryTree" />
 </jsp:include>
 
-<spring:url value="/resources/js/pages/category-tree/category-trees.js" var="categoryTreeJs" />
+<spring:url value="/resources/js/pages/admin/category-tree/category-trees.js" var="categoryTreeJs" />
 <spring:url value="/category-tree/ajax-save" var="categoryTreeSaveUrl" />
 <spring:url value="/category-tree/ajax-delete" var="categoryTreeDeleteUrl" />
 <spring:url value="/category-tree/ajax-add-category" var="addCategoryToTreeUrl" />

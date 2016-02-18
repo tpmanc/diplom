@@ -5,7 +5,7 @@
     <jsp:param name="activePage" value="file" />
 </jsp:include>
 
-<spring:url value="/resources/js/pages/file/file-form.js" var="fileFormJs" />
+<spring:url value="/resources/js/pages/admin/file/file-form.js" var="fileFormJs" />
 <script src="${fileFormJs}"></script>
 
 <h1>Добавить файл</h1>

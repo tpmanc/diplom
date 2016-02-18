@@ -26,6 +26,6 @@ public class ErrorController {
         model.addAttribute("codeMessage", errors.get(errorCode));
         model.addAttribute("pageTitle", "");
 
-        return "error";
+        return "admin/error";
     }
 }

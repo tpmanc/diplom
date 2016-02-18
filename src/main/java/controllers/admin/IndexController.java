@@ -1,4 +1,4 @@
-package controllers;
+package controllers.admin;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,6 +13,6 @@ public class IndexController {
     public String index(@RequestParam(value="name", required=false) String name, Model model) {
         model.addAttribute("pageTitle", "Index");
 
-        return "index";
+        return "admin/index";
     }
 }

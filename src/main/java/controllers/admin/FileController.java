@@ -1,4 +1,4 @@
-package controllers;
+package controllers.admin;
 
 import db.Database;
 import exceptions.CustomWebException;
@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
+@RequestMapping(value = {"/admin"})
 public class FileController {
 
     @RequestMapping(value = {"/files" }, method = RequestMethod.GET)
@@ -42,7 +43,7 @@ public class FileController {
         }
 
         model.addAttribute("pageTitle", "Файлы");
-        return "file/files";
+        return "admin/file/files";
     }
 
     @RequestMapping(value = {"/file-view" }, method = RequestMethod.GET)
@@ -58,7 +59,7 @@ public class FileController {
         model.addAttribute("file", file);
         model.addAttribute("fileProperties", fileProperties);
         model.addAttribute("pageTitle", "Просмотр файла");
-        return "file/file-view";
+        return "admin/file/file-view";
     }
 
     @RequestMapping(value = {"/file-edit" }, method = RequestMethod.GET)
@@ -71,14 +72,14 @@ public class FileController {
         }
         model.addAttribute("file", file);
         model.addAttribute("pageTitle", "Изменить файл");
-        return "file/file-edit";
+        return "admin/file/file-edit";
     }
 
     @RequestMapping(value = {"/file-add" }, method = RequestMethod.GET)
     public String fileAdd(Model model) {
         model.addAttribute("pageTitle", "Добавить файл");
         //returns the view name
-        return "file/file-add";
+        return "admin/file/file-add";
 
     }
 
@@ -86,7 +87,7 @@ public class FileController {
     public String fileDownload(Model model) {
         model.addAttribute("pageTitle", "Добавить файл");
         //returns the view name
-        return "file/file-add";
+        return "admin/file/file-add";
 
     }
 
@@ -182,7 +183,7 @@ public class FileController {
                 e.printStackTrace();
             }
         }
-        return "redirect:/files";
+        return "redirect:/admin/files";
     }
 
 }

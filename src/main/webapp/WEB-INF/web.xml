@@ -35,7 +35,7 @@
 
     <error-page>
         <error-code>404</error-code>
-        <location>/WEB-INF/pages/error404.jsp</location>
+        <location>/WEB-INF/pages/admin/error404.jsp</location>
     </error-page>
 
     <servlet>

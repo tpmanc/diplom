@@ -1,4 +1,4 @@
-package controllers;
+package controllers.admin;
 
 import exceptions.CustomWebException;
 import models.CategoryModel;
@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 @Controller
+@RequestMapping(value = {"/admin"})
 public class CategoryController {
 
     @RequestMapping(value = {"/categories" }, method = RequestMethod.GET)
@@ -30,13 +31,13 @@ public class CategoryController {
         }
 
         model.addAttribute("pageTitle", "Категории");
-        return "category/categories";
+        return "admin/category/categories";
     }
 
     @RequestMapping(value = {"/category-add" }, method = RequestMethod.GET)
     public String add(Model model) {
         model.addAttribute("pageTitle", "Добавить категорию");
-        return "category/category-add";
+        return "admin/category/category-add";
     }
 
     @RequestMapping(value = {"/category-edit" }, method = RequestMethod.GET)
@@ -49,7 +50,7 @@ public class CategoryController {
         }
         model.addAttribute("category", category);
         model.addAttribute("pageTitle", "Изменить категорию");
-        return "category/category-edit";
+        return "admin/category/category-edit";
     }
 
     @RequestMapping(value = {"/category-add-handler" }, method = RequestMethod.POST)
@@ -62,15 +63,15 @@ public class CategoryController {
         CategoryModel category = new CategoryModel(title, isEnabled);
         try {
             if (category.add()) {
-                return "redirect:/categories";
+                return "redirect:/admin/categories";
             } else {
                 attr.addFlashAttribute("errors", category.errors);
-                return "redirect:/category-add";
+                return "redirect:/admin/category-add";
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return "redirect:/category-add";
+        return "redirect:/admin/category-add";
     }
 
     @RequestMapping(value = {"/category-edit-handler" }, method = RequestMethod.POST)
@@ -87,10 +88,10 @@ public class CategoryController {
             category.setTitle(title);
             category.setIsEnabled(isEnabled);
             if (category.update()) {
-                return "redirect:/categories";
+                return "redirect:/admin/categories";
             } else {
                 attr.addFlashAttribute("errors", category.errors);
-                return "redirect:/category-edit?id=" + id;
+                return "redirect:/admin/category-edit?id=" + id;
             }
         } catch (SQLException e) {
 
