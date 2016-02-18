@@ -9,10 +9,12 @@
 <spring:url value="/resources/js/pages/category-tree/category-trees.js" var="categoryTreeJs" />
 <spring:url value="/category-tree/ajax-save" var="categoryTreeSaveUrl" />
 <spring:url value="/category-tree/ajax-delete" var="categoryTreeDeleteUrl" />
+<spring:url value="/category-tree/ajax-add-category" var="addCategoryToTreeUrl" />
 <script src="${categoryTreeJs}"></script>
 <script>
     var saveTreesUrl = '${categoryTreeSaveUrl}';
     var deleteTreesUrl = '${categoryTreeDeleteUrl}';
+    var addCategoryToTreeUrl = '${addCategoryToTreeUrl}';
     var trees = [
         <c:forEach items="${trees}" var="item" varStatus="itemStat">
             {id: "${item.get("treeId")}", parent: "${item.get("parent")}" , text: "${item.get("title")}"}<c:if test="${!itemStat.last}">,</c:if>
@@ -32,7 +34,13 @@
 <div style="display: none;">
     <div class="box-modal" id="addCategoryModal">
         <div class="box-modal_close arcticmodal-close">закрыть</div>
-        Пример модального окна
+        <form action="#">
+            <div class="form-group">
+                <label for="categoryTitle">Название</label>
+                <input type="text" class="form-control" id="categoryTitle" placeholder="Название">
+            </div>
+            <input type="button" id="submitNewCategory" class="btn btn-success" value="Добавить">
+        </form>
     </div>
 </div>
 

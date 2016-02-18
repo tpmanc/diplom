@@ -2,6 +2,55 @@ $(function(){
     var treesHolder = $('#treesHolder');
     var addNewTree = $('#addNewTree');
     var addCategoryModal = $('#addCategoryModal');
+    var newCategoryParent = undefined;
+
+    $('#submitNewCategory').on('click', function(){
+        var form = $(this).closest('form');
+        var titleElem = form.find('#categoryTitle');
+        var title = titleElem.val().trim();
+        var error = false;
+        form.find('.has-error').removeClass('has-error');
+        if (title.length == 0) {
+            error = true;
+            titleElem.addClass('has-error');
+        }
+        if (newCategoryParent == undefined) {
+            error = true;
+        }
+        if (!error) {
+            var newTreeElem = treesHolder.jstree(
+                "create_node",
+                newCategoryParent.id,
+                {text: title},
+                'last',
+                false,
+                false
+            );
+            $.ajax({
+                url: addCategoryToTreeUrl,
+                method: "post",
+                dataType: "json",
+                data: {parent: newCategoryParent.id, title: title, treeId: newTreeElem},
+                beforeSend: function(){
+                    NProgress.start();
+                },
+                success: function(data){
+                    NProgress.done();
+                    newCategoryParent = undefined;
+                },
+                error: function(){
+                    treesHolder.jstree(
+                        "delete_node",
+                        newTreeElem
+                    );
+                    alert('Ошибка при сохранении');
+                },
+                complete: function(){
+                    NProgress.done();
+                }
+            });
+        }
+    });
 
     treesHolder.jstree({
         "core" : {
@@ -18,42 +67,9 @@ $(function(){
                         "label": "Добавить категорию",
                         "action": function (obj) {
                             // добавление категории в дерево
+                            newCategoryParent = $node;
                             // TODO: добавление категории
                             addCategoryModal.arcticmodal();
-                            //var title = prompt('Название', '');
-                            //if (title != '') {
-                            //    var treeId = treesHolder.jstree(
-                            //        "create_node",
-                            //        $node.id,
-                            //        {text: title},
-                            //        'last',
-                            //        false,
-                            //        false
-                            //    );
-                            //    $.ajax({
-                            //        url: saveTreesUrl,
-                            //        method: "post",
-                            //        dataType: "json",
-                            //        data: {parent: $node.id, title: title, treeId: treeId},
-                            //        beforeSend: function(){
-                            //            NProgress.start();
-                            //        },
-                            //        success: function(data){
-                            //            NProgress.done();
-                            //
-                            //        },
-                            //        error: function(){
-                            //            treesHolder.jstree(
-                            //                "delete_node",
-                            //                treeId
-                            //            );
-                            //            alert('Ошибка при сохранении');
-                            //        },
-                            //        complete: function(){
-                            //            NProgress.done();
-                            //        }
-                            //    });
-                            //}
                         }
                     },
                     "Delete": {

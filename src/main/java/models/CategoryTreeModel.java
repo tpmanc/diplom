@@ -1,13 +1,14 @@
 package models;
 
 import db.Database;
+import db.Database2;
 import exceptions.CustomWebException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.validation.Errors;
 import validators.CategoryTreeValidator;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 public class CategoryTreeModel extends BaseModel implements ModelInterface {
     private static String getById = "SELECT * FROM categoryTree where treeId = ?";
@@ -16,6 +17,15 @@ public class CategoryTreeModel extends BaseModel implements ModelInterface {
     private static String getChildren = "SELECT * FROM categoryTree WHERE parent = ?";
     private static String saveNew = "INSERT INTO categoryTree(parent, categoryId, title, treeId) VALUES (?, ?, ?, ?)";
     private static String deleteById = "DELETE FROM categoryTree WHERE treeId = ?";
+    private static final String getTreeElements = "SELECT\n"+
+            "\tcategoryTree.treeId,\n"+
+            "\tcategoryTree.parent,\n"+
+            "\tcategoryTree.categoryId,\n"+
+            "\tcategoryTree.title,\n"+
+            "\tcategory.title as \"categoryTitle\"\n"+
+            "FROM\n"+
+            "\tcategoryTree\n"+
+            "LEFT JOIN category ON categoryTree.categoryId = category.id";
 
     private Errors errors;
 
@@ -89,7 +99,23 @@ public class CategoryTreeModel extends BaseModel implements ModelInterface {
     }
 
     public static ArrayList<HashMap> findAll() throws SQLException {
-        return queryAll(getAll);
+        ArrayList<HashMap> result = new ArrayList<HashMap>();
+        JdbcTemplate template = new JdbcTemplate(Database2.getInstance().getBds());
+        List<Map<String, Object>> rows = template.queryForList(getTreeElements);
+        for (Map row : rows) {
+            HashMap<String, String> info = new HashMap<String, String>();
+            info.put("treeId", String.valueOf(row.get("treeId")));
+            info.put("categoryId", String.valueOf(row.get("categoryId")));
+            String parent = String.valueOf(row.get("parent"));
+            info.put("parent", parent);
+            if (parent.equals("#")) {
+                info.put("title", String.valueOf(row.get("title")));
+            } else {
+                info.put("title", String.valueOf(row.get("categoryTitle")));
+            }
+            result.add(info);
+        }
+        return result;
     }
 
     public ArrayList children() throws SQLException {

@@ -34,16 +34,34 @@ public class CategoryTreeController {
     public String categoryTreeSaveUrl(
             @RequestParam("parent") String parent,
             @RequestParam("treeId") String treeId,
-            @RequestParam(value="categoryId", required=false) Integer categoryId,
-            @RequestParam(value="title", required=false) String title
+            @RequestParam("title") String title
     ) {
         CategoryTreeModel treeElem = new CategoryTreeModel(parent, treeId, title);
         String result;
         try {
-            // TODO: сохранение строки в таблицу
             treeElem.add();
             result = "{\"title\":\"" + title + "\"}";
-            return result;
+        } catch (SQLException e) {
+            result = "{\"error\": true}";
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/category-tree/ajax-add-category", method = RequestMethod.POST, produces = "application/json")
+    public String addNewCategory(
+            @RequestParam("parent") String parent,
+            @RequestParam("treeId") String treeId,
+            @RequestParam("title") String title
+    ) {
+        String result;
+        try {
+            CategoryModel category = new CategoryModel(title, true);
+            category.add();
+            CategoryTreeModel treeElem = new CategoryTreeModel(parent, treeId, category.getId());
+            treeElem.add();
+            result = "{\"title\":\"" + title + "\"}";
         } catch (SQLException e) {
             result = "{\"error\": true}";
             e.printStackTrace();
