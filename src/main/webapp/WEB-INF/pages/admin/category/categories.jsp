@@ -7,15 +7,24 @@
 </jsp:include>
 
 <script>
-    var categoryDeleteUrl = "<spring:url value="/category-delete" />";
+    var categoryDeleteUrl = "<spring:url value="/admin/category-delete" />";
 </script>
-<spring:url value="/resources/js/pages/category/categories.js" var="categoriesJs" />
+<spring:url value="/resources/js/pages/admin/category/categories.js" var="categoriesJs" />
 <script src="${categoriesJs}"></script>
 
-<h1>${pageTitle}</h1>
+<h2>${pageTitle}</h2>
+
+<ol class="breadcrumb">
+    <li><a href="<spring:url value="/admin" />">Главная</a></li>
+    <li class="active">
+        <strong>${pageTitle}</strong>
+    </li>
+</ol>
+
+<br>
 
 <p>
-    <a href="<spring:url value="/category-add" />" class="btn btn-success">Добавить категорию</a>
+    <a href="<spring:url value="/admin/category-add" />" class="btn btn-success">Добавить категорию</a>
 </p>
 
 <table class="table table-striped">
@@ -34,10 +43,10 @@
             <td>${item.get("title")}</td>
             <td>${item.get("isEnabled")}</td>
             <td>
-                <a href="<spring:url value="/category-edit?id=" />${item.get("id")}">
-                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                <a href="<spring:url value="/admin/category-edit?id=" />${item.get("id")}">
+                    <i class="fa fa-eye"></i>
                 </a>
-                <span class="glyphicon glyphicon-trash category-delete" data-id="${item.id}" aria-hidden="true"></span>
+                <i class="fa fa-trash category-delete" data-id="${item.id}"></i>
             </td>
         </tr>
     </c:forEach>

@@ -1,4 +1,4 @@
-package controllers.admin;
+package controllers;
 
 import exceptions.CustomWebException;
 import models.CategoryModel;
@@ -13,10 +13,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 @Controller
-@RequestMapping(value = {"/admin/*"})
-public class CategoryTreeController {
+@RequestMapping("/admin")
+public class AdminCategoryTreeController {
 
-    @RequestMapping(value = {"category-trees" }, method = RequestMethod.GET)
+    @RequestMapping(value = {"/category-trees" }, method = RequestMethod.GET)
     public String index(Model model) {
         ArrayList<HashMap> trees = null;
         try {
@@ -31,7 +31,7 @@ public class CategoryTreeController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "category-tree/ajax-save", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/category-tree/ajax-save", method = RequestMethod.POST, produces = "application/json")
     public String categoryTreeSaveUrl(
             @RequestParam("parent") String parent,
             @RequestParam("treeId") String treeId,
@@ -50,7 +50,7 @@ public class CategoryTreeController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "category-tree/ajax-add-category", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/category-tree/ajax-add-category", method = RequestMethod.POST, produces = "application/json")
     public String addNewCategory(
             @RequestParam("parent") String parent,
             @RequestParam("treeId") String treeId,
@@ -71,7 +71,7 @@ public class CategoryTreeController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "category-tree/ajax-update", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/category-tree/ajax-update", method = RequestMethod.POST, produces = "application/json")
     public String categoryTreeUpdateUrl(
             @RequestParam("treeId") String treeId
             ) {
@@ -80,7 +80,7 @@ public class CategoryTreeController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "category-tree/ajax-delete", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/category-tree/ajax-delete", method = RequestMethod.POST, produces = "application/json")
     public String categoryTreeDeleteUrl(
             @RequestParam("treeId") String treeId
     ) {

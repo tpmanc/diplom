@@ -1,4 +1,4 @@
-package controllers.admin;
+package controllers;
 
 import exceptions.CustomWebException;
 import models.PropertyModel;
@@ -15,7 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 @Controller
-public class PropertyController {
+@RequestMapping("/admin")
+public class AdminPropertyController {
 
     @RequestMapping(value = {"/properties" }, method = RequestMethod.GET)
     public String index(Model model) {
@@ -28,13 +29,13 @@ public class PropertyController {
         }
 
         model.addAttribute("pageTitle", "Свойства файлов");
-        return "property/properties";
+        return "admin/property/properties";
     }
 
     @RequestMapping(value = {"/property-add" }, method = RequestMethod.GET)
     public String add(Model model) {
         model.addAttribute("pageTitle", "Добавить свойство файла");
-        return "property/property-add";
+        return "admin/property/property-add";
     }
 
     @RequestMapping(value = {"/property-edit" }, method = RequestMethod.GET)
@@ -47,7 +48,7 @@ public class PropertyController {
         }
         model.addAttribute("property", property);
         model.addAttribute("pageTitle", "Изменить свойство файла");
-        return "property/property-edit";
+        return "admin/property/property-edit";
     }
 
     @RequestMapping(value = {"/property-view" }, method = RequestMethod.GET)
@@ -60,7 +61,7 @@ public class PropertyController {
         }
         model.addAttribute("property", property);
         model.addAttribute("pageTitle", "Просмотр свойства");
-        return "property/property-view";
+        return "admin/property/property-view";
     }
 
     @RequestMapping(value = {"/property-add-handler" }, method = RequestMethod.POST)
@@ -72,15 +73,15 @@ public class PropertyController {
         PropertyModel property = new PropertyModel(title);
         try {
             if (property.add()) {
-                return "redirect:/properties";
+                return "redirect:/admin/properties";
             } else {
                 attr.addFlashAttribute("errors", property.errors);
-                return "redirect:/property-add";
+                return "redirect:/admin/property-add";
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return "redirect:/property-add";
+        return "redirect:/admin/property-add";
     }
 
     @RequestMapping(value = {"/property-edit-handler" }, method = RequestMethod.POST)

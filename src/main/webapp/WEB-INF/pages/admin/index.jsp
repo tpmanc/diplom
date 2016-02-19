@@ -16,7 +16,7 @@
                         </div>
                         <div class="col-xs-8 text-right">
                             <span> Категорий </span>
-                            <h2 class="font-bold">26</h2>
+                            <h2 class="font-bold">${categoryCount}</h2>
                         </div>
                     </div>
                 </div>
@@ -29,7 +29,7 @@
                         </div>
                         <div class="col-xs-8 text-right">
                             <span> Файлов </span>
-                            <h2 class="font-bold">150</h2>
+                            <h2 class="font-bold">${fileCount}</h2>
                         </div>
                     </div>
                 </div>

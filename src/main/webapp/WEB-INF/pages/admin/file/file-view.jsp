@@ -6,7 +6,17 @@
     <jsp:param name="activePage" value="file" />
 </jsp:include>
 
-<h1>${pageTitle}</h1>
+<h2>${pageTitle}</h2>
+
+<ol class="breadcrumb">
+    <li><a href="<spring:url value="/admin" />">Главная</a></li>
+    <li><a href="<spring:url value="/admin/files" />">Файлы</a></li>
+    <li class="active">
+        <strong>${pageTitle}</strong>
+    </li>
+</ol>
+
+<br>
 
 <h3>${file.title}</h3>
 

@@ -8,7 +8,7 @@
 
 <h1>${pageTitle}</h1>
 
-<form method="POST" action="<spring:url value="/category-edit-handler" />">
+<form method="POST" action="<spring:url value="/admin/category-edit-handler" />">
     <input type="hidden" value="${category.id}" name="id" />
     <div class="form-group <c:if test="${errors.get(\"title\") != null}">has-error</c:if>">
         <label for="title">Название</label>

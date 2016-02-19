@@ -6,10 +6,19 @@
     <jsp:param name="activePage" value="file" />
 </jsp:include>
 
-<h1>${pageTitle}</h1>
+<h2>${pageTitle}</h2>
+
+<ol class="breadcrumb">
+    <li><a href="<spring:url value="/admin" />">Главная</a></li>
+    <li class="active">
+        <strong>${pageTitle}</strong>
+    </li>
+</ol>
+
+<br>
 
 <p>
-    <a href="<spring:url value="/file-add" />" class="btn btn-success">Добавить файлы</a>
+    <a href="<spring:url value="/admin/file-add" />" class="btn btn-success">Добавить файлы</a>
 </p>
 
 <table class="table table-striped models-view">
@@ -26,11 +35,11 @@
             <td>${item.get("id")}</td>
             <td>${item.get("title")}</td>
             <td>
-                <a href="<spring:url value="/file-view?id=" />${item.get("id")}" class="icon">
-                    <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+                <a href="<spring:url value="/admin/file-view?id=" />${item.get("id")}" class="icon">
+                    <i class="fa fa-eye"></i>
                 </a>
-                <a href="<spring:url value="/file-edit?id=" />${item.get("id")}" class="icon">
-                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                <a href="<spring:url value="/admin/file-edit?id=" />${item.get("id")}" class="icon">
+                    <i class="fa fa-edit"></i>
                 </a>
             </td>
         </tr>

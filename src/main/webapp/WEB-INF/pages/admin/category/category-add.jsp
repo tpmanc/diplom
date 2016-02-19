@@ -6,12 +6,19 @@
     <jsp:param name="activePage" value="category" />
 </jsp:include>
 
-<spring:url value="/resources/js/pages/category/category-add.js" var="categoryAdd" />
-<script src="${categoryAdd}"></script>
+<h2>${pageTitle}</h2>
 
-<h1>${pageTitle}</h1>
+<ol class="breadcrumb">
+    <li><a href="<spring:url value="/admin" />">Главная</a></li>
+    <li><a href="<spring:url value="/admin/categories" />">Категории</a></li>
+    <li class="active">
+        <strong>${pageTitle}</strong>
+    </li>
+</ol>
 
-<form method="POST" action="<spring:url value="/category-add-handler" />">
+<br>
+
+<form method="POST" action="<spring:url value="/admin/category-add-handler" />">
     <div class="form-group <c:if test="${errors.get(\"title\") != null}">has-error</c:if>">
         <label for="title">Название</label>
         <input type="text" class="form-control" name="title" id="title" placeholder="Название">

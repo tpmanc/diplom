@@ -1,7 +1,9 @@
 package models;
 
 import db.Database;
+import db.Database2;
 import exceptions.CustomWebException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.acls.model.NotFoundException;
 
 import java.sql.*;
@@ -17,6 +19,7 @@ public class CategoryModel extends BaseModel implements ModelInterface {
     private static final String saveNew = "INSERT INTO category(title, isEnabled) VALUES(?, ?)";
     private static final String getAll = "SELECT * FROM category";
     private static final String deleteById = "DELETE FROM category WHERE id = ?";
+    private static final String getCount = "SELECT count(id) FROM category";
 
     private int id;
     private String title;
@@ -81,6 +84,11 @@ public class CategoryModel extends BaseModel implements ModelInterface {
         } else {
             return false;
         }
+    }
+
+    public static int getCount() {
+        JdbcTemplate template = new JdbcTemplate(Database2.getInstance().getBds());
+        return template.queryForObject(getCount, Integer.class);
     }
 
     public boolean delete() throws SQLException {

@@ -1,4 +1,4 @@
-package controllers.admin;
+package controllers;
 
 import db.Database;
 import exceptions.CustomWebException;
@@ -29,8 +29,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
-@RequestMapping(value = {"/admin"})
-public class FileController {
+@RequestMapping("/admin")
+public class AdminFileController {
 
     @RequestMapping(value = {"/files" }, method = RequestMethod.GET)
     public String index(@RequestParam(value="name", required=false, defaultValue="World") String name, Model model) {

@@ -1,7 +1,9 @@
 package models;
 
 import db.Database;
+import db.Database2;
 import exceptions.CustomWebException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.acls.model.NotFoundException;
 
 import java.sql.*;
@@ -15,7 +17,7 @@ public class FileModel extends BaseModel implements ModelInterface {
     private static final String saveNew = "INSERT INTO file(title) VALUES(?)";
     private static final String getAll = "SELECT * FROM file";
     private static final String isFileExist = "SELECT * FROM fileVersion WHERE hash = ? AND fileSize = ?";
-//    private static final String deleteById = "DELETE FROM file WHERE id = ?";
+    private static final String getCount = "SELECT count(id) FROM file";
 
     private int id;
     private String title;
@@ -49,6 +51,11 @@ public class FileModel extends BaseModel implements ModelInterface {
 
     public static ArrayList<HashMap> findAll() throws SQLException {
         return queryAll(getAll);
+    }
+
+    public static int getCount() {
+        JdbcTemplate template = new JdbcTemplate(Database2.getInstance().getBds());
+        return template.queryForObject(getCount, Integer.class);
     }
 
     /**

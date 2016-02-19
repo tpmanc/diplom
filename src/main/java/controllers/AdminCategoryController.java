@@ -1,4 +1,4 @@
-package controllers.admin;
+package controllers;
 
 import exceptions.CustomWebException;
 import models.CategoryModel;
@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 @Controller
-@RequestMapping(value = {"/admin"})
-public class CategoryController {
+@RequestMapping("/admin")
+public class AdminCategoryController {
 
     @RequestMapping(value = {"/categories" }, method = RequestMethod.GET)
     public String index(Model model) {

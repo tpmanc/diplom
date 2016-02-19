@@ -7,9 +7,9 @@
 </jsp:include>
 
 <spring:url value="/resources/js/pages/admin/category-tree/category-trees.js" var="categoryTreeJs" />
-<spring:url value="/category-tree/ajax-save" var="categoryTreeSaveUrl" />
-<spring:url value="/category-tree/ajax-delete" var="categoryTreeDeleteUrl" />
-<spring:url value="/category-tree/ajax-add-category" var="addCategoryToTreeUrl" />
+<spring:url value="/admin/category-tree/ajax-save" var="categoryTreeSaveUrl" />
+<spring:url value="/admin/category-tree/ajax-delete" var="categoryTreeDeleteUrl" />
+<spring:url value="/admin/category-tree/ajax-add-category" var="addCategoryToTreeUrl" />
 <script src="${categoryTreeJs}"></script>
 <script>
     var saveTreesUrl = '${categoryTreeSaveUrl}';
@@ -22,7 +22,16 @@
     ];
 </script>
 
-<h1>${pageTitle}</h1>
+<h2>${pageTitle}</h2>
+
+<ol class="breadcrumb">
+    <li><a href="<spring:url value="/admin" />">Главная</a></li>
+    <li class="active">
+        <strong>${pageTitle}</strong>
+    </li>
+</ol>
+
+<br>
 
 <p>
     <button class="btn btn-success" id="addNewTree">Добавить дерево</button>
