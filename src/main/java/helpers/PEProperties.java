@@ -50,7 +50,9 @@ public class PEProperties {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
+        } catch (OutOfMemoryError e) {
+            // e.printStackTrace();
         }
         return properties;
     }

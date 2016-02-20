@@ -91,8 +91,11 @@ public class AdminFileController {
 
     }
 
-    @RequestMapping(value = {"/file-add-handler" }, method = RequestMethod.POST)
-    public String fileAddHandler(@RequestParam("file") MultipartFile file, Model model, HttpServletRequest request) {
+    @ResponseBody
+    @RequestMapping(value = {"/file-add-handler" }, method = RequestMethod.POST, produces = "application/json")
+    public String fileAddHandler(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
+        String result;
+
         String uploadPath = request.getServletContext().getRealPath("upload");
         File uploadRootDir = new File(uploadPath);
         // Создаем основную директорию, если ее нет
@@ -117,7 +120,7 @@ public class AdminFileController {
                 // проверяем дублирование файла
                 if (FileModel.isExist(hash, file.getSize())) {
                     // TODO: file already exist
-                    System.out.println("ТАКОЙ ФАЙЛ УЖЕ ЕСТЬ!!!");
+                    result = "{\"error\": \"Такой файл уже есть\"}";
                 } else {
                     // проверка существования пути до файла
                     File uploadDir = new File(String.valueOf(newFileName));
@@ -144,7 +147,7 @@ public class AdminFileController {
                     // получение свойств файла
                     Map<Integer, String> properties = PEProperties.parse(newFileName.toString());
 
-                    // сахранение файла в бд
+                    // сохранение файла в бд
                     FileModel fileModel = new FileModel();
                     String fileTitle = properties.get(PropertyModel.PRODUCT_NAME);
                     if (fileTitle != null && !fileTitle.trim().equals("")) {
@@ -178,12 +181,15 @@ public class AdminFileController {
                             fileProperty.add();
                         }
                     }
+                    result = "{\"error\": false}";
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                result = "{\"error\": true, \"msg\":\"" + e.getMessage() + "\"}";
             }
+        } else {
+            result = "{\"error\": true, \"msg\":\"File is empty\"}";
         }
-        return "redirect:/admin/files";
+        return result;
     }
 
 }

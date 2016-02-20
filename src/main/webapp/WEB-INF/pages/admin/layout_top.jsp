@@ -10,6 +10,7 @@
         <link href="<spring:url value="/resources/css/admin/animate.css" />" rel="stylesheet" />
         <link href="<spring:url value="/resources/css/admin/style.css" />" rel="stylesheet" />
         <link href="<spring:url value="/resources/css/admin/kforms.css" />" rel="stylesheet" />
+        <link href="<spring:url value="/resources/css/admin/dropzone.css" />" rel="stylesheet" />
         <link href="<spring:url value="/resources/css/admin/js-tree/style.min.css" />" rel="stylesheet" />
 
         <script src="<spring:url value="/resources/js/admin/jquery-2.1.4.min.js"/>"></script>
@@ -17,6 +18,7 @@
         <script src="<spring:url value="/resources/js/admin/jquery.metisMenu.js"/>"></script>
         <script src="<spring:url value="/resources/js/admin/jquery.slimscroll.min.js"/>"></script>
         <script src="<spring:url value="/resources/js/admin/jstree.min.js"/>"></script>
+        <script src="<spring:url value="/resources/js/admin/dropzone.js"/>"></script>
         <script src="<spring:url value="/resources/js/admin/main.js"/>"></script>
         <script src="<spring:url value="/resources/js/admin/pace.min.js"/>"></script>
     </head>

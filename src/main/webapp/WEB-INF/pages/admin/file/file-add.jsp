@@ -8,7 +8,17 @@
 <spring:url value="/resources/js/pages/admin/file/file-form.js" var="fileFormJs" />
 <script src="${fileFormJs}"></script>
 
-<h1>Добавить файл</h1>
+<h2>${pageTitle}</h2>
+
+<ol class="breadcrumb">
+    <li><a href="<spring:url value="/admin" />">Главная</a></li>
+    <li><a href="<spring:url value="/admin/files" />">Файлы</a></li>
+    <li class="active">
+        <strong>${pageTitle}</strong>
+    </li>
+</ol>
+
+<br>
 
 <jsp:include page="_file-form.jsp" />
 
