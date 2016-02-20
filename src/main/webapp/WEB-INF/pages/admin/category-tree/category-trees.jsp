@@ -9,10 +9,12 @@
 <spring:url value="/resources/js/pages/admin/category-tree/category-trees.js" var="categoryTreeJs" />
 <spring:url value="/admin/category-tree/ajax-delete" var="categoryTreeDeleteUrl" />
 <spring:url value="/admin/category-tree/ajax-add-category" var="addCategoryToTreeUrl" />
+<spring:url value="/admin/category-tree/ajax-update-position" var="updatePosition" />
 <script src="${categoryTreeJs}"></script>
 <script>
     var deleteTreesUrl = '${categoryTreeDeleteUrl}';
     var addCategoryToTreeUrl = '${addCategoryToTreeUrl}';
+    var updatePosition = '${updatePosition}';
     var trees = [
         <c:forEach items="${trees}" var="item" varStatus="itemStat">
             {id: "${item.get("treeId")}", parent: "${item.get("parent")}" , text: "${item.get("title")}"}<c:if test="${!itemStat.last}">,</c:if>

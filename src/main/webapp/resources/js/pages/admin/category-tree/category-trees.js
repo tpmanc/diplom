@@ -1,5 +1,6 @@
+var treesHolder;
 $(function(){
-    var treesHolder = $('#treesHolder');
+    treesHolder = $('#treesHolder');
     var addNewTree = $('#addNewTree');
     var addCategoryModal = $('#addCategoryModal');
     var newCategoryParent = undefined;
@@ -89,6 +90,20 @@ $(function(){
         }
     });
 
+    treesHolder.on("move_node.jstree", function (e, data) {
+        $.ajax({
+            url: updatePosition,
+            method: "post",
+            data: {"treeId": data.node.id, "newParentId": data.parent, "position": data.position},
+            success: function(data){
+
+            },
+            error: function(){
+                alert('Ошибка при сохранении');
+            }
+        });
+    });
+
     addNewTree.on('click', function(){
         var title = prompt('Название', '');
         if (title != null && title != '') {
@@ -109,7 +124,7 @@ $(function(){
             url: addCategoryToTreeUrl,
             method: "post",
             dataType: "json",
-            data: {parent: parent, title: title, treeId: treeId},
+            data: {parent: parent, title: title, treeId: treeId, position: getNodePosition(treeId)},
             beforeSend: function(){
             },
             success: function(data){
@@ -126,5 +141,12 @@ $(function(){
                 addCategoryModal.arcticmodal('close');
             }
         });
+    }
+
+    function getNodePosition(nodeId) {
+        var tree = treesHolder.jstree(true);
+        var node = tree.get_node(nodeId);
+        var parent = tree.get_node(node.parent);
+        return $.inArray(node.id, parent.children);
     }
 });

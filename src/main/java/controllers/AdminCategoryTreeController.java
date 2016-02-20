@@ -35,13 +35,14 @@ public class AdminCategoryTreeController {
     public String addNewCategory(
             @RequestParam("parent") String parent,
             @RequestParam("treeId") String treeId,
-            @RequestParam("title") String title
+            @RequestParam("title") String title,
+            @RequestParam("position") int soring
     ) {
         String result;
         try {
             CategoryModel category = new CategoryModel(title, true);
             category.add();
-            CategoryTreeModel treeElem = new CategoryTreeModel(parent, treeId, category.getId());
+            CategoryTreeModel treeElem = new CategoryTreeModel(parent, treeId, category.getId(), soring);
             treeElem.add();
             result = "{\"title\":\"" + title + "\"}";
         } catch (SQLException e) {
@@ -52,12 +53,26 @@ public class AdminCategoryTreeController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/category-tree/ajax-update", method = RequestMethod.POST, produces = "application/json")
-    public String categoryTreeUpdateUrl(
-            @RequestParam("treeId") String treeId
+    @RequestMapping(value = "/category-tree/ajax-update-position", method = RequestMethod.POST, produces = "application/json")
+    public String categoryTreeUpdatePositionUrl(
+            @RequestParam("treeId") String treeId,
+            @RequestParam("newParentId") String newParentId,
+            @RequestParam("position") int position
             ) {
-        // TODO: изменение позиции и инфы по treeId
-        return "";
+        String result;
+        try {
+            CategoryTreeModel model = CategoryTreeModel.findById(treeId);
+            if (!model.getParent().equals(newParentId)) {
+                model.setParent(newParentId);
+                model.update();
+            }
+            CategoryTreeModel.updateSortingOfNode(newParentId ,treeId, position);
+            result = "{\"error\": false}";
+        } catch (SQLException e) {
+            e.printStackTrace();
+            result = "{\"error\": true}";
+        }
+        return result;
     }
 
     @ResponseBody
