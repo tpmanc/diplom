@@ -26,29 +26,7 @@ $(function(){
                 false,
                 false
             );
-            $.ajax({
-                url: addCategoryToTreeUrl,
-                method: "post",
-                dataType: "json",
-                data: {parent: newCategoryParent.id, title: title, treeId: newTreeElem},
-                beforeSend: function(){
-                    NProgress.start();
-                },
-                success: function(data){
-                    NProgress.done();
-                    newCategoryParent = undefined;
-                },
-                error: function(){
-                    treesHolder.jstree(
-                        "delete_node",
-                        newTreeElem
-                    );
-                    alert('Ошибка при сохранении');
-                },
-                complete: function(){
-                    NProgress.done();
-                }
-            });
+            categoryAjax(newCategoryParent.id, title, newTreeElem);
         }
     });
 
@@ -68,7 +46,6 @@ $(function(){
                         "action": function (obj) {
                             // добавление категории в дерево
                             newCategoryParent = $node;
-                            // TODO: добавление категории
                             addCategoryModal.arcticmodal();
                         }
                     },
@@ -83,7 +60,6 @@ $(function(){
                                     dataType: "json",
                                     data: {treeId: $node.id},
                                     beforeSend: function(){
-                                        NProgress.start();
                                     },
                                     success: function(data){
                                         var children = $node.children;
@@ -98,14 +74,11 @@ $(function(){
                                             "delete_node",
                                             $node.id
                                         );
-                                        NProgress.done();
-
                                     },
                                     error: function(){
                                         alert('Ошибка при сохранении');
                                     },
-                                    complete: function(){
-                                        NProgress.done();
+                                    complete: function() {
                                     }
                                 });
                             }
@@ -118,7 +91,7 @@ $(function(){
 
     addNewTree.on('click', function(){
         var title = prompt('Название', '');
-        if (title != '') {
+        if (title != null && title != '') {
             var treeId = treesHolder.jstree(
                 "create_node",
                 null,
@@ -127,29 +100,31 @@ $(function(){
                 false,
                 false
             );
-            $.ajax({
-                url: saveTreesUrl,
-                method: "post",
-                dataType: "json",
-                data: {parent: "#", title: title, treeId: treeId},
-                beforeSend: function(){
-                    NProgress.start();
-                },
-                success: function(data){
-                    NProgress.done();
-
-                },
-                error: function(){
-                    treesHolder.jstree(
-                        "delete_node",
-                        treeId
-                    );
-                    alert('Ошибка при сохранении');
-                },
-                complete: function(){
-                    NProgress.done();
-                }
-            });
+            categoryAjax("#", title, treeId);
         }
     });
+
+    function categoryAjax(parent, title, treeId) {
+        $.ajax({
+            url: addCategoryToTreeUrl,
+            method: "post",
+            dataType: "json",
+            data: {parent: parent, title: title, treeId: treeId},
+            beforeSend: function(){
+            },
+            success: function(data){
+                toastr.success('Without any options', 'Категория сохранена')
+            },
+            error: function(){
+                treesHolder.jstree(
+                    "delete_node",
+                    treeId
+                );
+                alert('Ошибка при сохранении');
+            },
+            complete: function(){
+                addCategoryModal.arcticmodal('close');
+            }
+        });
+    }
 });

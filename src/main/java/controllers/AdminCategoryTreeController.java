@@ -31,25 +31,6 @@ public class AdminCategoryTreeController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/category-tree/ajax-save", method = RequestMethod.POST, produces = "application/json")
-    public String categoryTreeSaveUrl(
-            @RequestParam("parent") String parent,
-            @RequestParam("treeId") String treeId,
-            @RequestParam("title") String title
-    ) {
-        CategoryTreeModel treeElem = new CategoryTreeModel(parent, treeId, title);
-        String result;
-        try {
-            treeElem.add();
-            result = "{\"title\":\"" + title + "\"}";
-        } catch (SQLException e) {
-            result = "{\"error\": true}";
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    @ResponseBody
     @RequestMapping(value = "/category-tree/ajax-add-category", method = RequestMethod.POST, produces = "application/json")
     public String addNewCategory(
             @RequestParam("parent") String parent,
@@ -87,6 +68,8 @@ public class AdminCategoryTreeController {
         String result;
         try {
             CategoryTreeModel model = CategoryTreeModel.findById(treeId);
+            CategoryModel category = CategoryModel.findById(model.getCategoryId());
+            category.delete();
             model.delete();
             result = "{\"error\": false}";
         } catch (SQLException e) {

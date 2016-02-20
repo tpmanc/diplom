@@ -15,13 +15,12 @@ public class CategoryTreeModel extends BaseModel implements ModelInterface {
     private static String getAll = "SELECT * FROM categoryTree";
     private static String updateParents = "UPDATE categoryTree SET parent = ? WHERE parent = ?";
     private static String getChildren = "SELECT * FROM categoryTree WHERE parent = ?";
-    private static String saveNew = "INSERT INTO categoryTree(parent, categoryId, title, treeId) VALUES (?, ?, ?, ?)";
+    private static String saveNew = "INSERT INTO categoryTree(parent, categoryId, treeId) VALUES (?, ?, ?)";
     private static String deleteById = "DELETE FROM categoryTree WHERE treeId = ?";
     private static final String getTreeElements = "SELECT\n"+
             "\tcategoryTree.treeId,\n"+
             "\tcategoryTree.parent,\n"+
             "\tcategoryTree.categoryId,\n"+
-            "\tcategoryTree.title,\n"+
             "\tcategory.title as \"categoryTitle\"\n"+
             "FROM\n"+
             "\tcategoryTree\n"+
@@ -32,15 +31,6 @@ public class CategoryTreeModel extends BaseModel implements ModelInterface {
     private String parent;
     private String treeId;
     private Integer categoryId = 0;
-    private String title;
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
 
     public String getParent() {
         return parent;
@@ -66,20 +56,13 @@ public class CategoryTreeModel extends BaseModel implements ModelInterface {
         this.categoryId = categoryId;
     }
 
-    public CategoryTreeModel(String parent, String treeId, int categoryId, String title) {
-        this.parent = parent;
-        this.treeId = treeId;
-        this.categoryId = categoryId;
-        this.title = title;
-    }
     public CategoryTreeModel(String parent, String treeId, int categoryId) {
         this.parent = parent;
         this.treeId = treeId;
         this.categoryId = categoryId;
     }
-    public CategoryTreeModel(String parent, String treeId, String title) {
+    public CategoryTreeModel(String parent, String treeId) {
         this.parent = parent;
-        this.title = title;
         this.treeId = treeId;
     }
 
@@ -92,8 +75,7 @@ public class CategoryTreeModel extends BaseModel implements ModelInterface {
             String treeId = res.getString(1);
             String parent = res.getString(2);
             int categoryId = res.getInt(3);
-            String title = res.getString(4);
-            return new CategoryTreeModel(parent, treeId, categoryId, title);
+            return new CategoryTreeModel(parent, treeId, categoryId);
         }
         throw new CustomWebException("Запись не найдена");
     }
@@ -108,11 +90,7 @@ public class CategoryTreeModel extends BaseModel implements ModelInterface {
             info.put("categoryId", String.valueOf(row.get("categoryId")));
             String parent = String.valueOf(row.get("parent"));
             info.put("parent", parent);
-            if (parent.equals("#")) {
-                info.put("title", String.valueOf(row.get("title")));
-            } else {
-                info.put("title", String.valueOf(row.get("categoryTitle")));
-            }
+            info.put("title", String.valueOf(row.get("categoryTitle")));
             result.add(info);
         }
         return result;
@@ -128,8 +106,7 @@ public class CategoryTreeModel extends BaseModel implements ModelInterface {
             String treeId = res.getString(1);
             String parent = res.getString(2);
             int categoryId = res.getInt(3);
-            String title = res.getString(4);
-            result.add(new CategoryTreeModel(parent, treeId, categoryId, title));
+            result.add(new CategoryTreeModel(parent, treeId, categoryId));
         }
         return result;
     }
@@ -148,8 +125,7 @@ public class CategoryTreeModel extends BaseModel implements ModelInterface {
             } else {
                 ps.setInt(2, categoryId);
             }
-            ps.setString(3, title);
-            ps.setString(4, treeId);
+            ps.setString(3, treeId);
             ps.executeUpdate();
             return true;
         }

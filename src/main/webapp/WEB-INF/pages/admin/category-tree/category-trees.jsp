@@ -7,12 +7,10 @@
 </jsp:include>
 
 <spring:url value="/resources/js/pages/admin/category-tree/category-trees.js" var="categoryTreeJs" />
-<spring:url value="/admin/category-tree/ajax-save" var="categoryTreeSaveUrl" />
 <spring:url value="/admin/category-tree/ajax-delete" var="categoryTreeDeleteUrl" />
 <spring:url value="/admin/category-tree/ajax-add-category" var="addCategoryToTreeUrl" />
 <script src="${categoryTreeJs}"></script>
 <script>
-    var saveTreesUrl = '${categoryTreeSaveUrl}';
     var deleteTreesUrl = '${categoryTreeDeleteUrl}';
     var addCategoryToTreeUrl = '${addCategoryToTreeUrl}';
     var trees = [
