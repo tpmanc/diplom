@@ -1,13 +1,10 @@
 package controllers;
 
-import db.Database;
 import exceptions.CustomWebException;
 import helpers.FileCheckSum;
 import helpers.PEProperties;
 import models.*;
 import org.apache.commons.io.IOUtils;
-import org.boris.pecoff4j.PE;
-import org.boris.pecoff4j.io.PEParser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,14 +13,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.io.FilenameUtils;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -92,7 +85,7 @@ public class AdminFileController {
     }
 
     @ResponseBody
-    @RequestMapping(value = {"/file-add-handler" }, method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = {"/file-add-handler" }, method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
     public String fileAddHandler(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
         String result;
 
@@ -105,8 +98,9 @@ public class AdminFileController {
 
         if (!file.isEmpty()) {
             try {
+                InputStream inputStream = file.getInputStream();
                 // формирование пути до файла
-                String hash = FileCheckSum.get(file.getInputStream());
+                String hash = FileCheckSum.get(inputStream);
                 String firstDir = hash.substring(0, 2);
                 String secondDir = hash.substring(2, 4);
                 StringBuilder newFileName = new StringBuilder();
@@ -141,8 +135,9 @@ public class AdminFileController {
 
                     // сохранение файла на диск
                     BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(newFileName.toString())));
-                    IOUtils.copy(file.getInputStream(), stream);
+                    IOUtils.copy(inputStream, stream);
                     stream.close();
+                    inputStream.close();
 
                     // получение свойств файла
                     Map<Integer, String> properties = PEProperties.parse(newFileName.toString());

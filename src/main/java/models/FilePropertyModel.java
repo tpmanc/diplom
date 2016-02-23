@@ -1,6 +1,11 @@
 package models;
 
 import db.Database;
+import db.Database2;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 import javax.xml.transform.Result;
 import java.sql.*;
@@ -8,7 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class FilePropertyModel extends BaseModel implements ModelInterface {
-    private static final String saveNew = "INSERT INTO fileProperty(fileId, propertyId, value) VALUES(?, ?, ?)";
+    private static final String saveNew = "INSERT INTO fileProperty(fileId, propertyId, value) VALUES(:fileId, :propertyId, :value)";
     private static final String getByFile = "SELECT fileProperty.id, property.title, fileProperty.value FROM fileProperty LEFT JOIN property ON fileProperty.propertyId = property.id WHERE fileId = ?";
 
     private int id;
@@ -39,16 +44,14 @@ public class FilePropertyModel extends BaseModel implements ModelInterface {
 
     public boolean add() throws SQLException {
         if (this.validate()) {
-            Connection connection = Database.getConnection();
-            PreparedStatement ps = connection.prepareStatement(saveNew, Statement.RETURN_GENERATED_KEYS);
-            ps.setInt(1, fileId);
-            ps.setInt(2, propertyId);
-            ps.setString(3, value);
-            int affectedRows = ps.executeUpdate();
-            ResultSet generatedKeys = ps.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                id = generatedKeys.getInt(1);
-            }
+            NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+            MapSqlParameterSource parameters = new MapSqlParameterSource();
+            parameters.addValue("fileId", fileId);
+            parameters.addValue("propertyId", propertyId);
+            parameters.addValue("value", value);
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            template.update(saveNew, parameters, keyHolder);
+            id = keyHolder.getKey().intValue();
             return true;
         }
         return false;
