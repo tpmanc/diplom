@@ -30,11 +30,8 @@
                             <li <c:if test="${param.activePage == ''}"> class="active" </c:if>>
                                 <a href="<spring:url value="/admin/" />"><i class="fa fa-home"></i> <span class="nav-label">Главная</span></a>
                             </li>
-                            <li <c:if test="${param.activePage == 'category'}"> class="active" </c:if>>
-                                <a href="<spring:url value="/admin/categories" />"><i class="fa fa-folder-open"></i> <span class="nav-label">Категории</span></a>
-                            </li>
                             <li <c:if test="${param.activePage == 'categoryTree'}"> class="active" </c:if>>
-                                <a href="<spring:url value="/admin/category-trees" />"><i class="fa fa-sitemap"></i> <span class="nav-label">Дерево категорий</span></a>
+                                <a href="<spring:url value="/admin/categories" />"><i class="fa fa-sitemap"></i> <span class="nav-label">Категории</span></a>
                             </li>
                             <li <c:if test="${param.activePage == 'file'}"> class="active" </c:if>>
                                 <a href="<spring:url value="/admin/files" />"><i class="fa fa-file"></i> <span class="nav-label">Файлы</span></a>

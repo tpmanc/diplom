@@ -4,27 +4,81 @@ import db.Database;
 import db.Database2;
 import exceptions.CustomWebException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.acls.model.NotFoundException;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.validation.Errors;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Map;
 
 public class CategoryModel extends BaseModel implements ModelInterface {
-    private static final String getById = "SELECT * FROM category WHERE id = ?";
-    private static final String saveById = "UPDATE category SET title = ?, isEnabled = ? WHERE id = ?";
-    private static final String saveNew = "INSERT INTO category(title, isEnabled) VALUES(?, ?)";
-    private static final String getAll = "SELECT * FROM category";
-    private static final String deleteById = "DELETE FROM category WHERE id = ?";
+    private static String getById = "SELECT * FROM category where id = ?";
+    private static String getAll = "SELECT * FROM category";
+    private static String updateElem = "UPDATE category SET parent = :parent, title = :title WHERE id = :id";
+    private static String updateParents = "UPDATE category SET parent = ? WHERE parent = ?";
+    private static String getChildren = "SELECT * FROM category WHERE parent = ?";
+    private static String saveNew = "INSERT INTO category(parent, title, position, isEnabled) VALUES (:parent, :title, :position, :isEnabled)";
+    private static String deleteById = "DELETE FROM category WHERE id = ?";
+    private static final String getTreeElements = "SELECT * FROM category ORDER BY position ASC, id ASC";
     private static final String getCount = "SELECT count(id) FROM category";
 
+    private Errors errors;
+
     private int id;
+    private int parent;
     private String title;
-    private boolean isEnabled;
-    public HashMap<String, List<String>> errors = new HashMap<String, List<String>>();
+    private int position = 0;
+    private boolean isEnabled = true;
+
+    public int getParent() {
+        return parent;
+    }
+
+    public void setParent(int parent) {
+        this.parent = parent;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
+    public CategoryModel(int parent, int position, String title) {
+        this.parent = parent;
+        this.position = position;
+        this.title = title;
+    }
+
+    public CategoryModel(int id, int parent, int position, String title) {
+        this.parent = parent;
+        this.id = id;
+        this.position = position;
+        this.title = title;
+    }
 
     public static CategoryModel findById(int id) throws SQLException {
         Connection connection = Database.getConnection();
@@ -33,57 +87,55 @@ public class CategoryModel extends BaseModel implements ModelInterface {
         ResultSet res = ps.executeQuery();
         if (res.next()) {
             int categoryId = res.getInt(1);
-            String title = res.getString(2);
-            boolean isEnabled = res.getBoolean(3);
-            return new CategoryModel(categoryId, title, isEnabled);
+            int parent = res.getInt(2);
+            String title = res.getString(3);
+            int position = res.getInt(4);
+            return new CategoryModel(categoryId, parent, position, title);
         }
-        throw new CustomWebException("User not found");
+        throw new CustomWebException("Запись не найдена");
     }
 
     public static ArrayList<HashMap> findAll() throws SQLException {
-        return queryAll(getAll);
+        ArrayList<HashMap> result = new ArrayList<HashMap>();
+        JdbcTemplate template = new JdbcTemplate(Database2.getInstance().getBds());
+        List<Map<String, Object>> rows = template.queryForList(getTreeElements);
+        for (Map row : rows) {
+            HashMap<String, String> info = new HashMap<String, String>();
+            info.put("id", String.valueOf(row.get("id")));
+            String parent = String.valueOf(row.get("parent"));
+            info.put("parent", parent);
+            info.put("title", String.valueOf(row.get("title")));
+            result.add(info);
+        }
+        return result;
     }
 
-    public CategoryModel(int id, String title, boolean isEnabled) {
-        this.id = id;
-        this.title = title;
-        this.isEnabled = isEnabled;
-    }
-
-    public CategoryModel(String title, boolean isEnabled) {
-        this.title = title;
-        this.isEnabled = isEnabled;
+    public ArrayList children() throws SQLException {
+        ArrayList<CategoryModel> result = new ArrayList<CategoryModel>();
+        Connection connection = Database.getConnection();
+        PreparedStatement ps = connection.prepareStatement(getChildren);
+        ps.setInt(1, id);
+        ResultSet res = ps.executeQuery();
+        if (res.next()) {
+            int categoryId = res.getInt(1);
+            int parent = res.getInt(2);
+            String title = res.getString(3);
+            int position = res.getInt(4);
+            result.add(new CategoryModel(categoryId, parent, position, title));
+        }
+        return result;
     }
 
     public boolean update() throws SQLException {
-        if (this.validate()) {
-            Connection connection = Database.getConnection();
-            PreparedStatement ps = connection.prepareStatement(saveById);
-            ps.setString(1, title);
-            ps.setBoolean(2, isEnabled);
-            ps.setInt(3, id);
-            ps.execute();
-            return true;
-        } else {
-            return false;
+        if (validate()) {
+            NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+            MapSqlParameterSource parameters = new MapSqlParameterSource();
+            parameters.addValue("id", id);
+            parameters.addValue("parent", parent);
+            parameters.addValue("title", title);
+            template.update(updateElem, parameters);
         }
-    }
-
-    public boolean add() throws SQLException {
-        if (this.validate()) {
-            Connection connection = Database.getConnection();
-            PreparedStatement ps = connection.prepareStatement(saveNew , Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, title);
-            ps.setBoolean(2, isEnabled);
-            int affectedRows = ps.executeUpdate();
-            ResultSet generatedKeys = ps.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                id = generatedKeys.getInt(1);
-            }
-            return true;
-        } else {
-            return false;
-        }
+        return false;
     }
 
     public static int getCount() {
@@ -91,50 +143,73 @@ public class CategoryModel extends BaseModel implements ModelInterface {
         return template.queryForObject(getCount, Integer.class);
     }
 
-    public boolean delete() throws SQLException {
-        Connection connection = Database.getConnection();
-        PreparedStatement ps = connection.prepareStatement(deleteById);
-        ps.setInt(1, id);
-        ps.execute();
+    /**
+     * Обновление сортировки внутри родителя
+     * @param parentId id родителя, внутри которого обвноляем сортировку
+     * @param nodeId id элемента, которому задали позицию
+     * @param newPosition заданная позиция для элемента с id = nodeId
+     * @throws SQLException
+     */
+    public static void updateSortingOfNode(int parentId, int nodeId, int newPosition) throws SQLException {
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        String sql = "SELECT * FROM category WHERE parent = :parentId order by position";
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("parentId", parentId);
+        parameters.addValue("newPosition", newPosition);
+        List<Map<String, Object>> rows = template.queryForList(sql, parameters);
+        int counter = 0;
+        sql = "UPDATE category SET position = :position WHERE id = :id";
+        for (Map row : rows) {
+            Integer position = (Integer) row.get("position");
+            Integer id = (Integer) row.get("id");
+            if (id == nodeId) {
+                parameters.addValue("id", nodeId);
+                parameters.addValue("position", newPosition);
+            } else {
+                if (position == newPosition) {
+                    counter++;
+                }
+                parameters.addValue("id", id);
+                parameters.addValue("position", counter);
+                counter++;
+            }
+            template.update(sql, parameters);
+        }
+    }
+
+    public boolean add() throws SQLException {
+        if (this.validate()) {
+            NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+            MapSqlParameterSource parameters = new MapSqlParameterSource();
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            parameters.addValue("parent", parent);
+            parameters.addValue("title", title);
+            parameters.addValue("position", position);
+            parameters.addValue("isEnabled", isEnabled);
+            template.update(saveNew, parameters, keyHolder);
+            this.id = keyHolder.getKey().intValue();
+            return true;
+        }
+        return false;
+    }
+
+    public boolean validate() {
+
         return true;
     }
 
-    /**
-     * Валидация данных
-     * @return Результат валидации
-     */
-    public boolean validate() {
-        // title
-        List<String> titleErrors = new ArrayList<String>();
-        boolean result = true;
-        if (title.length() > 255) {
-            result = false;
-            titleErrors.add("Название должно быть меньше 255 символов");
-        }
-        if (titleErrors.size() > 0) {
-            errors.put("title", titleErrors);
-        }
+    public boolean delete() throws SQLException {
+        // всем категориям, прявязанным к этому элементу, надо изменить родителя на родителя этого элемента
+        Connection connection = Database.getConnection();
+        PreparedStatement ps = connection.prepareStatement(updateParents);
+        ps.setInt(1, parent);
+        ps.setInt(2, id);
+        ps.execute();
 
-        return result;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public boolean getIsEnabled() {
-        return isEnabled;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setIsEnabled(boolean isEnabled) {
-        this.isEnabled = isEnabled;
+        // удаляем этот элемент
+        ps = connection.prepareStatement(deleteById);
+        ps.setInt(1, id);
+        ps.execute();
+        return true;
     }
 }

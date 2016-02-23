@@ -1,17 +1,10 @@
 package controllers;
 
-import exceptions.CustomWebException;
 import models.CategoryModel;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,97 +15,87 @@ public class AdminCategoryController {
 
     @RequestMapping(value = {"/categories" }, method = RequestMethod.GET)
     public String index(Model model) {
-        ArrayList<HashMap> categories = null;
+        ArrayList<HashMap> trees = null;
         try {
-            categories = CategoryModel.findAll();
-            model.addAttribute("categories", categories);
+            trees = CategoryModel.findAll();
+            model.addAttribute("trees", trees);
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        model.addAttribute("pageTitle", "Категории");
+        model.addAttribute("pageTitle", "Деревья категорий");
         return "admin/category/categories";
     }
 
-    @RequestMapping(value = {"/category-add" }, method = RequestMethod.GET)
-    public String add(Model model) {
-        model.addAttribute("pageTitle", "Добавить категорию");
-        return "admin/category/category-add";
-    }
-
-    @RequestMapping(value = {"/category-edit" }, method = RequestMethod.GET)
-    public String update(@RequestParam("id") int id, Model model) {
-        CategoryModel category = null;
-        try {
-            category = CategoryModel.findById(id);
-        } catch (SQLException e) {
-            throw new CustomWebException("Категория не существует");
-        }
-        model.addAttribute("category", category);
-        model.addAttribute("pageTitle", "Изменить категорию");
-        return "admin/category/category-edit";
-    }
-
-    @RequestMapping(value = {"/category-add-handler" }, method = RequestMethod.POST)
-    public String addHandler(
+    @ResponseBody
+    @RequestMapping(value = "/category/ajax-add-category", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
+    public String addNewCategory(
+            @RequestParam("parent") int parent,
             @RequestParam("title") String title,
-            @RequestParam(value="isEnabled", required=true, defaultValue="false") boolean isEnabled,
-            RedirectAttributes attr,
-            Model model
+            @RequestParam("position") int position
     ) {
-        CategoryModel category = new CategoryModel(title, isEnabled);
+        String result;
         try {
-            if (category.add()) {
-                return "redirect:/admin/categories";
-            } else {
-                attr.addFlashAttribute("errors", category.errors);
-                return "redirect:/admin/category-add";
-            }
+            CategoryModel category = new CategoryModel(parent, position, title);
+            category.add();
+            result = "{\"title\":\"" + title + "\", \"id\": \""+category.getId()+"\"}";
         } catch (SQLException e) {
+            result = "{\"error\": true}";
             e.printStackTrace();
         }
-        return "redirect:/admin/category-add";
+        return result;
     }
 
-    @RequestMapping(value = {"/category-edit-handler" }, method = RequestMethod.POST)
-    public String updateHandler(
+    @ResponseBody
+    @RequestMapping(value = "/category/ajax-rename", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
+    public String renameCategory(
             @RequestParam("id") int id,
-            @RequestParam("title") String title,
-            @RequestParam(value="isEnabled", required=true, defaultValue="false") boolean isEnabled,
-            RedirectAttributes attr,
-            Model model
+            @RequestParam("title") String title
     ) {
-        CategoryModel category = null;
+        String result;
         try {
-            category = CategoryModel.findById(id);
-            category.setTitle(title);
-            category.setIsEnabled(isEnabled);
-            if (category.update()) {
-                return "redirect:/admin/categories";
-            } else {
-                attr.addFlashAttribute("errors", category.errors);
-                return "redirect:/admin/category-edit?id=" + id;
-            }
+            CategoryModel model = CategoryModel.findById(id);
+            model.setTitle(title);
+            model.update();
+            result = "{\"title\":\"" + title + "\"}";
         } catch (SQLException e) {
-
+            result = "{\"error\": true}";
+            e.printStackTrace();
         }
-        return "redirect:/category-edit?id=" + id;
+        return result;
     }
 
-    @RequestMapping(value = {"/category-delete" }, method = RequestMethod.POST)
-    public @ResponseBody boolean deleteHandler(
-            @RequestParam("categoryId") int categoryId,
-            Model model
-    ) {
+    @ResponseBody
+    @RequestMapping(value = "/category/ajax-update-position", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
+    public String categoryTreeUpdatePositionUrl(
+            @RequestParam("treeId") int id,
+            @RequestParam("newParentId") int newParentId,
+            @RequestParam("position") int position
+            ) {
+        String result;
         try {
-            CategoryModel category = CategoryModel.findById(categoryId);
-            if (category.delete()) {
-                return true;
+            CategoryModel model = CategoryModel.findById(id);
+            if (model.getParent() != newParentId) {
+                model.setParent(newParentId);
+                model.update();
             }
+            CategoryModel.updateSortingOfNode(newParentId, id, position);
+            result = "{\"error\": false}";
         } catch (SQLException e) {
-
+            e.printStackTrace();
+            result = "{\"error\": true}";
         }
-        return false;
+        return result;
     }
 
+    @ResponseBody
+    @RequestMapping(value = "/category/ajax-delete", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
+    public String categoryTreeDeleteUrl(
+            @RequestParam("id") String id
+    ) {
+        // TODO
+        String result = "";
+//            result = "{\"error\": true}";
+        return result;
+    }
 }

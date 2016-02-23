@@ -3,14 +3,30 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 
 <jsp:include page="../layout_top.jsp">
-    <jsp:param name="activePage" value="category" />
+    <jsp:param name="activePage" value="categoryTree" />
 </jsp:include>
 
+<spring:url value="/resources/js/pages/admin/category/categories.js" var="categoryTreeJs" />
+<spring:url value="/admin/category/ajax-delete" var="categoryTreeDeleteUrl" />
+<spring:url value="/admin/category/ajax-add-category" var="addCategoryToTreeUrl" />
+<spring:url value="/admin/category/ajax-update-position" var="updatePosition" />
+<spring:url value="/admin/category/ajax-rename" var="renameCategoryUrl" />
+<script src="${categoryTreeJs}"></script>
 <script>
-    var categoryDeleteUrl = "<spring:url value="/admin/category-delete" />";
+    var deleteTreesUrl = '${categoryTreeDeleteUrl}';
+    var addCategoryToTreeUrl = '${addCategoryToTreeUrl}';
+    var updatePosition = '${updatePosition}';
+    var renameCategoryUrl = '${renameCategoryUrl}';
+    var trees = [
+        <c:forEach items="${trees}" var="item" varStatus="itemStat">
+            {
+                id: "jst_${item.get("id")}",
+                parent: "<c:choose><c:when test="${item.get(\"parent\") == \"0\"}">#</c:when><c:otherwise>jst_${item.get("parent")}</c:otherwise></c:choose>",
+                text: "${item.get("title")}"
+            }<c:if test="${!itemStat.last}">,</c:if>
+        </c:forEach>
+    ];
 </script>
-<spring:url value="/resources/js/pages/admin/category/categories.js" var="categoriesJs" />
-<script src="${categoriesJs}"></script>
 
 <h2>${pageTitle}</h2>
 
@@ -24,33 +40,23 @@
 <br>
 
 <p>
-    <a href="<spring:url value="/admin/category-add" />" class="btn btn-success">Добавить категорию</a>
+    <button class="btn btn-success" id="addNewTree">Добавить дерево</button>
 </p>
 
-<table class="table table-striped">
-    <thead>
-    <tr>
-        <td>id</td>
-        <td>Название</td>
-        <td>Включена</td>
-        <td></td>
-    </tr>
-    </thead>
-    <tbody>
-    <c:forEach items="${categories}" var="item" varStatus="itemStat">
-        <tr>
-            <td>${item.get("id")}</td>
-            <td>${item.get("title")}</td>
-            <td>${item.get("isEnabled")}</td>
-            <td>
-                <a href="<spring:url value="/admin/category-edit?id=" />${item.get("id")}">
-                    <i class="fa fa-eye"></i>
-                </a>
-                <i class="fa fa-trash category-delete" data-id="${item.id}"></i>
-            </td>
-        </tr>
-    </c:forEach>
-    </tbody>
-</table>
+<div id="treesHolder">
+</div>
+
+<div style="display: none;">
+    <div class="box-modal" id="addCategoryModal">
+        <div class="box-modal_close arcticmodal-close">закрыть</div>
+        <form action="#">
+            <div class="form-group">
+                <label for="categoryTitle">Название</label>
+                <input type="text" class="form-control" id="categoryTitle" placeholder="Название">
+            </div>
+            <input type="button" id="submitNewCategory" class="btn btn-success" value="Добавить">
+        </form>
+    </div>
+</div>
 
 <jsp:include page="../layout_bottom.jsp" />
