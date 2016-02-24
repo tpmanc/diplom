@@ -8,20 +8,6 @@
 
 <h1>Добавить свойство файла</h1>
 
-<form method="POST" action="<spring:url value="/property-add-handler" />">
-    <div class="form-group <c:if test="${errors.get(\"title\") != null}">has-error</c:if>">
-        <label for="title">Название</label>
-        <input type="text" class="form-control" name="title" id="title" placeholder="Название">
-        <c:if test="${errors.get(\"title\") != null}">
-            <span class="help-block">
-                <c:forEach items="${errors.get(\"title\")}" var="item" varStatus="itemStat">
-                    ${item}
-                </c:forEach>
-            </span>
-        </c:if>
-    </div>
-
-    <button type="submit" class="btn btn-success">Добавить</button>
-</form>
+<jsp:include page="_form.jsp" />
 
 <jsp:include page="../layout_bottom.jsp" />

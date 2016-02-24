@@ -23,7 +23,6 @@
                 </div>
             </li>
             <li>
-                <!-- START : Left sidebar -->
                 <div class="nano left-sidebar">
                     <div class="nano-content">
                         <ul class="nav nav-pills nav-stacked nav-inq">
@@ -51,7 +50,6 @@
                         </ul>
                     </div>
                 </div>
-                <!-- END : Left sidebar -->
             </li>
         </ul>
     </div>
@@ -62,20 +60,6 @@
         <nav class="navbar navbar-fixed-top white-bg show-menu-full" id="nav" role="navigation" style="margin-bottom: 0">
             <div class="navbar-header">
                 <a class="navbar-minimalize minimalize-styl-2 btn" href="javascript:void(0)"><i class="fa fa-bars" style="font-size:27px;"></i> </a>
-                <form role="search" class="navbar-form-custom">
-                    <div class="form-group">
-                        <div class="kform inq">
-                            <div>
-                                <label class="field append-icon">
-                                    <input type="text" name="search" id="search" class="gui-input" placeholder="Поиск">
-                                        <span class="field-icon">
-                                            <i class="fa fa-search"></i>
-                                        </span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </form>
             </div>
             <ul class="nav navbar-top-links navbar-right">
                 <li class="dropdown pull-right">
