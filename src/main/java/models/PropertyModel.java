@@ -1,16 +1,17 @@
 package models;
 
-import db.Database;
+import db.Database2;
 import exceptions.CustomSQLException;
-import org.springframework.security.acls.model.NotFoundException;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class PropertyModel extends BaseModel implements ModelInterface {
     private static Map<String, Integer> defaultProperties = new HashMap<String, Integer>();
@@ -29,9 +30,10 @@ public class PropertyModel extends BaseModel implements ModelInterface {
         // defaultProperties.put("Comments", 10);
     }
 
-    private static final String saveNew = "INSERT INTO property(title) VALUES(?)";
+    private static final String saveNew = "INSERT INTO property(title) VALUES(:title)";
     private static final String getAll = "SELECT * FROM property";
-    private static final String getById = "SELECT * FROM property WHERE id = ?";
+    private static final String getById = "SELECT * FROM property WHERE id = :id";
+    private static final String deleteById = "DELETE FROM property WHERE id = :id";
 
     private int id;
     private String title;
@@ -72,13 +74,14 @@ public class PropertyModel extends BaseModel implements ModelInterface {
     }
 
     public static PropertyModel findById(int id) throws SQLException {
-        Connection connection = Database.getConnection();
-        PreparedStatement ps = connection.prepareStatement(getById);
-        ps.setInt(1, id);
-        ResultSet res = ps.executeQuery();
-        if (res.next()) {
-            int propertyId = res.getInt(1);
-            String title = res.getString(2);
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("id", id);
+        List<String> result = template.queryForList(getById, parameters, String.class);
+
+        if (!result.isEmpty()) {
+            int propertyId = Integer.parseInt(result.get(0));
+            String title = result.get(1);
             return new PropertyModel(propertyId, title);
         } else {
             throw new CustomSQLException("Свойство не найдено");
@@ -92,14 +95,12 @@ public class PropertyModel extends BaseModel implements ModelInterface {
 
     public boolean add() throws SQLException {
         if (this.validate()) {
-            Connection connection = Database.getConnection();
-            PreparedStatement ps = connection.prepareStatement(saveNew, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, title);
-            int affectedRows = ps.executeUpdate();
-            ResultSet generatedKeys = ps.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                id = generatedKeys.getInt(1);
-            }
+            NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+            MapSqlParameterSource parameters = new MapSqlParameterSource();
+            parameters.addValue("title", title);
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            template.update(saveNew, parameters, keyHolder);
+            this.id = keyHolder.getKey().intValue();
             return true;
         }
         return false;
@@ -127,7 +128,10 @@ public class PropertyModel extends BaseModel implements ModelInterface {
     }
 
     public boolean delete() throws SQLException {
-        // TODO
-        return false;
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("id", id);
+        int rows = template.update(deleteById, parameters);
+        return rows > 0;
     }
 }

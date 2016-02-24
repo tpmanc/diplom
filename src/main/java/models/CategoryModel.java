@@ -1,6 +1,5 @@
 package models;
 
-import db.Database;
 import db.Database2;
 import exceptions.CustomWebException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,13 +16,13 @@ import java.util.List;
 import java.util.Map;
 
 public class CategoryModel extends BaseModel implements ModelInterface {
-    private static String getById = "SELECT * FROM category where id = ?";
+    private static String getById = "SELECT * FROM category where id = :id";
     private static String getAll = "SELECT * FROM category";
     private static String updateElem = "UPDATE category SET parent = :parent, title = :title WHERE id = :id";
-    private static String updateParents = "UPDATE category SET parent = ? WHERE parent = ?";
-    private static String getChildren = "SELECT * FROM category WHERE parent = ?";
+    private static String updateParents = "UPDATE category SET parent = :parent WHERE parent = :id";
+    private static String getChildren = "SELECT * FROM category WHERE parent = :parentId";
     private static String saveNew = "INSERT INTO category(parent, title, position, isEnabled) VALUES (:parent, :title, :position, :isEnabled)";
-    private static String deleteById = "DELETE FROM category WHERE id = ?";
+    private static String deleteById = "DELETE FROM category WHERE id = :id";
     private static final String getTreeElements = "SELECT * FROM category ORDER BY position ASC, id ASC";
     private static final String getCount = "SELECT count(id) FROM category";
 
@@ -81,18 +80,18 @@ public class CategoryModel extends BaseModel implements ModelInterface {
     }
 
     public static CategoryModel findById(int id) throws SQLException {
-        Connection connection = Database.getConnection();
-        PreparedStatement ps = connection.prepareStatement(getById);
-        ps.setInt(1, id);
-        ResultSet res = ps.executeQuery();
-        if (res.next()) {
-            int categoryId = res.getInt(1);
-            int parent = res.getInt(2);
-            String title = res.getString(3);
-            int position = res.getInt(4);
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("id", id);
+        List<String> res = template.queryForList(getById, parameters, String.class);
+        if (!res.isEmpty()) {
+            int categoryId = Integer.parseInt(res.get(0));
+            int parent = Integer.parseInt(res.get(1));
+            String title = res.get(2);
+            int position = Integer.parseInt(res.get(3));
             return new CategoryModel(categoryId, parent, position, title);
         }
-        throw new CustomWebException("Запись не найдена");
+        throw new CustomWebException("Категория не найдена");
     }
 
     public static ArrayList<HashMap> findAll() throws SQLException {
@@ -112,15 +111,16 @@ public class CategoryModel extends BaseModel implements ModelInterface {
 
     public ArrayList children() throws SQLException {
         ArrayList<CategoryModel> result = new ArrayList<CategoryModel>();
-        Connection connection = Database.getConnection();
-        PreparedStatement ps = connection.prepareStatement(getChildren);
-        ps.setInt(1, id);
-        ResultSet res = ps.executeQuery();
-        if (res.next()) {
-            int categoryId = res.getInt(1);
-            int parent = res.getInt(2);
-            String title = res.getString(3);
-            int position = res.getInt(4);
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("parentId", id);
+        List<Map<String, Object>> rows = template.queryForList(getChildren, parameters);
+
+        for (Map row : rows) {
+            Integer categoryId = (Integer) row.get("id");
+            Integer parent = (Integer) row.get("parent");
+            String title = (String) row.get("title");
+            Integer position = (Integer) row.get("position");
             result.add(new CategoryModel(categoryId, parent, position, title));
         }
         return result;
@@ -200,16 +200,15 @@ public class CategoryModel extends BaseModel implements ModelInterface {
 
     public boolean delete() throws SQLException {
         // всем категориям, прявязанным к этому элементу, надо изменить родителя на родителя этого элемента
-        Connection connection = Database.getConnection();
-        PreparedStatement ps = connection.prepareStatement(updateParents);
-        ps.setInt(1, parent);
-        ps.setInt(2, id);
-        ps.execute();
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("parent", parent);
+        parameters.addValue("id", id);
+        template.update(updateParents, parameters);
 
         // удаляем этот элемент
-        ps = connection.prepareStatement(deleteById);
-        ps.setInt(1, id);
-        ps.execute();
-        return true;
+        parameters.addValue("id", id);
+        int rows = template.update(deleteById, parameters);
+        return rows > 0;
     }
 }

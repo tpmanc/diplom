@@ -1,6 +1,5 @@
 package models;
 
-import db.Database;
 import db.Database2;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
