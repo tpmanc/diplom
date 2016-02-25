@@ -3,11 +3,77 @@ $(function(){
     treesHolder = $('#treesHolder');
     var addNewTree = $('#addNewTree');
     var addCategoryModal = $('#addCategoryModal');
+    var categoryTitle = $('#categoryTitle');
+    var submitNewCategory = $('#submitNewCategory');
+    var renameCategoryModal = $('#renameCategoryModal');
+    var submitNewCategoryTitle = $('#submitNewCategoryTitle');
+    var newCategoryTitle = $('#newCategoryTitle');
+    var renameCategoryId = $('#renameCategoryId');
     var newCategoryParent = undefined;
 
-    $('#submitNewCategory').on('click', function(){
-        var form = $(this).closest('form');
-        var titleElem = form.find('#categoryTitle');
+    addCategoryModal.on('shown.bs.modal', function () {
+        categoryTitle.val('');
+        categoryTitle.focus();
+    });
+    renameCategoryModal.on('shown.bs.modal', function () {
+        categoryTitle.focus();
+    });
+
+    categoryTitle.on('keyup', function(event){
+        if(event.keyCode == 13){
+            submitNewCategory.click();
+        }
+    });
+    newCategoryTitle.on('keyup', function(event){
+        if(event.keyCode == 13){
+            submitNewCategoryTitle.click();
+        }
+    });
+
+    // переимановать категорию
+    submitNewCategoryTitle.on('click', function(){
+        var form = $(this).closest('.form');
+        var title = newCategoryTitle.val().trim();
+        var id = parseInt(renameCategoryId.val());
+        var error = false;
+        form.find('.has-error').removeClass('has-error');
+        if (title.length == 0) {
+            error = true;
+            newCategoryTitle.addClass('has-error');
+        }
+        if (isNaN(id) || id <= 0) {
+            error = true;
+        }
+        if (!error) {
+            $.ajax({
+                url: renameCategoryUrl,
+                method: "post",
+                dataType: "json",
+                data: {id: id, title: title},
+                beforeSend: function(){
+                },
+                success: function(data){
+                    //var node = treesHolder.jstree(true).get_node("jst_"+id);
+                    treesHolder.jstree(
+                        "rename_node",
+                        "jst_"+id,
+                        data.title
+                    );
+                },
+                complete: function(){
+                    renameCategoryModal.modal('hide');
+                },
+                error: function(){
+                    alert('Ошибка при сохранении');
+                }
+            });
+        }
+    });
+
+    // добавить новую категорию
+    submitNewCategory.on('click', function(){
+        var form = $(this).closest('.form');
+        var titleElem = categoryTitle;
         var title = titleElem.val().trim();
         var error = false;
         form.find('.has-error').removeClass('has-error');
@@ -15,19 +81,23 @@ $(function(){
             error = true;
             titleElem.addClass('has-error');
         }
-        if (newCategoryParent == undefined) {
-            error = true;
+        var parent = '#';
+        if (newCategoryParent != undefined) {
+            parent = newCategoryParent.id;
         }
         if (!error) {
             var newTreeElem = treesHolder.jstree(
                 "create_node",
-                newCategoryParent.id,
+                parent,
                 {text: title},
                 'last',
                 false,
                 false
             );
-            var parentId = parseId(newCategoryParent.id);
+            var parentId = 0;
+            if (newCategoryParent != undefined) {
+                parentId = parseId(newCategoryParent.id);
+            }
             categoryAjax(parentId, title, newTreeElem);
         }
     });
@@ -48,36 +118,16 @@ $(function(){
                         "action": function (obj) {
                             // добавление категории в дерево
                             newCategoryParent = $node;
-                            addCategoryModal.arcticmodal();
+                            addCategoryModal.modal('show');
                         }
                     },
                     "Update": {
                         "label": "Переименовать",
                         "action": function (obj) {
                             // переименовать категорию
-                            var prevTitle = treesHolder.jstree("get_text", $node.id);
-                            var title = prompt('Новое название', prevTitle);
-                            if (title != null && title != '') {
-                                var id = parseId($node.id);
-                                $.ajax({
-                                    url: renameCategoryUrl,
-                                    method: "post",
-                                    dataType: "json",
-                                    data: {id: id, title: title},
-                                    beforeSend: function(){
-                                    },
-                                    success: function(data){
-                                        treesHolder.jstree(
-                                            "rename_node",
-                                            $node.id,
-                                            data.title
-                                        );
-                                    },
-                                    error: function(){
-                                        alert('Ошибка при сохранении');
-                                    }
-                                });
-                            }
+                            newCategoryTitle.val($node.text);
+                            renameCategoryId.val(parseId($node.id));
+                            renameCategoryModal.modal('show');
                         }
                     },
                     "Delete": {
@@ -137,18 +187,8 @@ $(function(){
     });
 
     addNewTree.on('click', function(){
-        var title = prompt('Название', '');
-        if (title != null && title != '') {
-            var treeId = treesHolder.jstree(
-                "create_node",
-                null,
-                {text: title},
-                'last',
-                false,
-                false
-            );
-            categoryAjax(0, title, treeId);
-        }
+        newCategoryParent = undefined;
+        addCategoryModal.modal('show');
     });
 
     function categoryAjax(parent, title, treeId) {
@@ -175,7 +215,7 @@ $(function(){
                 alert('Ошибка при сохранении');
             },
             complete: function(){
-                addCategoryModal.arcticmodal('close');
+                addCategoryModal.modal('hide');
             }
         });
     }

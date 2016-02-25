@@ -18,7 +18,6 @@
         <script src="<spring:url value="/resources/js/admin/bootstrap.min.js"/>"></script>
         <script src="<spring:url value="/resources/js/admin/jquery.metisMenu.js"/>"></script>
         <script src="<spring:url value="/resources/js/admin/jquery.slimscroll.min.js"/>"></script>
-        <script src="<spring:url value="/resources/js/admin/jquery.arcticmodal-0.3.min.js"/>"></script>
         <script src="<spring:url value="/resources/js/admin/jstree.min.js"/>"></script>
         <script src="<spring:url value="/resources/js/admin/toastr.min.js"/>"></script>
         <script src="<spring:url value="/resources/js/admin/dropzone.js"/>"></script>

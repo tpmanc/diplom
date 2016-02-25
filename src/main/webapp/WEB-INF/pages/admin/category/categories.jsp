@@ -46,16 +46,48 @@
 <div id="treesHolder">
 </div>
 
-<div style="display: none;">
-    <div class="box-modal" id="addCategoryModal">
-        <div class="box-modal_close arcticmodal-close">закрыть</div>
-        <form action="#">
-            <div class="form-group">
-                <label for="categoryTitle">Название</label>
-                <input type="text" class="form-control" id="categoryTitle" placeholder="Название">
+<div class="modal inmodal" id="addCategoryModal" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content animated fadeIn">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">Добавить категорию</h4>
             </div>
-            <input type="button" id="submitNewCategory" class="btn btn-success" value="Добавить">
-        </form>
+            <div class="modal-body">
+                <div class="form">
+                    <div class="form-group">
+                        <label for="categoryTitle">Название</label>
+                        <input type="text" class="form-control" id="categoryTitle" placeholder="Название">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="button" id="submitNewCategory" class="btn btn-success" value="Добавить">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal inmodal" id="renameCategoryModal" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content animated fadeIn">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">Переименовать категорию</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form">
+                    <div class="form-group">
+                        <label for="categoryTitle">Название</label>
+                        <input type="text" class="form-control" id="newCategoryTitle" placeholder="Название">
+                    </div>
+                    <input type="hidden" class="form-control" id="renameCategoryId">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="button" id="submitNewCategoryTitle" class="btn btn-success" value="Добавить">
+            </div>
+        </div>
     </div>
 </div>
 

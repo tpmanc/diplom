@@ -83,12 +83,12 @@ public class CategoryModel extends BaseModel implements ModelInterface {
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("id", id);
-        List<String> res = template.queryForList(getById, parameters, String.class);
+        List<Map<String,Object>> res = template.queryForList(getById, parameters);
         if (!res.isEmpty()) {
-            int categoryId = Integer.parseInt(res.get(0));
-            int parent = Integer.parseInt(res.get(1));
-            String title = res.get(2);
-            int position = Integer.parseInt(res.get(3));
+            int categoryId = Integer.parseInt(String.valueOf(res.get(0).get("id")));
+            int parent = Integer.parseInt(String.valueOf(res.get(0).get("parent")));
+            String title = String.valueOf(res.get(0).get("title"));
+            int position = Integer.parseInt(String.valueOf(res.get(0).get("position")));
             return new CategoryModel(categoryId, parent, position, title);
         }
         throw new CustomWebException("Категория не найдена");
@@ -152,10 +152,9 @@ public class CategoryModel extends BaseModel implements ModelInterface {
      */
     public static void updateSortingOfNode(int parentId, int nodeId, int newPosition) throws SQLException {
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
-        String sql = "SELECT * FROM category WHERE parent = :parentId order by position";
+        String sql = "SELECT * FROM category WHERE parent = :parentId ORDER BY position";
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("parentId", parentId);
-        parameters.addValue("newPosition", newPosition);
         List<Map<String, Object>> rows = template.queryForList(sql, parameters);
         int counter = 0;
         sql = "UPDATE category SET position = :position WHERE id = :id";
