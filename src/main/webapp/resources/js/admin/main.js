@@ -1,13 +1,22 @@
-/*
- *
- *   INQ - Responsive Admin Theme
- *   version 1.0
- *
- */
-
 $(document).ready(function () {
 
     "use strict";
+
+    toastr.options = {
+        "closeButton": true,
+        "debug": false,
+        "progressBar": true,
+        "positionClass": "toast-top-right",
+        "onclick": null,
+        "showDuration": "400",
+        "hideDuration": "1000",
+        "timeOut": "7000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+    }
 
     // Add body-small class if window less than 768px
     if ($(this).width() < 769) {

@@ -8,11 +8,12 @@
         <link href="<spring:url value="/resources/css/admin/bootstrap.min.css" />" rel="stylesheet" />
         <link href="<spring:url value="/resources/fonts/admin/font-awesome/css/font-awesome.css" />" rel="stylesheet" />
         <link href="<spring:url value="/resources/css/admin/animate.css" />" rel="stylesheet" />
-        <link href="<spring:url value="/resources/css/admin/style.css" />" rel="stylesheet" />
         <link href="<spring:url value="/resources/css/admin/kforms.css" />" rel="stylesheet" />
         <link href="<spring:url value="/resources/css/admin/dropzone.css" />" rel="stylesheet" />
+        <link href="<spring:url value="/resources/css/admin/toastr.min.css" />" rel="stylesheet" />
         <link href="<spring:url value="/resources/css/admin/jquery.arcticmodal-0.3.css" />" rel="stylesheet" />
         <link href="<spring:url value="/resources/css/admin/js-tree/style.min.css" />" rel="stylesheet" />
+        <link href="<spring:url value="/resources/css/admin/style.css" />" rel="stylesheet" />
 
         <script src="<spring:url value="/resources/js/admin/jquery-2.1.4.min.js"/>"></script>
         <script src="<spring:url value="/resources/js/admin/bootstrap.min.js"/>"></script>
