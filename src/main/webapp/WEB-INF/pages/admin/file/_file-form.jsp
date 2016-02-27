@@ -4,14 +4,25 @@
 <div class="row">
     <div class="col-lg-12">
         <div class="inqbox float-e-margins">
-            <div class="inqbox-title border-top-success">
-                <h5>Dropzone Area</h5>
-            </div>
             <div class="inqbox-content">
-                <form id="my-awesome-dropzone" class="dropzone" action="<spring:url value="/admin/file-add-handler" />">
-                    <div class="dropzone-previews"></div>
-                    <button type="submit" class="btn btn-primary pull-right">Загрузить файлы</button>
-                </form>
+                <div id="steps">
+                    <h2>Загзурзка файлов</h2>
+                    <div class="step-content">
+                        <div class="text-center m-t-md">
+                            <form id="my-awesome-dropzone" class="dropzone" action="<spring:url value="/admin/file-add-handler" />">
+                                <div class="dropzone-previews"></div>
+                                <button type="submit" class="btn btn-primary pull-right">Загрузить файлы</button>
+                            </form>
+                        </div>
+                    </div>
+                    <h2>Заполнение информации</h2>
+                    <div class="step-content">
+                        <div class="text-center m-t-md">
+                            <form action="#" id="secondStep"></form>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>

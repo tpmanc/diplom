@@ -7,6 +7,9 @@
 
 <spring:url value="/resources/js/pages/admin/file/file-form.js" var="fileFormJs" />
 <script src="${fileFormJs}"></script>
+<script>
+    var properties = ${properties};
+</script>
 
 <h2>${pageTitle}</h2>
 

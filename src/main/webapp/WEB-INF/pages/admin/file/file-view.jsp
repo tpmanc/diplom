@@ -18,6 +18,10 @@
 
 <br>
 
+<p>
+    <a href="<spring:url value="/admin/file-add-property?id=${file.id}" />" class="btn btn-success">Добавить свойство</a>
+</p>
+
 <h3>${file.title}</h3>
 
 <table class="table table-striped models-view">
@@ -33,10 +37,31 @@
     </tbody>
 </table>
 
-<h3>Свойства</h3>
+<div class="hr-line-dashed"></div>
+
+<h3>Свойства файла</h3>
 <table class="table table-striped models-view">
     <tbody>
-        <c:forEach items="${fileProperties}" var="item" varStatus="itemStat">
+    <c:forEach items="${fileProperties}" var="item" varStatus="itemStat">
+        <tr>
+            <td>${item.title}</td>
+            <td>${item.value}</td>
+            <td>
+                <a href="<spring:url value="/admin/file-edit-property?id=" />${item.get("id")}" class="icon">
+                    <i class="fa fa-edit"></i>
+                </a>
+            </td>
+        </tr>
+    </c:forEach>
+    </tbody>
+</table>
+
+<div class="hr-line-dashed"></div>
+
+<h3>Свойства версии</h3>
+<table class="table table-striped models-view">
+    <tbody>
+        <c:forEach items="${fileVersionProperties}" var="item" varStatus="itemStat">
             <tr>
                 <td>${item.title}</td>
                 <td>${item.value}</td>

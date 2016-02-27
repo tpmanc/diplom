@@ -2,16 +2,16 @@ package models;
 
 import db.Database2;
 import exceptions.CustomSQLException;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PropertyModel extends BaseModel implements ModelInterface {
     private static HashMap<String, Integer> defaultProperties = new HashMap<String, Integer>();
@@ -32,10 +32,12 @@ public class PropertyModel extends BaseModel implements ModelInterface {
 
     private static final String saveNew = "INSERT INTO property(title) VALUES(:title)";
     private static final String getAll = "SELECT * FROM property";
+    private static final String getAllCustom = "SELECT * FROM property WHERE id > 10";
     private static final String getById = "SELECT * FROM property WHERE id = :id";
     private static final String deleteById = "DELETE FROM property WHERE id = :id";
     private static final String updateById = "UPDATE property SET title = :title WHERE id = :id";
     private static final String duplicateCheck = "SELECT count(id) FROM property WHERE title = :title";
+    private static final String getNotUsed = "SELECT * FROM property WHERE id > 10 AND id NOT IN (SELECT propertyId FROM fileProperty WHERE fileId = :fileId);";
 
     private int id;
     private String title;
@@ -73,6 +75,40 @@ public class PropertyModel extends BaseModel implements ModelInterface {
 
     public static ArrayList<HashMap> findAll() throws SQLException {
         return queryAll(getAll);
+    }
+
+    public static ArrayList<HashMap> findAllCustom() throws SQLException {
+        return queryAll(getAllCustom);
+    }
+
+    public static ArrayList<HashMap> findAllNotUsedCustom(int fileId) throws SQLException {
+        ArrayList<HashMap> result = new ArrayList<HashMap>();
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("fileId", fileId);
+        List<Map<String, Object>> rows = template.queryForList(getNotUsed, parameters);
+        for (Map row : rows) {
+            HashMap<String, String> info = new HashMap<String, String>();
+            Iterator it = row.keySet().iterator();
+            while (it.hasNext()) {
+                String key = (String) it.next();
+                info.put(key, String.valueOf(row.get(key)));
+            }
+            result.add(info);
+        }
+        return result;
+    }
+
+    public static String getAllJson() throws SQLException {
+        ArrayList<HashMap> arr = findAll();
+        JSONArray res = new JSONArray();
+        for (HashMap row : arr) {
+            JSONObject one = new JSONObject();
+            one.put("propertyId", row.get("id"));
+            one.put("title", row.get("title"));
+            res.add(one);
+        }
+        return res.toJSONString();
     }
 
     public static PropertyModel findById(int id) throws SQLException {

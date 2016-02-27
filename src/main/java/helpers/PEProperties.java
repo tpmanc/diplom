@@ -1,8 +1,5 @@
 package helpers;
 
-import models.FileModel;
-import models.FilePropertyModel;
-import models.FileVersionModel;
 import models.PropertyModel;
 import org.boris.pecoff4j.PE;
 import org.boris.pecoff4j.ResourceDirectory;
@@ -16,7 +13,6 @@ import org.boris.pecoff4j.resources.VersionInfo;
 import org.boris.pecoff4j.util.ResourceHelper;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,9 +46,9 @@ public class PEProperties {
                 }
             }
         } catch (IOException e) {
-            // e.printStackTrace();
+             e.printStackTrace();
         } catch (OutOfMemoryError e) {
-            // e.printStackTrace();
+             e.printStackTrace();
         }
         return properties;
     }
