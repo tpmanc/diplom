@@ -18,7 +18,7 @@
 <br>
 
 <p>
-    <a href="<spring:url value="/admin/property-add" />" class="btn btn-success">Добавить файлы</a>
+    <a href="<spring:url value="/admin/property-add" />" class="btn btn-success">Добавить свойство</a>
 </p>
 
 <table class="table table-striped models-view">

@@ -39,6 +39,7 @@ $(function () {
         uploadMultiple: true,
         parallelUploads: 10,
         maxFiles: 10,
+        maxFilesize: 5120, // MB
         // Dropzone settings
         init: function() {
             var myDropzone = this;
