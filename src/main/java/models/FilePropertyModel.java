@@ -25,6 +25,8 @@ public class FilePropertyModel extends BaseModel implements ModelInterface {
     private String title;
     private String value;
 
+    public HashMap<String, List<String>> errors = new HashMap<String, List<String>>();
+
     public boolean update() throws SQLException {
         if (validate()) {
             NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
@@ -102,8 +104,42 @@ public class FilePropertyModel extends BaseModel implements ModelInterface {
     }
 
     public boolean validate() {
-        // TODO
-        return true;
+        boolean isValid = true;
+        // value
+        List<String> valueErrors = new ArrayList<String>();
+        if (value.length() > 255) {
+            isValid = false;
+            valueErrors.add("Значение свойства должно быть меньше 255 символов");
+        }
+        if (value.trim().length() == 0) {
+            isValid = false;
+            valueErrors.add("Заполните значение");
+        }
+        if (valueErrors.size() > 0) {
+            errors.put("value", valueErrors);
+        }
+
+        // file id
+        List<String> fileIdErrors = new ArrayList<String>();
+        if (fileId < 0) {
+            isValid = false;
+            fileIdErrors.add("Id файла должен быть >= 0");
+        }
+        if (fileIdErrors.size() > 0) {
+            errors.put("fileId", fileIdErrors);
+        }
+
+        // property id
+        List<String> propertyIdErrors = new ArrayList<String>();
+        if (propertyId < 0) {
+            isValid = false;
+            propertyIdErrors.add("Id свойства должен быть >= 0");
+        }
+        if (propertyIdErrors.size() > 0) {
+            errors.put("propertyId", propertyIdErrors);
+        }
+
+        return isValid;
     }
 
     public boolean delete() throws SQLException {

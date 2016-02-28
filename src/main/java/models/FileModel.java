@@ -89,7 +89,22 @@ public class FileModel extends BaseModel implements ModelInterface {
     }
 
     public boolean validate() {
-        return true;
+        // title
+        List<String> titleErrors = new ArrayList<String>();
+        boolean isValid = true;
+        if (title.length() > 255) {
+            isValid = false;
+            titleErrors.add("Название должно быть меньше 255 символов");
+        }
+        if (title.trim().length() == 0) {
+            isValid = false;
+            titleErrors.add("Заполните название");
+        }
+        if (titleErrors.size() > 0) {
+            errors.put("title", titleErrors);
+        }
+
+        return isValid;
     }
 
     public boolean delete() throws SQLException {

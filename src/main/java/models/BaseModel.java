@@ -8,8 +8,6 @@ import java.sql.*;
 import java.util.*;
 
 public class BaseModel {
-    protected static JdbcTemplate jdbcTemplate;
-
     /**
      * Выборка всех записей из таблицы
      * @param query Запрос в БД на выборку
@@ -28,9 +26,5 @@ public class BaseModel {
             result.add(info);
         }
         return result;
-    }
-
-    public static void setDataSource(DataSource dataSource) {
-        jdbcTemplate = new JdbcTemplate(dataSource);
     }
 }

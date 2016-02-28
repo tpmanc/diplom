@@ -214,17 +214,26 @@ public class AdminFileController {
                         file.getInputStream().close();
 
                         // получение свойств файла
-                        Map<Integer, String> properties = PEProperties.parse(newFileName.toString());
+                        Map<Integer, String> properties = null;
+                        try {
+                            properties = PEProperties.parse(newFileName.toString());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         inputStream.close();
 
                         // сохранение файла в бд
                         FileModel fileModel = new FileModel();
-                        String fileTitle = properties.get(PropertyModel.PRODUCT_NAME);
-                        if (fileTitle != null && !fileTitle.trim().equals("")) {
-                            // если в свойствах есть название и оно не пустое
-                            fileModel.setTitle(fileTitle);
+                        if (properties != null) {
+                            String fileTitle = properties.get(PropertyModel.PRODUCT_NAME);
+                            if (fileTitle != null && !fileTitle.trim().equals("")) {
+                                // если в свойствах есть название и оно не пустое
+                                fileModel.setTitle(fileTitle);
+                            } else {
+                                // иначе берем название самого файла
+                                fileModel.setTitle(file.getOriginalFilename());
+                            }
                         } else {
-                            // иначе берем название самого файла
                             fileModel.setTitle(file.getOriginalFilename());
                         }
                         fileModel.add();
@@ -234,24 +243,28 @@ public class AdminFileController {
                         FileVersionModel fileVersion = new FileVersionModel();
                         fileVersion.setFileId(fileModel.getId());
                         fileVersion.setHash(hash);
-                        String versionValue = properties.get(PropertyModel.FILE_VERSION);
-                        if (versionValue != null && !versionValue.trim().equals("")) {
-                            fileVersion.setVersion(versionValue);
-                        } else {
-                            needVersion = true;
+                        if (properties != null) {
+                            String versionValue = properties.get(PropertyModel.FILE_VERSION);
+                            if (versionValue != null && !versionValue.trim().equals("")) {
+                                fileVersion.setVersion(versionValue);
+                            } else {
+                                needVersion = true;
+                            }
                         }
                         fileVersion.setFileSize(file.getSize());
                         fileVersion.add();
 
                         // добавление остальных свойств в БД
-                        for (Map.Entry entry : properties.entrySet()) {
-                            int propertyId = (Integer) entry.getKey();
-                            if (propertyId != 2 && propertyId != 3) {
-                                FileVersionPropertyModel fileProperty = new FileVersionPropertyModel();
-                                fileProperty.setFileId(fileModel.getId());
-                                fileProperty.setPropertyId(propertyId);
-                                fileProperty.setValue(String.valueOf(entry.getValue()));
-                                fileProperty.add();
+                        if (properties != null) {
+                            for (Map.Entry entry : properties.entrySet()) {
+                                int propertyId = (Integer) entry.getKey();
+                                if (propertyId != 2 && propertyId != 3) {
+                                    FileVersionPropertyModel fileProperty = new FileVersionPropertyModel();
+                                    fileProperty.setFileId(fileModel.getId());
+                                    fileProperty.setPropertyId(propertyId);
+                                    fileProperty.setValue(String.valueOf(entry.getValue()));
+                                    fileProperty.add();
+                                }
                             }
                         }
                         JSONObject succ = new JSONObject();

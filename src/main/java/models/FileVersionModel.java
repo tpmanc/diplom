@@ -7,6 +7,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class FileVersionModel implements ModelInterface {
     private static final String saveNew = "INSERT INTO fileVersion(fileId, version, hash, fileSize) VALUES(:fileId, :version, :hash, :fileSize)";
@@ -16,6 +19,8 @@ public class FileVersionModel implements ModelInterface {
     private String version = "";
     private String hash;
     private long fileSize;
+
+    public HashMap<String, List<String>> errors = new HashMap<String, List<String>>();
 
     public boolean update() throws SQLException {
         // TODO file version update
@@ -40,8 +45,53 @@ public class FileVersionModel implements ModelInterface {
     }
 
     public boolean validate() {
-        // TODO: file version validate
-        return true;
+        // hash
+        List<String> hashErrors = new ArrayList<String>();
+        boolean isValid = true;
+        if (hash.length() > 255) {
+            isValid = false;
+            hashErrors.add("Хэш должен быть меньше 255 символов");
+        }
+        if (hash.trim().length() == 0) {
+            isValid = false;
+            hashErrors.add("Заполните хэш");
+        }
+        if (hashErrors.size() > 0) {
+            errors.put("hash", hashErrors);
+        }
+
+        // version
+
+        List<String> versionErrors = new ArrayList<String>();
+        if (version.length() > 255) {
+            isValid = false;
+            versionErrors.add("Версия должна быть меньше 255 символов");
+        }
+        if (versionErrors.size() > 0) {
+            errors.put("version", versionErrors);
+        }
+
+        // file id
+        List<String> fileIdErrors = new ArrayList<String>();
+        if (fileId < 0) {
+            isValid = false;
+            fileIdErrors.add("Id файла должен быть >= 0");
+        }
+        if (fileIdErrors.size() > 0) {
+            errors.put("fileId", fileIdErrors);
+        }
+
+        // file size
+        List<String> fileSizeErrors = new ArrayList<String>();
+        if (fileSize < 0) {
+            isValid = false;
+            fileSizeErrors.add("Размер должен быть >= 0");
+        }
+        if (fileSizeErrors.size() > 0) {
+            errors.put("fileSize", fileSizeErrors);
+        }
+
+        return isValid;
     }
 
     public boolean delete() throws SQLException {
