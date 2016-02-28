@@ -172,6 +172,7 @@ public class AdminFileController {
                     InputStream inputStream = file.getInputStream();
                     // формирование пути до файла
                     String hash = FileCheckSum.get(inputStream);
+                    inputStream.close();
                     String firstDir = hash.substring(0, 2);
                     String secondDir = hash.substring(2, 4);
                     StringBuilder newFileName = new StringBuilder();
@@ -207,8 +208,9 @@ public class AdminFileController {
                         }
 
                         // сохранение файла на диск
+                        inputStream = file.getInputStream();
                         FileOutputStream stream = new FileOutputStream(new File(newFileName.toString()));
-                        IOUtils.copy(file.getInputStream(), stream);
+                        IOUtils.copy(inputStream, stream);
                         stream.close();
                         inputStream.close();
                         file.getInputStream().close();
@@ -220,7 +222,6 @@ public class AdminFileController {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        inputStream.close();
 
                         // сохранение файла в бд
                         FileModel fileModel = new FileModel();
@@ -292,5 +293,4 @@ public class AdminFileController {
         result.put("success", success);
         return result.toJSONString();
     }
-
 }
