@@ -1,6 +1,7 @@
 package controllers;
 
 import models.CategoryModel;
+import org.json.simple.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -34,16 +35,23 @@ public class AdminCategoryController {
             @RequestParam("title") String title,
             @RequestParam("position") int position
     ) {
-        String result;
+        JSONObject result = new JSONObject();
         try {
             CategoryModel category = new CategoryModel(parent, position, title);
-            category.add();
-            result = "{\"title\":\"" + title + "\", \"id\": \""+category.getId()+"\"}";
+            if (category.add()) {
+                result.put("title", title);
+                result.put("id", category.getId());
+                result.put("error", false);
+            } else {
+                result.put("error", true);
+                result.put("msg", category.errors);
+            }
         } catch (SQLException e) {
-            result = "{\"error\": true}";
+            result.put("error", true);
+            result.put("msg", e.getMessage());
             e.printStackTrace();
         }
-        return result;
+        return result.toJSONString();
     }
 
     @ResponseBody
@@ -52,17 +60,19 @@ public class AdminCategoryController {
             @RequestParam("id") int id,
             @RequestParam("title") String title
     ) {
-        String result;
+        JSONObject result = new JSONObject();
         try {
             CategoryModel model = CategoryModel.findById(id);
             model.setTitle(title);
             model.update();
-            result = "{\"title\":\"" + title + "\"}";
+            result.put("title", title);
+            result.put("error", false);
         } catch (SQLException e) {
-            result = "{\"error\": true}";
+            result.put("error", true);
+            result.put("msg", e.getMessage());
             e.printStackTrace();
         }
-        return result;
+        return result.toJSONString();
     }
 
     @ResponseBody
@@ -72,7 +82,7 @@ public class AdminCategoryController {
             @RequestParam("newParentId") int newParentId,
             @RequestParam("position") int position
             ) {
-        String result;
+        JSONObject result = new JSONObject();
         try {
             CategoryModel model = CategoryModel.findById(id);
             if (model.getParent() != newParentId) {
@@ -80,22 +90,30 @@ public class AdminCategoryController {
                 model.update();
             }
             CategoryModel.updateSortingOfNode(newParentId, id, position);
-            result = "{\"error\": false}";
+            result.put("error", false);
         } catch (SQLException e) {
+            result.put("error", true);
+            result.put("msg", e.getMessage());
             e.printStackTrace();
-            result = "{\"error\": true}";
         }
-        return result;
+        return result.toJSONString();
     }
 
     @ResponseBody
     @RequestMapping(value = "/category/ajax-delete", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
     public String categoryTreeDeleteUrl(
-            @RequestParam("id") String id
+            @RequestParam("id") int id
     ) {
-        // TODO
-        String result = "";
-//            result = "{\"error\": true}";
-        return result;
+        JSONObject result = new JSONObject();
+        try {
+            CategoryModel model = CategoryModel.findById(id);
+            model.delete();
+            result.put("error", false);
+        } catch (SQLException e) {
+            result.put("error", true);
+            result.put("msg", e.getMessage());
+            e.printStackTrace();
+        }
+        return result.toJSONString();
     }
 }

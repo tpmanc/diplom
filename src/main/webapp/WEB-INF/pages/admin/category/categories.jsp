@@ -58,6 +58,7 @@
                     <div class="form-group">
                         <label for="categoryTitle">Название</label>
                         <input type="text" class="form-control" id="categoryTitle" placeholder="Название">
+                        <span class="help-block"></span>
                     </div>
                 </div>
             </div>

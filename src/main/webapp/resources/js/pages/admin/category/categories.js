@@ -39,7 +39,7 @@ $(function(){
         form.find('.has-error').removeClass('has-error');
         if (title.length == 0) {
             error = true;
-            newCategoryTitle.addClass('has-error');
+            newCategoryTitle.closest('.form-group').addClass('has-error').find('.help-block').html('<div>Введите название</div>');
         }
         if (isNaN(id) || id <= 0) {
             error = true;
@@ -53,18 +53,22 @@ $(function(){
                 beforeSend: function(){
                 },
                 success: function(data){
-                    //var node = treesHolder.jstree(true).get_node("jst_"+id);
-                    treesHolder.jstree(
-                        "rename_node",
-                        "jst_"+id,
-                        data.title
-                    );
+                    if (data.error == false) {
+                        treesHolder.jstree(
+                            "rename_node",
+                            "jst_" + id,
+                            data.title
+                        );
+                        toastr.success('Категория переименована');
+                    } else {
+                        toastr.error('Ошибка при сохранении', data.msg);
+                    }
                 },
                 complete: function(){
                     renameCategoryModal.modal('hide');
                 },
-                error: function(){
-                    alert('Ошибка при сохранении');
+                error: function(data){
+                    toastr.error('Ошибка при сохранении', data.msg);
                 }
             });
         }
@@ -79,7 +83,7 @@ $(function(){
         form.find('.has-error').removeClass('has-error');
         if (title.length == 0) {
             error = true;
-            titleElem.addClass('has-error');
+            titleElem.closest('.form-group').addClass('has-error').find('.help-block').html('<div>Введите название</div>');
         }
         var parent = '#';
         if (newCategoryParent != undefined) {
@@ -139,25 +143,30 @@ $(function(){
                                     url: deleteTreesUrl,
                                     method: "post",
                                     dataType: "json",
-                                    data: {treeId: $node.id},
+                                    data: {id: parseId($node.id)},
                                     beforeSend: function(){
                                     },
                                     success: function(data){
-                                        var children = $node.children;
-                                        $(children).each(function (i, elemId) {
+                                        if (data.error == false) {
+                                            var children = $node.children;
+                                            $(children).each(function (i, elemId) {
+                                                treesHolder.jstree(
+                                                    "move_node",
+                                                    elemId,
+                                                    $node.parent
+                                                );
+                                            });
                                             treesHolder.jstree(
-                                                "move_node",
-                                                elemId,
-                                                $node.parent
+                                                "delete_node",
+                                                $node.id
                                             );
-                                        });
-                                        treesHolder.jstree(
-                                            "delete_node",
-                                            $node.id
-                                        );
+                                            toastr.success('Категория удалена');
+                                        } else {
+                                            toastr.error('Ошибка при удалении', data.msg);
+                                        }
                                     },
-                                    error: function(){
-                                        alert('Ошибка при сохранении');
+                                    error: function(data){
+                                        toastr.error('Ошибка при удалении', data.msg);
                                     },
                                     complete: function() {
                                     }
@@ -178,10 +187,14 @@ $(function(){
             method: "post",
             data: {"treeId": treeId, "newParentId": parentId, "position": data.position},
             success: function(data){
-
+                if (data.error == false) {
+                    toastr.success('Порядок сохранен');
+                } else {
+                    toastr.error('Ошибка при сохранении', data.msg);
+                }
             },
-            error: function(){
-                alert('Ошибка при сохранении');
+            error: function(data){
+                toastr.error('Ошибка при сохранении', data.msg);
             }
         });
     });
@@ -200,19 +213,27 @@ $(function(){
             beforeSend: function(){
             },
             success: function(data){
-                toastr.success('Without any options', 'Категория сохранена');
-                treesHolder.jstree(
-                    "set_id",
-                    treeId,
-                    "jst_"+data.id
-                );
+                if (data.error == false) {
+                    treesHolder.jstree(
+                        "set_id",
+                        treeId,
+                        "jst_" + data.id
+                    );
+                    toastr.success('Категория добавлена');
+                } else {
+                    treesHolder.jstree(
+                        "delete_node",
+                        treeId
+                    );
+                    toastr.error('Ошибка при сохранении', data.msg);
+                }
             },
-            error: function(){
+            error: function(data){
                 treesHolder.jstree(
                     "delete_node",
                     treeId
                 );
-                alert('Ошибка при сохранении');
+                toastr.error('Ошибка при сохранении', data.msg);
             },
             complete: function(){
                 addCategoryModal.modal('hide');

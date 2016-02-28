@@ -26,7 +26,7 @@ public class CategoryModel extends BaseModel implements ModelInterface {
     private static final String getTreeElements = "SELECT * FROM category ORDER BY position ASC, id ASC";
     private static final String getCount = "SELECT count(id) FROM category";
 
-    private Errors errors;
+    public HashMap<String, List<String>> errors = new HashMap<String, List<String>>();
 
     private int id;
     private int parent;
@@ -193,8 +193,42 @@ public class CategoryModel extends BaseModel implements ModelInterface {
     }
 
     public boolean validate() {
+        // title
+        List<String> titleErrors = new ArrayList<String>();
+        boolean isValid = true;
+        if (title.length() > 255) {
+            isValid = false;
+            titleErrors.add("Название должно быть меньше 255 символов");
+        }
+        if (title.trim().length() == 0) {
+            isValid = false;
+            titleErrors.add("Заполните название");
+        }
+        if (titleErrors.size() > 0) {
+            errors.put("title", titleErrors);
+        }
 
-        return true;
+        // parent
+        List<String> parentErrors = new ArrayList<String>();
+        if (parent < 0) {
+            isValid = false;
+            parentErrors.add("Id родителя должен быть >= 0");
+        }
+        if (parentErrors.size() > 0) {
+            errors.put("parent", parentErrors);
+        }
+
+        // position
+        List<String> positionErrors = new ArrayList<String>();
+        if (parent < 0) {
+            isValid = false;
+            positionErrors.add("Позиция должена быть >= 0");
+        }
+        if (parentErrors.size() > 0) {
+            errors.put("position", positionErrors);
+        }
+
+        return isValid;
     }
 
     public boolean delete() throws SQLException {
