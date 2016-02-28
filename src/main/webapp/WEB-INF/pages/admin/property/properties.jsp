@@ -35,12 +35,14 @@
             <td>${item.get("id")}</td>
             <td>${item.get("title")}</td>
             <td>
-                <a href="<spring:url value="/property-view?id=" />${item.get("id")}" class="icon">
+                <a href="<spring:url value="/admin/property-view?id=" />${item.get("id")}" class="icon">
                     <i class="fa fa-eye"></i>
                 </a>
-                <a href="<spring:url value="/property-edit?id=" />${item.get("id")}" class="icon">
-                    <i class="fa fa-edit"></i>
-                </a>
+                <c:if test="${item.get('isCustom') != null && item.get('isCustom') == true}">
+                    <a href="<spring:url value="/admin/property-edit?id=" />${item.get("id")}" class="icon">
+                        <i class="fa fa-edit"></i>
+                    </a>
+                </c:if>
             </td>
         </tr>
     </c:forEach>

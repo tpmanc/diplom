@@ -42,7 +42,7 @@ public class AdminPropertyController {
     public String update(@RequestParam("id") int id, Model model) {
         PropertyModel property = null;
         try {
-            property = PropertyModel.findById(id);
+            property = PropertyModel.findCustomById(id);
         } catch (SQLException e) {
             throw new CustomWebException("Свойство не найдено");
         }
@@ -53,35 +53,50 @@ public class AdminPropertyController {
 
     @RequestMapping(value = {"/property-view" }, method = RequestMethod.GET)
     public String view(@RequestParam("id") int id, Model model) {
-        PropertyModel property = null;
         try {
-            property = PropertyModel.findById(id);
+            PropertyModel property = PropertyModel.findById(id);
+            model.addAttribute("property", property);
         } catch (SQLException e) {
             throw new CustomWebException("Свойство не найдено");
         }
-        model.addAttribute("property", property);
+
         model.addAttribute("pageTitle", "Просмотр свойства");
         return "admin/property/property-view";
     }
 
-    @RequestMapping(value = {"/property-add-handler" }, method = RequestMethod.POST)
+    @RequestMapping(value = {"/property-handler" }, method = RequestMethod.POST)
     public String addHandler(
             @RequestParam("title") String title,
-            RedirectAttributes attr,
-            Model model
+            @RequestParam(value="id", required=false, defaultValue = "0") int id,
+            RedirectAttributes attr
     ) {
-        PropertyModel property = new PropertyModel(title);
-        try {
-            if (property.add()) {
-                return "redirect:/admin/properties";
-            } else {
-                attr.addFlashAttribute("errors", property.errors);
-                return "redirect:/admin/property-add";
+        PropertyModel property;
+        if (id > 0) {
+            try {
+                property = PropertyModel.findCustomById(id);
+                property.setTitle(title);
+                if (property.update()) {
+                    return "redirect:/admin/properties";
+                } else {
+                    attr.addFlashAttribute("errors", property.errors);
+                    return "redirect:/admin/property-edit?id="+id;
+                }
+            } catch (SQLException e) {
+                throw new CustomWebException("Свойство не найдено", "404");
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } else {
+            property = new PropertyModel(title);
+            try {
+                if (property.add()) {
+                    return "redirect:/admin/properties";
+                } else {
+                    attr.addFlashAttribute("errors", property.errors);
+                    return "redirect:/admin/property-add";
+                }
+            } catch (SQLException e) {
+                throw new CustomWebException("Ошибка при добавлении свойства", "500");
+            }
         }
-        return "redirect:/admin/property-add";
     }
 
     @RequestMapping(value = {"/property-edit-handler" }, method = RequestMethod.POST)

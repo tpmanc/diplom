@@ -6,9 +6,17 @@
     <jsp:param name="activePage" value="property" />
 </jsp:include>
 
-<h1>${pageTitle}</h1>
+<h2>${pageTitle}</h2>
 
-<h3>${property.title}</h3>
+<ol class="breadcrumb">
+    <li><a href="<spring:url value="/admin" />">Главная</a></li>
+    <li><a href="<spring:url value="/admin/properties" />">Свойства файлов</a></li>
+    <li class="active">
+        <strong>${pageTitle}</strong>
+    </li>
+</ol>
+
+<br>
 
 <table class="table table-striped models-view">
     <tbody>

@@ -6,8 +6,20 @@
     <jsp:param name="activePage" value="property" />
 </jsp:include>
 
-<h1>${pageTitle}</h1>
+<h2>${pageTitle}</h2>
 
-<jsp:include page="_form.jsp" />
+<ol class="breadcrumb">
+    <li><a href="<spring:url value="/admin" />">Главная</a></li>
+    <li><a href="<spring:url value="/admin/properties" />">Свойства файлов</a></li>
+    <li class="active">
+        <strong>${pageTitle}</strong>
+    </li>
+</ol>
+
+<br>
+
+<jsp:include page="_form.jsp" >
+    <jsp:param name="property" value="${property}" />
+</jsp:include>
 
 <jsp:include page="../layout_bottom.jsp" />

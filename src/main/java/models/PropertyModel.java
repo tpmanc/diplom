@@ -2,9 +2,9 @@ package models;
 
 import db.Database2;
 import exceptions.CustomSQLException;
+import exceptions.CustomWebException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -74,7 +74,17 @@ public class PropertyModel extends BaseModel implements ModelInterface {
     }
 
     public static ArrayList<HashMap> findAll() throws SQLException {
-        return queryAll(getAll);
+        ArrayList<HashMap> result = new ArrayList<HashMap>();
+        ArrayList<HashMap> rows = queryAll(getAll);
+        for (HashMap row : rows) {
+            HashMap<String, String> info = new HashMap<String, String>();
+            int propertyId = Integer.valueOf((String) row.get("id"));
+            info.put("id", String.valueOf(propertyId));
+            info.put("title", (String) row.get("title"));
+            info.put("isCustom", String.valueOf(!isRequired(propertyId)));
+            result.add(info);
+        }
+        return result;
     }
 
     public static ArrayList<HashMap> findAllCustom() throws SQLException {
@@ -115,15 +125,33 @@ public class PropertyModel extends BaseModel implements ModelInterface {
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("id", id);
-        List<String> result = template.queryForList(getById, parameters, String.class);
+        List<Map<String, Object>> rows = template.queryForList(getById, parameters);
 
-        if (!result.isEmpty()) {
-            int propertyId = Integer.parseInt(result.get(0));
-            String title = result.get(1);
+        if (rows.size() > 0) {
+            Map<String, Object> result = rows.get(0);
+            int propertyId = (Integer) result.get("id");
+            String title = (String) result.get("title");
             return new PropertyModel(propertyId, title);
         } else {
             throw new CustomSQLException("Свойство не найдено");
         }
+    }
+
+    public static PropertyModel findCustomById(int id) throws SQLException {
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("id", id);
+        List<Map<String, Object>> rows = template.queryForList(getById, parameters);
+
+        if (rows.size() > 0) {
+            Map<String, Object> result = rows.get(0);
+            int propertyId = (Integer) result.get("id");
+            String title = (String) result.get("title");
+            if (!isRequired(propertyId)) {
+                return new PropertyModel(propertyId, title);
+            }
+        }
+        throw new CustomWebException("Свойство не найдено", "404");
     }
 
     public boolean update() throws SQLException {
@@ -167,21 +195,21 @@ public class PropertyModel extends BaseModel implements ModelInterface {
             result = false;
             titleErrors.add("Название должно быть меньше 255 символов");
         }
-        if (titleErrors.size() > 0) {
-            errors.put("title", titleErrors);
+        if (title.trim().length() == 0) {
+            result = false;
+            titleErrors.add("Заполните название");
         }
 
-        List<String> duplicateErrors = new ArrayList<String>();
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("title", title);
         Integer count = template.queryForObject(duplicateCheck, parameters, Integer.class);
         if (count > 0) {
-            result = true;
-            duplicateErrors.add("Такое свойство уже существует");
+            result = false;
+            titleErrors.add("Такое свойство уже существует");
         }
         if (titleErrors.size() > 0) {
-            errors.put("duplicate", duplicateErrors);
+            errors.put("title", titleErrors);
         }
 
         return result;
