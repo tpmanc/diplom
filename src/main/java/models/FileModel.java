@@ -1,5 +1,6 @@
 package models;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import db.Database2;
 import exceptions.CustomWebException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -86,6 +87,25 @@ public class FileModel extends BaseModel implements ModelInterface {
         } else {
             return false;
         }
+    }
+
+    public FileVersionModel getLastVersion() {
+        String sql = "SELECT * FROM fileVersion WHERE fileId = :fileId ORDER BY version DESC LIMIT 1;";
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("fileId", id);
+        List<Map<String, Object>> rows = template.queryForList(sql, parameters);
+        for (Map row : rows) {
+            Integer id = (Integer) row.get("id");
+            Integer fileId = (Integer) row.get("fileId");
+            String version = (String) row.get("version");
+            String hash = (String) row.get("hash");
+            Long fileSize = (Long) row.get("fileSize");
+            Long date = (Long) row.get("date");
+            Boolean isFilled = ((Integer) row.get("isFilled") == 1);
+            return  new FileVersionModel(id, fileId, version, hash, fileSize, date, isFilled);
+        }
+        throw new CustomWebException("Версия не найдена");
     }
 
     public boolean validate() {

@@ -78,22 +78,18 @@ $(function () {
 
 var lineTemplate = '<div class="form-group">\
                         <label>{title}</label>\
-                        <input type="text" class="form-control" data-fileid="{fileId}">\
+                        <input type="text" class="form-control" data-fileid="{fileId}" data-propertyid="{propertyId}">\
                     </div>';
 function loadFinishStepContent() {
     var secondStep = $('#secondStep');
     var markup = '';
-    filesInfo.forEach(function(item, i){
+    filesInfo.forEach(function(item){
         console.log(item);
-        var str = '<h3>Файл: '+item.fileName+'</h3>';
-        if (item.needCategory == true) {
-            var line = lineTemplate;
-            str += line.replace('{title}', 'Категории').replace('{fileId}', item.fileId);
-        }
-        if (item.needVersion == true) {
-            var line = lineTemplate;
-            str += line.replace('{title}', 'Версия').replace('{fileId}', item.fileId);
-        }
+        var str = '<h3>Файл: '+item.fileVersionName+'</h3>';
+        var line = lineTemplate;
+        str += line.replace('{title}', 'Название продукта').replace('{fileVersionId}', item.fileVersionId).replace('{propertyId}', 9);
+        line = lineTemplate;
+        str += line.replace('{title}', 'Версия файла').replace('{fileVersionId}', item.fileVersionId).replace('{propertyId}', 3);
         str += '<hr>';
         markup += str;
     });

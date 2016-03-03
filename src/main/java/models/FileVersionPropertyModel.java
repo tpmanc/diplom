@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.Map;
 
 public class FileVersionPropertyModel extends BaseModel implements ModelInterface {
-    private static final String saveNew = "INSERT INTO fileVersionProperty(fileId, propertyId, value) VALUES(:fileId, :propertyId, :value)";
-    private static final String getByFile = "SELECT fileVersionProperty.id, property.title, fileVersionProperty.value FROM fileVersionProperty LEFT JOIN property ON fileVersionProperty.propertyId = property.id WHERE fileId = :fileId";
+    private static final String saveNew = "INSERT INTO fileVersionProperty(fileVersionId, propertyId, value) VALUES(:fileVersionId, :propertyId, :value)";
+    private static final String getByFileVersion = "SELECT fileVersionProperty.id, property.title, fileVersionProperty.value FROM fileVersionProperty LEFT JOIN property ON fileVersionProperty.propertyId = property.id WHERE fileVersionId = :fileVersionId";
 
     private int id;
-    private int fileId;
+    private int fileVersionId;
     private int propertyId;
     private String value;
 
@@ -28,12 +28,12 @@ public class FileVersionPropertyModel extends BaseModel implements ModelInterfac
         return false;
     }
 
-    public static ArrayList getProperties(int fileId) throws SQLException {
+    public static ArrayList getProperties(int fileVersionId) throws SQLException {
         ArrayList<HashMap> result = new ArrayList<HashMap>();
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
         MapSqlParameterSource parameters = new MapSqlParameterSource();
-        parameters.addValue("fileId", fileId);
-        List<Map<String, Object>> rows = template.queryForList(getByFile, parameters);
+        parameters.addValue("fileVersionId", fileVersionId);
+        List<Map<String, Object>> rows = template.queryForList(getByFileVersion, parameters);
 
         for (Map row : rows) {
             HashMap<String, String> info = new HashMap<String, String>();
@@ -49,7 +49,7 @@ public class FileVersionPropertyModel extends BaseModel implements ModelInterfac
         if (this.validate()) {
             NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
             MapSqlParameterSource parameters = new MapSqlParameterSource();
-            parameters.addValue("fileId", fileId);
+            parameters.addValue("fileVersionId", fileVersionId);
             parameters.addValue("propertyId", propertyId);
             parameters.addValue("value", value);
             KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -78,7 +78,7 @@ public class FileVersionPropertyModel extends BaseModel implements ModelInterfac
 
         // file id
         List<String> fileIdErrors = new ArrayList<String>();
-        if (fileId < 0) {
+        if (fileVersionId < 0) {
             isValid = false;
             fileIdErrors.add("Id פאיכא המכזום בûעü >= 0");
         }
@@ -108,12 +108,12 @@ public class FileVersionPropertyModel extends BaseModel implements ModelInterfac
         return id;
     }
 
-    public int getFileId() {
-        return fileId;
+    public int getFileVersionId() {
+        return fileVersionId;
     }
 
-    public void setFileId(int fileId) {
-        this.fileId = fileId;
+    public void setFileVersionId(int fileVersionId) {
+        this.fileVersionId = fileVersionId;
     }
 
     public int getPropertyId() {

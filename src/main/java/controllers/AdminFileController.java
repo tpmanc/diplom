@@ -18,8 +18,10 @@ import org.apache.commons.io.FilenameUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
+import java.security.Timestamp;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,7 +50,10 @@ public class AdminFileController {
             FileModel file = FileModel.findById(id);
             model.addAttribute("file", file);
 
-            ArrayList fileVersionProperties = FileVersionPropertyModel.getProperties(file.getId());
+            FileVersionModel lastVersion = file.getLastVersion();
+            model.addAttribute("lastVersion", lastVersion);
+
+            ArrayList fileVersionProperties = FileVersionPropertyModel.getProperties(lastVersion.getId());
             model.addAttribute("fileVersionProperties", fileVersionProperties);
 
             ArrayList fileProperties = FilePropertyModel.getProperties(file.getId());
@@ -222,46 +227,50 @@ public class AdminFileController {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-
-                        // сохранение файла в бд
-                        FileModel fileModel = new FileModel();
+                        boolean isFilled = false;
+                        String fileTitle = null;
+                        String versionValue = null;
                         if (properties != null) {
-                            String fileTitle = properties.get(PropertyModel.PRODUCT_NAME);
-                            if (fileTitle != null && !fileTitle.trim().equals("")) {
-                                // если в свойствах есть название и оно не пустое
-                                fileModel.setTitle(fileTitle);
-                            } else {
-                                // иначе берем название самого файла
-                                fileModel.setTitle(file.getOriginalFilename());
+                            fileTitle = properties.get(PropertyModel.PRODUCT_NAME);
+                            versionValue = properties.get(PropertyModel.FILE_VERSION);
+                            if (fileTitle != null && !fileTitle.trim().equals("") && versionValue != null && !versionValue.trim().equals("")) {
+                                isFilled = true;
                             }
-                        } else {
-                            fileModel.setTitle(file.getOriginalFilename());
                         }
-                        fileModel.add();
+
+                        // сохранение файла в бд, если свойства заполненены
+                        FileModel fileModel = null;
+                        if (isFilled) {
+                            // TODO: поиск файла по названию, если не нашел, то добаляем новый (код которые уже написан ниже)
+                            fileModel = new FileModel();
+                            fileModel.setTitle(fileTitle);
+                            fileModel.add();
+                        }
 
                         // добавленией новой версии файла
-                        boolean needVersion = false;
                         FileVersionModel fileVersion = new FileVersionModel();
-                        fileVersion.setFileId(fileModel.getId());
+                        if (fileModel == null) {
+                            fileVersion.setFileId(0);
+                        } else {
+                            fileVersion.setFileId(fileModel.getId());
+                        }
                         fileVersion.setHash(hash);
-                        if (properties != null) {
-                            String versionValue = properties.get(PropertyModel.FILE_VERSION);
-                            if (versionValue != null && !versionValue.trim().equals("")) {
-                                fileVersion.setVersion(versionValue);
-                            } else {
-                                needVersion = true;
-                            }
+                        fileVersion.setIsFilled(isFilled);
+                        long time = new Date().getTime();
+                        fileVersion.setDate(time);
+                        if (versionValue != null && !versionValue.trim().equals("")) {
+                            fileVersion.setVersion(versionValue);
                         }
                         fileVersion.setFileSize(file.getSize());
                         fileVersion.add();
 
-                        // добавление остальных свойств в БД
+                        // добавление остальных свойств версии в БД
                         if (properties != null) {
                             for (Map.Entry entry : properties.entrySet()) {
                                 int propertyId = (Integer) entry.getKey();
-                                if (propertyId != 2 && propertyId != 3) {
+                                if (propertyId != PropertyModel.FILE_VERSION && propertyId != PropertyModel.PRODUCT_NAME) {
                                     FileVersionPropertyModel fileProperty = new FileVersionPropertyModel();
-                                    fileProperty.setFileId(fileModel.getId());
+                                    fileProperty.setFileVersionId(fileVersion.getId());
                                     fileProperty.setPropertyId(propertyId);
                                     fileProperty.setValue(String.valueOf(entry.getValue()));
                                     fileProperty.add();
@@ -269,10 +278,9 @@ public class AdminFileController {
                             }
                         }
                         JSONObject succ = new JSONObject();
-                        succ.put("fileId", fileModel.getId());
-                        succ.put("fileName", fileModel.getTitle());
-                        succ.put("needCategory", true);
-                        succ.put("needVersion", needVersion);
+                        succ.put("fileVersionId", fileVersion.getId());
+                        succ.put("fileVersionName", file.getOriginalFilename());
+                        succ.put("isFilled", isFilled);
                         success.add(succ);
                     }
                 } catch (Exception e) {

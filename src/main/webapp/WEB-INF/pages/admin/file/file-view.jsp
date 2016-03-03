@@ -34,6 +34,10 @@
             <td>Название</td>
             <td>${file.title}</td>
         </tr>
+        <tr>
+            <td>Последняя версия</td>
+            <td>${lastVersion.version}</td>
+        </tr>
     </tbody>
 </table>
 

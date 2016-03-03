@@ -12,19 +12,35 @@ import java.util.HashMap;
 import java.util.List;
 
 public class FileVersionModel implements ModelInterface {
-    private static final String saveNew = "INSERT INTO fileVersion(fileId, version, hash, fileSize) VALUES(:fileId, :version, :hash, :fileSize)";
+    private static final String saveNew = "INSERT INTO fileVersion(fileId, version, hash, fileSize, date, isFilled) VALUES(:fileId, :version, :hash, :fileSize, :date, :isFilled)";
 
     private int id;
     private int fileId;
     private String version = "";
     private String hash;
     private long fileSize;
+    private long date;
+    private boolean isFilled;
 
     public HashMap<String, List<String>> errors = new HashMap<String, List<String>>();
 
     public boolean update() throws SQLException {
         // TODO file version update
         return false;
+    }
+
+    public FileVersionModel() {
+
+    }
+
+    public FileVersionModel(int id, int fileId, String version, String hash, long fileSize, long date, boolean isFilled) {
+        this.id = id;
+        this.fileId = fileId;
+        this.version = version;
+        this.hash = hash;
+        this.fileSize = fileSize;
+        this.date = date;
+        this.isFilled = isFilled;
     }
 
     public boolean add() throws SQLException {
@@ -35,6 +51,8 @@ public class FileVersionModel implements ModelInterface {
             parameters.addValue("version", version);
             parameters.addValue("hash", hash);
             parameters.addValue("fileSize", fileSize);
+            parameters.addValue("date", date);
+            parameters.addValue("isFilled", isFilled);
             KeyHolder keyHolder = new GeneratedKeyHolder();
             template.update(saveNew, parameters, keyHolder);
             id = keyHolder.getKey().intValue();
@@ -107,6 +125,10 @@ public class FileVersionModel implements ModelInterface {
         this.version = version;
     }
 
+    public String getVersion() {
+        return version;
+    }
+
     public void setHash(String hash) {
         this.hash = hash;
     }
@@ -121,5 +143,21 @@ public class FileVersionModel implements ModelInterface {
 
     public void setFileSize(long fileSize) {
         this.fileSize = fileSize;
+    }
+
+    public long getDate() {
+        return date;
+    }
+
+    public void setDate(long date) {
+        this.date = date;
+    }
+
+    public boolean isFilled() {
+        return isFilled;
+    }
+
+    public void setIsFilled(boolean isFilled) {
+        this.isFilled = isFilled;
     }
 }
