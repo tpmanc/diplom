@@ -65,6 +65,10 @@
 <h3>Свойства версии</h3>
 <table class="table table-striped models-view">
     <tbody>
+        <tr>
+            <td>Дата загрузки</td>
+            <td>${downloadDate}</td>
+        </tr>
         <c:forEach items="${fileVersionProperties}" var="item" varStatus="itemStat">
             <tr>
                 <td>${item.title}</td>

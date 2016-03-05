@@ -20,6 +20,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.security.Timestamp;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -58,6 +60,11 @@ public class AdminFileController {
 
             ArrayList fileProperties = FilePropertyModel.getProperties(file.getId());
             model.addAttribute("fileProperties", fileProperties);
+
+            Date date = new Date(lastVersion.getDate());
+            SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+            String downloadDate = df.format(date);
+            model.addAttribute("downloadDate", downloadDate);
         } catch (SQLException e) {
             throw new CustomWebException("Файл не существует");
         }
