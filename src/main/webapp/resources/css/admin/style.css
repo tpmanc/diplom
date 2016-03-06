@@ -1972,6 +1972,14 @@ label.error {
 .ngRow {
     border-bottom:1px solid #e7eaec
 }
+.logout-btn {
+    margin-top: 9px;
+    display: block;
+    color: rgba(255,255,255,0.9);
+}
+.logout-btn:hover {
+    color: #fff;
+}
 .ngCell {
     background-color:transparent
 }

@@ -1,43 +1,49 @@
 <%@ taglib prefix="c" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ page contentType="text/html;charset=UTF-8" %>
+<!DOCTYPE html>
 <html>
 <head>
-    <title>Repository - Login</title>
-    <spring:url value="/resources/css/bootstrap.min.css" var="bootstrapCss" />
-    <spring:url value="/resources/js/jquery-2.1.4.min.js" var="jquery" />
-    <spring:url value="/resources/js/bootstrap.min.js" var="bootstrapJs" />
-    <link href="${bootstrapCss}" rel="stylesheet" />
-    <script src="${jquery}"></script>
-    <script src="${bootstrapJs}"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель администратора - Войти</title>
+    <link href="<spring:url value="/resources/css/admin/bootstrap.min.css" />" rel="stylesheet">
+    <link href="<spring:url value="/resources/css/admin/style.css" />" rel="stylesheet">
 </head>
-<body>
-    <div class="container">
-        <h1>Sing in</h1>
-
-        <form action="<c:url value='j_spring_security_check' />" method="POST">
-
-            <div class="form-group">
-                <label for="j_username">Login:</label>
-                <input type="text" class="form-control" name="username" id="j_username" placeholder="Login">
+<body class="gray-bg">
+<div class="loginColumns">
+    <div class="row">
+        <div class="col-md-6">
+            <h2 class="font-bold">Панель администратора</h2>
+            <p>
+                Для входа введите логин и пароль
+            </p>
+        </div>
+        <div class="col-md-6">
+            <div class="inqbox-content">
+                <form class="m-t" role="form" method="post" action="<c:url value='j_spring_security_check' />">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Логин" required name="username">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control" placeholder="Пароль" required name="password">
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="j_spring_security_check">
+                            Запомнить
+                        </label>
+                    </div>
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+                    <button type="submit" class="btn btn-primary block full-width m-b">Войти</button>
+                </form>
             </div>
-
-            <div class="form-group">
-                <label for="j_password">Password:</label>
-                <input type="password" class="form-control" name="password" id="j_password" placeholder="Password">
-            </div>
-
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" name="j_spring_security_check">
-                    Remember Me
-                </label>
-            </div>
-
-            <button type="submit" class="btn btn-success">Sing in</button>
-
-            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-        </form>
+        </div>
     </div>
+    <hr/>
+    <div class="row">
+        <div class="col-md-6">АО "ВПК "НПО машиностроения"</div>
+    </div>
+</div>
 </body>
 </html>
