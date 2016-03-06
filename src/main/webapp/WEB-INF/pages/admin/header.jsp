@@ -1,24 +1,27 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <nav class="navbar-default navbar-static-side fixed-menu" role="navigation">
     <div class="sidebar-collapse">
         <div id="hover-menu"></div>
         <ul class="nav metismenu" id="side-menu">
             <li>
-                <div class="logopanel" style="margin-left: 0px; z-index: 99999">
+                <div class="logopanel">
                     <div class="profile-element">
-                        <h2><a href="index.html">Repository</a></h2>
+                        <h2><a href="<spring:url value="/admin/" />">Repository</a></h2>
                     </div>
                     <div class="logo-element">Rep</div>
                 </div>
             </li>
             <li>
                 <div class="leftpanel-profile">
-                    <div class="media-body profile-name" style="white-space: nowrap;">
-                        <h4 class="media-heading">test@test.info</h4>
-                        <span>test test</span>
+                    <div class="media-body profile-name">
+                        <sec:authorize access="isAuthenticated()">
+                            <h4 class="media-heading"><sec:authentication property="principal.username" /></h4>
+                            <span><sec:authentication property="principal.authorities"/></span>
+                        </sec:authorize>
                     </div>
                 </div>
             </li>

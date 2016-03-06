@@ -17,4 +17,6 @@
     <!--<bean id="employeeDatabaseBean" class="models.BaseModel">-->
         <!--<property name="dataSource" ref="springDataSource"/>-->
     <!--</bean>-->
+
+    <bean id="webexpressionHandler" class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler" />
 </beans>

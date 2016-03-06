@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+                                http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                                http://www.springframework.org/schema/security
+                                http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+    <http auto-config="true">
+        <intercept-url pattern="/admin/*" access="IS_AUTHENTICATED_FULLY" />
+        <form-login
+                login-page="/login"
+                default-target-url="/admin/"
+                authentication-failure-url="/login?error"
+                username-parameter="username"
+                password-parameter="password" />
+        <logout logout-success-url="/login?logout" />
+        <csrf />
+    </http>
+
+    <authentication-manager>
+        <ldap-authentication-provider
+                user-search-filter="(&amp;(cn={0})(objectCategory=user))"
+                user-search-base="CN=Users"
+                group-search-filter="(&amp;(cn={0})(objectCategory=user))"
+                group-search-base="CN=Users"
+                group-role-attribute="CN"
+                role-prefix="ROLE_">
+        </ldap-authentication-provider>
+    </authentication-manager>
+    <ldap-server url="ldap://sis.moscow:25559/dc=test,dc=info" manager-dn="CN=test test,CN=Users,DC=test,DC=info" manager-password="Pa$$w0rd123" />
+</beans:beans>

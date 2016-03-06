@@ -19,12 +19,12 @@
 
             <div class="form-group">
                 <label for="j_username">Login:</label>
-                <input type="text" class="form-control" name="j_username" id="j_username" placeholder="Login">
+                <input type="text" class="form-control" name="username" id="j_username" placeholder="Login">
             </div>
 
             <div class="form-group">
                 <label for="j_password">Password:</label>
-                <input type="password" class="form-control" name="j_password" id="j_password" placeholder="Password">
+                <input type="password" class="form-control" name="password" id="j_password" placeholder="Password">
             </div>
 
             <div class="checkbox">
