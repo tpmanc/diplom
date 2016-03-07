@@ -23,6 +23,7 @@
         <script src="<spring:url value="/resources/js/admin/toastr.min.js"/>"></script>
         <script src="<spring:url value="/resources/js/admin/dropzone.js"/>"></script>
         <script src="<spring:url value="/resources/js/admin/jquery.steps.min.js"/>"></script>
+        <script src="<spring:url value="/resources/js/admin/jquery.autocomplete.min.js"/>"></script>
         <script src="<spring:url value="/resources/js/admin/main.js"/>"></script>
         <script src="<spring:url value="/resources/js/admin/pace.min.js"/>"></script>
     </head>

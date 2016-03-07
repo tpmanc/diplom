@@ -75,10 +75,9 @@ $(function () {
     };
 });
 
-
 var lineTemplate = '<div class="form-group">\
                         <label>{title}</label>\
-                        <input type="text" class="form-control" data-fileid="{fileId}" data-propertyid="{propertyId}">\
+                        <input type="text" class="form-control title-autocomplete" data-fileid="{fileVersionId}" data-propertyid="{propertyId}">\
                     </div>';
 function loadFinishStepContent() {
     var secondStep = $('#secondStep');
@@ -94,4 +93,10 @@ function loadFinishStepContent() {
         markup += str;
     });
     secondStep.html(markup);
+    secondStep.find('.title-autocomplete').autocomplete('dispose').autocomplete({
+        serviceUrl: fileTitleUrl,
+        onSelect: function (suggestion) {
+            console.log('You selected: ' + suggestion.value + ', ' + suggestion.data);
+        }
+    });
 }

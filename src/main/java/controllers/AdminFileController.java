@@ -164,6 +164,25 @@ public class AdminFileController {
     }
 
     @ResponseBody
+    @RequestMapping(value = {"/file-title-autocomplete"}, method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+    public String fileTitleAutocomplete(@RequestParam("query") String query) {
+        JSONObject result = new JSONObject();
+        JSONArray array = new JSONArray();
+        result.put("query", query);
+
+        ArrayList<HashMap> res = FileModel.findTitles(query);
+        for (HashMap row : res) {
+            JSONObject obj = new JSONObject();
+            obj.put("value", row.get("title"));
+            obj.put("data", row.get("id"));
+            array.add(obj);
+        }
+        result.put("suggestions", array);
+
+        return result.toJSONString();
+    }
+
+    @ResponseBody
     @RequestMapping(value = {"/file-add-handler" }, method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
     public String fileAddHandler(@RequestParam("file[]") MultipartFile[] files, HttpServletRequest request) {
         JSONObject result = new JSONObject();

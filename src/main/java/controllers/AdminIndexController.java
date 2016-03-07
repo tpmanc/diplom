@@ -20,15 +20,13 @@ public class AdminIndexController {
 
     @RequestMapping(value = { "/admin" }, method = RequestMethod.GET)
     public String index(@RequestParam(value="name", required=false) String name, Model model, Principal principal) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
-        System.out.println(currentPrincipalName);
-        Object s = authentication.getDetails();
-
-        System.out.println(principal.getName());
-
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        System.out.println("User has authorities: " + userDetails.getAuthorities());
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        String currentPrincipalName = authentication.getName();
+//        System.out.println(currentPrincipalName);
+//        Object s = authentication.getDetails();
+//        System.out.println(principal.getName());
+//        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+//        System.out.println("User has authorities: " + userDetails.getAuthorities());
 
         model.addAttribute("pageTitle", "Index");
 

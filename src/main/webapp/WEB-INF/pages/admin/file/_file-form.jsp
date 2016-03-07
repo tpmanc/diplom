@@ -1,6 +1,10 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 
+<script>
+    var fileTitleUrl = "<spring:url value="/admin/file-title-autocomplete" />";
+</script>
+
 <div class="row">
     <div class="col-lg-12">
         <div class="inqbox float-e-margins">

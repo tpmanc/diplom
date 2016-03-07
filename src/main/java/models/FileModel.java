@@ -1,6 +1,5 @@
 package models;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import db.Database2;
 import exceptions.CustomWebException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -10,17 +9,16 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class FileModel extends BaseModel implements ModelInterface {
     private static final String getById = "SELECT * FROM file WHERE id = :id";
+    private static final String getByTitle = "SELECT * FROM file WHERE title = :title";
     private static final String saveNew = "INSERT INTO file(title) VALUES(:title)";
     private static final String getAll = "SELECT * FROM file";
     private static final String isFileExist = "SELECT count(id) FROM fileVersion WHERE hash = :hash AND fileSize = :fileSize";
     private static final String getCount = "SELECT count(id) FROM file";
+    private static final String getTitles = "SELECT id, title FROM file WHERE title LIKE :str";
 
     private int id;
     private String title;
@@ -87,6 +85,23 @@ public class FileModel extends BaseModel implements ModelInterface {
         } else {
             return false;
         }
+    }
+
+    public static ArrayList<HashMap> findTitles(String query){
+        ArrayList<HashMap> result = new ArrayList<HashMap>();
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("str", "%" + query + "%");
+        List<Map<String, Object>> rows = template.queryForList(getTitles, parameters);
+        for (Map row : rows) {
+            HashMap<String, String> info = new HashMap<String, String>();
+            String fileId = String.valueOf(row.get("id"));
+            String title = (String) row.get("title");
+            info.put("id", fileId);
+            info.put("title", title);
+            result.add(info);
+        }
+        return result;
     }
 
     public FileVersionModel getLastVersion() {
