@@ -6,6 +6,7 @@
                                 http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
                                 http://www.springframework.org/schema/security
                                 http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
     <http auto-config="true">
         <intercept-url pattern="/admin/*" access="IS_AUTHENTICATED_FULLY" />
         <form-login
@@ -18,6 +19,10 @@
         <csrf />
     </http>
 
+    <!--<authentication-manager>-->
+        <!--<authentication-provider ref="ldapAuthProvider" />-->
+    <!--</authentication-manager>-->
+
     <authentication-manager>
         <ldap-authentication-provider
                 user-search-filter="(&amp;(cn={0})(objectCategory=user))"
@@ -25,7 +30,8 @@
                 group-search-filter="(&amp;(cn={0})(objectCategory=user))"
                 group-search-base="CN=Users"
                 group-role-attribute="CN"
-                role-prefix="ROLE_">
+                role-prefix="ROLE_"
+                user-context-mapper-ref="ldapContextMapperImpl">
         </ldap-authentication-provider>
     </authentication-manager>
     <ldap-server url="ldap://sis.moscow:25559/dc=test,dc=info" manager-dn="CN=test test,CN=Users,DC=test,DC=info" manager-password="Pa$$w0rd123" />
