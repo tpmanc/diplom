@@ -20,7 +20,7 @@
                     <div class="media-body profile-name">
                         <sec:authorize access="isAuthenticated()">
                             <h4 class="media-heading"><sec:authentication property="principal.username" /></h4>
-                            <sec:authentication property="principal" />
+                            dn: <sec:authentication property="principal.fullname" />
                             <span><sec:authentication property="principal.authorities"/></span>
                             <div><a href="<spring:url value="/login?logout" />" class="logout-btn"><i class="fa fa-sign-out"></i> Выйти</a></div>
                         </sec:authorize>

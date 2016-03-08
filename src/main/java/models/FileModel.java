@@ -50,6 +50,19 @@ public class FileModel extends BaseModel implements ModelInterface {
         throw new CustomWebException("Файл не найден");
     }
 
+    public static FileModel findByTitle(String title) throws SQLException {
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("title", title);
+        List<Map<String, Object>> rows = template.queryForList(getByTitle, parameters);
+        for (Map row : rows) {
+            Integer fileId = (Integer) row.get("id");
+            String fileTitle = (String) row.get("title");
+            return new FileModel(fileId, fileTitle);
+        }
+        return null;
+    }
+
     public static ArrayList<HashMap> findAll() throws SQLException {
         return queryAll(getAll);
     }

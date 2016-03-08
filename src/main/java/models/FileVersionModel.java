@@ -1,6 +1,7 @@
 package models;
 
 import db.Database2;
+import exceptions.CustomWebException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -10,8 +11,11 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FileVersionModel implements ModelInterface {
+    private static String updateElem = "UPDATE fileVersion SET fileId = :fileId, version = :version, hash = :hash, fileSize = :fileSize, date = :date, isFilled = :isFilled WHERE id = :id";
+    private static final String getById = "SELECT * FROM fileVersion WHERE id = :id";
     private static final String saveNew = "INSERT INTO fileVersion(fileId, version, hash, fileSize, date, isFilled) VALUES(:fileId, :version, :hash, :fileSize, :date, :isFilled)";
 
     private int id;
@@ -25,7 +29,21 @@ public class FileVersionModel implements ModelInterface {
     public HashMap<String, List<String>> errors = new HashMap<String, List<String>>();
 
     public boolean update() throws SQLException {
-        // TODO file version update
+        if (validate()) {
+            NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+            MapSqlParameterSource parameters = new MapSqlParameterSource();
+            parameters.addValue("id", id);
+            parameters.addValue("fileId", fileId);
+            parameters.addValue("version", version);
+            parameters.addValue("hash", hash);
+            parameters.addValue("fileSize", fileSize);
+            parameters.addValue("date", date);
+            parameters.addValue("isFilled", isFilled);
+            int rows = template.update(updateElem, parameters);
+            if (rows > 0) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -60,6 +78,24 @@ public class FileVersionModel implements ModelInterface {
         } else {
             return false;
         }
+    }
+
+    public static FileVersionModel findById(int id) throws SQLException {
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("id", id);
+        List<Map<String, Object>> rows = template.queryForList(getById, parameters);
+        for (Map row : rows) {
+            Integer modelId = (Integer) row.get("id");
+            Integer fileId = (Integer) row.get("fileId");
+            String version = (String) row.get("version");
+            String hash = (String) row.get("hash");
+            Long fileSize = (Long) row.get("fileSize");
+            Long date = (Long) row.get("date");
+            boolean isFilled = ((Integer) row.get("isFilled") == 1);
+            return new FileVersionModel(modelId, fileId, version, hash, fileSize, date, isFilled);
+        }
+        throw new CustomWebException("Файл не найден");
     }
 
     public boolean validate() {

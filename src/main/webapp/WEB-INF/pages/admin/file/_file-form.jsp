@@ -3,6 +3,7 @@
 
 <script>
     var fileTitleUrl = "<spring:url value="/admin/file-title-autocomplete" />";
+    var fileFillingUrl = "<spring:url value="/admin/file-filling" />";
 </script>
 
 <div class="row">

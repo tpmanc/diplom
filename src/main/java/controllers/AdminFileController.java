@@ -1,31 +1,31 @@
 package controllers;
 
+import exceptions.CustomSQLException;
 import exceptions.CustomWebException;
 import helpers.FileCheckSum;
 import helpers.PEProperties;
+import jdk.nashorn.internal.parser.JSONParser;
 import models.*;
+import models.helpers.FileFilling;
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
+import java.lang.reflect.Array;
+import java.nio.charset.Charset;
 import java.security.Timestamp;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequestMapping("/admin")
@@ -183,6 +183,57 @@ public class AdminFileController {
     }
 
     @ResponseBody
+    @RequestMapping(value = {"/file-filling"}, method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
+    public String fileFilling(@RequestBody FileFilling[] res) {
+        JSONObject result = new JSONObject();
+        JSONArray errors = new JSONArray();
+        JSONArray success = new JSONArray();
+
+        for (FileFilling model : res) {
+            JSONObject file = new JSONObject();
+            boolean isError = false;
+            file.put("id", model.getId());
+            if (model.getTitle().length() == 0) {
+                isError = true;
+                file.put("msgTitle", "Заполните название продукта");
+            }
+            if (model.getVersion().length() == 0) {
+                isError = true;
+                file.put("msgVersion", "Заполните версию файла");
+            }
+            if (isError) {
+                errors.add(file);
+            } else {
+                FileModel fileModel = null;
+                try {
+                    FileVersionModel version = FileVersionModel.findById(model.getId());
+                    version.setVersion(model.getVersion());
+                    version.setIsFilled(true);
+                    // ищем файл с таким названием
+                    fileModel = FileModel.findByTitle(model.getTitle());
+                    if (fileModel == null) {
+                        // если такого файла нет, то создаем
+                        fileModel = new FileModel();
+                        fileModel.setTitle(model.getTitle());
+                        fileModel.add();
+                    }
+                    version.setFileId(fileModel.getId());
+                    version.update();
+                } catch (SQLException e) {
+                    throw new CustomSQLException(e.getMessage());
+                }
+                // TODO: file.put("fileId", fileId);
+                success.add(file);
+            }
+        }
+
+        result.put("errors", errors);
+        result.put("success", success);
+
+        return result.toJSONString();
+    }
+
+    @ResponseBody
     @RequestMapping(value = {"/file-add-handler" }, method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
     public String fileAddHandler(@RequestParam("file[]") MultipartFile[] files, HttpServletRequest request) {
         JSONObject result = new JSONObject();
@@ -200,6 +251,7 @@ public class AdminFileController {
         for (MultipartFile file : files) {
             if (!file.isEmpty()) {
                 try {
+                    String uploadedFileName = new String(file.getOriginalFilename().getBytes("ISO-8859-1"), "UTF-8");
                     InputStream inputStream = file.getInputStream();
                     // формирование пути до файла
                     String hash = FileCheckSum.get(inputStream);
@@ -229,10 +281,10 @@ public class AdminFileController {
 
                         // добавление конечного имени файла
                         newFileName.append(File.separator)
-                                .append(FilenameUtils.getBaseName(file.getOriginalFilename()))
+                                .append(FilenameUtils.getBaseName(uploadedFileName))
                                 .append("_")
                                 .append(hash);
-                        String extension = FilenameUtils.getExtension(file.getOriginalFilename());
+                        String extension = FilenameUtils.getExtension(uploadedFileName);
                         if (!extension.equals("")) {
                             newFileName.append(".");
                             newFileName.append(extension);
@@ -267,10 +319,12 @@ public class AdminFileController {
                         // сохранение файла в бд, если свойства заполненены
                         FileModel fileModel = null;
                         if (isFilled) {
-                            // TODO: поиск файла по названию, если не нашел, то добаляем новый (код которые уже написан ниже)
-                            fileModel = new FileModel();
-                            fileModel.setTitle(fileTitle);
-                            fileModel.add();
+                            fileModel = FileModel.findByTitle(fileTitle);
+                            if (fileModel == null) {
+                                fileModel = new FileModel();
+                                fileModel.setTitle(fileTitle);
+                                fileModel.add();
+                            }
                         }
 
                         // добавленией новой версии файла
@@ -305,7 +359,8 @@ public class AdminFileController {
                         }
                         JSONObject succ = new JSONObject();
                         succ.put("fileVersionId", fileVersion.getId());
-                        succ.put("fileVersionName", file.getOriginalFilename());
+
+                        succ.put("fileVersionName", uploadedFileName);
                         succ.put("isFilled", isFilled);
                         success.add(succ);
                     }

@@ -1,9 +1,11 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ page contentType="text/html;charset=UTF-8" %>
+<!doctype html>
 <html>
     <head>
         <title>Repository - ${pageTitle}</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta charset="UTF-8">
 
         <link href="<spring:url value="/resources/css/admin/bootstrap.min.css" />" rel="stylesheet" />
         <link href="<spring:url value="/resources/fonts/admin/font-awesome/css/font-awesome.css" />" rel="stylesheet" />
