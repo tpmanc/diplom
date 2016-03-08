@@ -13,13 +13,15 @@
 <body class="gray-bg">
 <div class="loginColumns">
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-6 col-md-offset-3">
             <h2 class="font-bold">Панель администратора</h2>
             <p>
                 Для входа введите логин и пароль
             </p>
         </div>
-        <div class="col-md-6">
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
             <div class="inqbox-content">
                 <form class="m-t" role="form" method="post" action="<c:url value='j_spring_security_check' />">
                     <div class="form-group">
@@ -42,7 +44,7 @@
     </div>
     <hr/>
     <div class="row">
-        <div class="col-md-6">АО "ВПК "НПО машиностроения"</div>
+        <div class="col-md-6 col-md-offset-3">АО "ВПК "НПО машиностроения"</div>
     </div>
 </div>
 </body>
