@@ -37,95 +37,123 @@
 		<type label="SET" length="1" sql="SET" quote=""/>
 		<type label="Bit" length="0" sql="bit" quote=""/>
 	</group>
-</datatypes><table x="107" y="230" name="users">
-<row name="id" null="0" autoincrement="1">
-<datatype>INTEGER</datatype>
-<default>NULL</default></row>
-<row name="username" null="0" autoincrement="0">
-<datatype>VARCHAR(255)</datatype>
-<default>'NULL'</default></row>
-<row name="password" null="0" autoincrement="0">
-<datatype>VARCHAR(255)</datatype>
-<default>'NULL'</default></row>
-<row name="isEnabled" null="0" autoincrement="0">
-<datatype>INTEGER(1)</datatype>
-<default>NULL</default></row>
-<key type="PRIMARY" name="">
-<part>id</part>
-</key>
-</table>
-<table x="375" y="84" name="userRole">
+</datatypes><table x="58" y="52" name="category">
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
-<row name="userId" null="0" autoincrement="0">
+<row name="parent" null="1" autoincrement="0">
 <datatype>INTEGER</datatype>
-<default>NULL</default><relation table="users" row="id" />
+<default>NULL</default><relation table="category" row="id" />
 </row>
-<row name="role" null="0" autoincrement="0">
+<row name="title" null="1" autoincrement="0">
 <datatype>VARCHAR(255)</datatype>
-<default>'NULL'</default></row>
-<key type="PRIMARY" name="">
-<part>id</part>
-</key>
-</table>
-<table x="653" y="74" name="Log">
-<row name="id" null="1" autoincrement="1">
+<default>NULL</default></row>
+<row name="position" null="1" autoincrement="0">
 <datatype>INTEGER</datatype>
-<default>NULL</default></row>
-<row name="level" null="0" autoincrement="0">
-<datatype>INTEGER(1)</datatype>
-<default>NULL</default></row>
-<row name="text" null="0" autoincrement="0">
-<datatype>MEDIUMTEXT</datatype>
-<default>'NULL'</default></row>
-<key type="PRIMARY" name="">
-<part>id</part>
-</key>
-</table>
-<table x="370" y="410" name="file">
-<row name="id" null="1" autoincrement="1">
-<datatype>INTEGER</datatype>
-<default>NULL</default></row>
-<row name="filename" null="0" autoincrement="0">
-<datatype>VARCHAR(255)</datatype>
-<default>'NULL'</default></row>
-<row name="hash" null="0" autoincrement="0">
-<datatype>VARCHAR(255)</datatype>
-<default>'NULL'</default></row>
-<key type="PRIMARY" name="">
-<part>id</part>
-</key>
-</table>
-<table x="951" y="318" name="property">
-<row name="id" null="1" autoincrement="1">
-<datatype>INTEGER</datatype>
-<default>NULL</default></row>
-<row name="title" null="0" autoincrement="0">
-<datatype>VARCHAR(255)</datatype>
-<default>'NULL'</default></row>
-<row name="isEnabled" null="1" autoincrement="0">
-<datatype>INTEGER(1)</datatype>
 <default>NULL</default></row>
 <key type="PRIMARY" name="">
 <part>id</part>
 </key>
 </table>
-<table x="651" y="415" name="fileProperty">
+<table x="475" y="73" name="file">
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
-<row name="fileId" null="0" autoincrement="0">
+<row name="title" null="1" autoincrement="0">
+<datatype>VARCHAR(255)</datatype>
+<default>NULL</default></row>
+<key type="PRIMARY" name="">
+<part>id</part>
+</key>
+</table>
+<table x="467" y="220" name="fileProperty">
+<row name="id" null="1" autoincrement="1">
+<datatype>INTEGER</datatype>
+<default>NULL</default></row>
+<row name="fileId" null="1" autoincrement="0">
 <datatype>INTEGER</datatype>
 <default>NULL</default><relation table="file" row="id" />
 </row>
-<row name="propertyId" null="0" autoincrement="0">
+<row name="propertyId" null="1" autoincrement="0">
 <datatype>INTEGER</datatype>
 <default>NULL</default><relation table="property" row="id" />
 </row>
-<row name="value" null="0" autoincrement="0">
+<row name="value" null="1" autoincrement="0">
 <datatype>VARCHAR(255)</datatype>
-<default>'NULL'</default></row>
+<default>NULL</default></row>
+<key type="PRIMARY" name="">
+<part>id</part>
+</key>
+</table>
+<table x="883" y="120" name="fileVersion">
+<row name="id" null="1" autoincrement="1">
+<datatype>INTEGER</datatype>
+<default>NULL</default></row>
+<row name="fileId" null="1" autoincrement="0">
+<datatype>INTEGER</datatype>
+<default>NULL</default><relation table="file" row="id" />
+</row>
+<row name="version" null="1" autoincrement="0">
+<datatype>VARCHAR</datatype>
+<default>NULL</default></row>
+<row name="hash" null="1" autoincrement="0">
+<datatype>VARCHAR</datatype>
+<default>NULL</default></row>
+<row name="fileSize" null="1" autoincrement="0">
+<datatype>INTEGER</datatype>
+<default>NULL</default></row>
+<row name="date" null="1" autoincrement="0">
+<datatype>INTEGER</datatype>
+<default>NULL</default></row>
+<row name="isFilled" null="1" autoincrement="0">
+<datatype>TINYINT(1)</datatype>
+<default>NULL</default></row>
+<key type="PRIMARY" name="">
+<part>id</part>
+</key>
+</table>
+<table x="835" y="393" name="fileVersionProperty">
+<row name="id" null="1" autoincrement="1">
+<datatype>INTEGER</datatype>
+<default>NULL</default><relation table="fileVersion" row="id" />
+</row>
+<row name="fileVersionId" null="1" autoincrement="0">
+<datatype>INTEGER</datatype>
+<default>NULL</default></row>
+<row name="propertyId" null="1" autoincrement="0">
+<datatype>INTEGER</datatype>
+<default>NULL</default><relation table="property" row="id" />
+</row>
+<row name="value" null="1" autoincrement="0">
+<datatype>VARCHAR</datatype>
+<default>NULL</default></row>
+<key type="PRIMARY" name="">
+<part>id</part>
+</key>
+</table>
+<table x="468" y="470" name="property">
+<row name="id" null="1" autoincrement="1">
+<datatype>INTEGER</datatype>
+<default>NULL</default></row>
+<row name="title" null="1" autoincrement="0">
+<datatype>VARCHAR</datatype>
+<default>NULL</default></row>
+<key type="PRIMARY" name="">
+<part>id</part>
+</key>
+</table>
+<table x="58" y="260" name="fileCategory">
+<row name="id" null="1" autoincrement="1">
+<datatype>INTEGER</datatype>
+<default>NULL</default></row>
+<row name="categoryId" null="1" autoincrement="0">
+<datatype>INTEGER</datatype>
+<default>NULL</default><relation table="category" row="id" />
+</row>
+<row name="fileId" null="1" autoincrement="0">
+<datatype>INTEGER</datatype>
+<default>NULL</default><relation table="file" row="id" />
+</row>
 <key type="PRIMARY" name="">
 <part>id</part>
 </key>
