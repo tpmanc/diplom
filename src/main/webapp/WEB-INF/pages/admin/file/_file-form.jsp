@@ -11,7 +11,7 @@
         <div class="inqbox float-e-margins">
             <div class="inqbox-content">
                 <div id="steps">
-                    <h2>Загзурзка файлов</h2>
+                    <h2>Загрузка файлов</h2>
                     <div class="step-content">
                         <div class="text-center m-t-md">
                             <form id="my-awesome-dropzone" class="dropzone" action="<spring:url value="/admin/file-add-handler" />">
