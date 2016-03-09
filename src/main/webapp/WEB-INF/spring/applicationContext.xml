@@ -7,32 +7,5 @@
 
     <bean id="ldapContextMapperImpl" class="auth.LdapContextMapperImpl" />
 
-    <!--<bean id="myContextMapper" class="auth.LdapContextMapperImpl-->
-        <!--<property name="rolePrefix" value="TEST_PREFIX" />-->
-    <!--</bean>-->
-
-    <!--<bean id="contextSource"-->
-          <!--class="org.springframework.security.ldap.DefaultSpringSecurityContextSource">-->
-        <!--<constructor-arg value="ldap://sis.moscow:25559/dc=test,dc=info"/>-->
-        <!--<property name="userDn" value="CN=test test,CN=Users,DC=test,DC=info"/>-->
-        <!--<property name="password" value="Pa$$w0rd123"/>-->
-    <!--</bean>-->
-
-    <!--<bean id="ldapAuthProvider"-->
-          <!--class="org.springframework.security.ldap.authentication.LdapAuthenticationProvider">-->
-        <!--<constructor-arg>-->
-            <!--<bean class="org.springframework.security.ldap.authentication.BindAuthenticator">-->
-                <!--<constructor-arg ref="contextSource"/>-->
-                <!--<property name="userDnPatterns"><list><value>cn={0},cn=Users</value></list></property>-->
-            <!--</bean>-->
-        <!--</constructor-arg>-->
-        <!--<constructor-arg>-->
-            <!--<bean class="org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator">-->
-                <!--<constructor-arg ref="contextSource"/>-->
-                <!--<constructor-arg value="cn=Users"/>-->
-                <!--<property name="groupRoleAttribute" value="cn"/>-->
-            <!--</bean>-->
-        <!--</constructor-arg>-->
-        <!--<property name="userDetailsContextMapper" ref="myContextMapper" />-->
-    <!--</bean>-->
+    <bean id="defaultAuthEventPublisher" class="auth.UserService"/>
 </beans>
