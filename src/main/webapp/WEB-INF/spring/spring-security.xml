@@ -25,9 +25,8 @@
 
     <authentication-manager>
         <ldap-authentication-provider
-                user-search-filter="(&amp;(cn={0})(objectCategory=user))"
-                user-search-base="CN=Users"
-                group-search-filter="(&amp;(cn={0})(objectCategory=user))"
+                user-search-filter="(&amp;(employeeID={0})(objectCategory=user))"
+                group-search-filter="(&amp;(employeeID={0})(objectCategory=user))"
                 group-search-base="CN=Users"
                 group-role-attribute="CN"
                 role-prefix="ROLE_"
