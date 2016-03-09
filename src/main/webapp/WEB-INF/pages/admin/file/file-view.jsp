@@ -6,6 +6,11 @@
     <jsp:param name="activePage" value="file" />
 </jsp:include>
 
+<script src="<spring:url value="/resources/js/pages/admin/file/file-view.js" />"></script>
+<script>
+    var filePropertyDeleteUrl = "<spring:url value="/admin/file-property-delete" />";
+</script>
+
 <h2>${pageTitle}</h2>
 
 <ol class="breadcrumb">
@@ -49,12 +54,15 @@
 <table class="table table-striped models-view">
     <tbody>
     <c:forEach items="${fileProperties}" var="item" varStatus="itemStat">
-        <tr>
+        <tr class="file-property-holder">
             <td>${item.title}</td>
             <td>${item.value}</td>
             <td>
                 <a href="<spring:url value="/admin/file-edit-property?id=" />${item.get("id")}" class="icon">
                     <i class="fa fa-edit"></i>
+                </a>
+                <a data-link="${item.get("id")}" class="icon remove-file-property">
+                    <i class="fa fa-trash"></i>
                 </a>
             </td>
         </tr>

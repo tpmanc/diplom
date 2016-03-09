@@ -420,4 +420,23 @@ public class AdminFileController {
             throw new CustomWebException("Ошибка", "500");
         }
     }
+
+    @ResponseBody
+    @RequestMapping(value = {"/file-property-delete"}, method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
+    public String filePropertyDelete(@RequestParam("propertyLink") int propertyLink) {
+        JSONObject result = new JSONObject();
+        boolean error = true;
+
+        try {
+            FilePropertyModel fileProperty = FilePropertyModel.findById(propertyLink);
+            if (fileProperty.delete()) {
+                error = false;
+            }
+        } catch (SQLException e) {
+            throw new CustomWebException("Свойство файла не найдено");
+        }
+
+        result.put("error", error);
+        return result.toJSONString();
+    }
 }
