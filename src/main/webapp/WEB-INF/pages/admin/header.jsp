@@ -46,9 +46,9 @@
                             <li <c:if test="${param.activePage == 'property'}"> class="active" </c:if>>
                                 <a href="<spring:url value="/admin/properties" />"><i class="fa fa-list-ul"></i> <span class="nav-label">Свойства файлов</span></a>
                             </li>
-                            <li>
-                                <a href="<spring:url value="/admin/users" />"><i class="fa fa-user"></i> <span class="nav-label">Пользователи</span></a>
-                            </li>
+                            <%--<li>--%>
+                                <%--<a href="<spring:url value="/admin/users" />"><i class="fa fa-user"></i> <span class="nav-label">Пользователи</span></a>--%>
+                            <%--</li>--%>
                             <li>
                                 <a href="#"><i class="fa fa-warning"></i> <span class="nav-label">Логи</span></a>
                             </li>
