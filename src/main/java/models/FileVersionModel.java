@@ -14,14 +14,15 @@ import java.util.List;
 import java.util.Map;
 
 public class FileVersionModel implements ModelInterface {
-    private static String updateElem = "UPDATE fileVersion SET fileId = :fileId, version = :version, hash = :hash, fileSize = :fileSize, date = :date, isFilled = :isFilled WHERE id = :id";
+    private static String updateElem = "UPDATE fileVersion SET fileId = :fileId, version = :version, hash = :hash, fileSize = :fileSize, date = :date, isFilled = :isFilled, fileName = :fileName WHERE id = :id";
     private static final String getById = "SELECT * FROM fileVersion WHERE id = :id";
-    private static final String saveNew = "INSERT INTO fileVersion(fileId, version, hash, fileSize, date, isFilled) VALUES(:fileId, :version, :hash, :fileSize, :date, :isFilled)";
+    private static final String saveNew = "INSERT INTO fileVersion(fileId, version, hash, fileSize, date, isFilled, fileName) VALUES(:fileId, :version, :hash, :fileSize, :date, :isFilled, :fileName)";
 
     private int id;
     private int fileId;
     private String version = "";
     private String hash;
+    private String fileName;
     private long fileSize;
     private long date;
     private boolean isFilled;
@@ -39,6 +40,7 @@ public class FileVersionModel implements ModelInterface {
             parameters.addValue("fileSize", fileSize);
             parameters.addValue("date", date);
             parameters.addValue("isFilled", isFilled);
+            parameters.addValue("fileName", fileName);
             int rows = template.update(updateElem, parameters);
             if (rows > 0) {
                 return true;
@@ -51,7 +53,7 @@ public class FileVersionModel implements ModelInterface {
 
     }
 
-    public FileVersionModel(int id, int fileId, String version, String hash, long fileSize, long date, boolean isFilled) {
+    public FileVersionModel(int id, int fileId, String version, String hash, long fileSize, long date, boolean isFilled, String fileName) {
         this.id = id;
         this.fileId = fileId;
         this.version = version;
@@ -59,6 +61,7 @@ public class FileVersionModel implements ModelInterface {
         this.fileSize = fileSize;
         this.date = date;
         this.isFilled = isFilled;
+        this.fileName = fileName;
     }
 
     public boolean add() throws SQLException {
@@ -71,6 +74,7 @@ public class FileVersionModel implements ModelInterface {
             parameters.addValue("fileSize", fileSize);
             parameters.addValue("date", date);
             parameters.addValue("isFilled", isFilled);
+            parameters.addValue("fileName", fileName);
             KeyHolder keyHolder = new GeneratedKeyHolder();
             template.update(saveNew, parameters, keyHolder);
             id = keyHolder.getKey().intValue();
@@ -89,11 +93,12 @@ public class FileVersionModel implements ModelInterface {
             Integer modelId = (Integer) row.get("id");
             Integer fileId = (Integer) row.get("fileId");
             String version = (String) row.get("version");
+            String fileName = (String) row.get("fileName");
             String hash = (String) row.get("hash");
             Long fileSize = (Long) row.get("fileSize");
             Long date = (Long) row.get("date");
             boolean isFilled = ((Integer) row.get("isFilled") == 1);
-            return new FileVersionModel(modelId, fileId, version, hash, fileSize, date, isFilled);
+            return new FileVersionModel(modelId, fileId, version, hash, fileSize, date, isFilled, fileName);
         }
         throw new CustomWebException("Файл не найден");
     }
@@ -157,6 +162,10 @@ public class FileVersionModel implements ModelInterface {
         this.fileId = fileId;
     }
 
+    public int getFileId() {
+        return fileId;
+    }
+
     public void setVersion(String version) {
         this.version = version;
     }
@@ -167,6 +176,10 @@ public class FileVersionModel implements ModelInterface {
 
     public void setHash(String hash) {
         this.hash = hash;
+    }
+
+    public String getHash() {
+        return hash;
     }
 
     public int getId() {
@@ -195,5 +208,13 @@ public class FileVersionModel implements ModelInterface {
 
     public void setIsFilled(boolean isFilled) {
         this.isFilled = isFilled;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 }

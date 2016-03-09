@@ -12,12 +12,14 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.lang.reflect.Array;
 import java.nio.charset.Charset;
@@ -222,7 +224,6 @@ public class AdminFileController {
                 } catch (SQLException e) {
                     throw new CustomSQLException(e.getMessage());
                 }
-                // TODO: file.put("fileId", fileId);
                 success.add(file);
             }
         }
@@ -280,15 +281,16 @@ public class AdminFileController {
                         }
 
                         // добавление конечного имени файла
-                        newFileName.append(File.separator)
+                        StringBuilder fileName = new StringBuilder()
                                 .append(FilenameUtils.getBaseName(uploadedFileName))
                                 .append("_")
                                 .append(hash);
                         String extension = FilenameUtils.getExtension(uploadedFileName);
                         if (!extension.equals("")) {
-                            newFileName.append(".");
-                            newFileName.append(extension);
+                            fileName.append(".");
+                            fileName.append(extension);
                         }
+                        newFileName.append(File.separator).append(fileName);
 
                         // сохранение файла на диск
                         inputStream = file.getInputStream();
@@ -334,6 +336,7 @@ public class AdminFileController {
                         } else {
                             fileVersion.setFileId(fileModel.getId());
                         }
+                        fileVersion.setFileName(fileName.toString());
                         fileVersion.setHash(hash);
                         fileVersion.setIsFilled(isFilled);
                         long time = new Date().getTime();
@@ -381,5 +384,40 @@ public class AdminFileController {
         result.put("errors", errors);
         result.put("success", success);
         return result.toJSONString();
+    }
+
+    @RequestMapping(value = {"/file-download" }, method = RequestMethod.GET)
+    public String fileDownload(@RequestParam("id") int id, Model model, HttpServletRequest request, HttpServletResponse response) {
+        try {
+            FileVersionModel fileVersion = FileVersionModel.findById(id);
+            StringBuilder filePath = new StringBuilder();
+            // формируем путь до файла
+            filePath.append(request.getServletContext().getRealPath("upload"));
+            String hash = fileVersion.getHash();
+            String firstDir = hash.substring(0, 2);
+            String secondDir = hash.substring(2, 4);
+            filePath
+                    .append(File.separator)
+                    .append(firstDir)
+                    .append(File.separator)
+                    .append(secondDir)
+                    .append(File.separator)
+                    .append(fileVersion.getFileName());
+            File file = new File(filePath.toString());
+            InputStream inputStream = new FileInputStream(file);
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + fileVersion.getFileName() + "\"");
+            OutputStream os = response.getOutputStream();
+            FileCopyUtils.copy(inputStream, os);
+            os.close();
+            inputStream.close();
+            return "redirect:/admin/file-view?id="+fileVersion.getFileId();
+        } catch (SQLException e) {
+            throw new CustomWebException("Файла не существует");
+        } catch (FileNotFoundException e) {
+            throw new CustomWebException("Файла не найден");
+        } catch (IOException e) {
+            throw new CustomWebException("Ошибка", "500");
+        }
     }
 }

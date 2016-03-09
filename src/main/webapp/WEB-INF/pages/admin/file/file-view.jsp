@@ -19,7 +19,9 @@
 <br>
 
 <p>
-    <a href="<spring:url value="/admin/file-add-property?id=${file.id}" />" class="btn btn-success">Добавить свойство</a>
+    <a href="<spring:url value="/admin/file-add-property?id=${file.id}" />" class="btn btn-success">Добавить свойство файла</a>
+    <a href="<spring:url value="/admin/version-add-property?id=${lastVersion.id}" />" class="btn btn-success">Добавить свойство версии</a>
+    <a href="<spring:url value="/admin/file-download?id=${lastVersion.id}" />" class="btn btn-primary">Скачать файл</a>
 </p>
 
 <h3>${file.title}</h3>

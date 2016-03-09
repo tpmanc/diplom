@@ -41,59 +41,77 @@ $(function () {
     steps.find('a[href="#finish"]').on('click', function(){
         var res = [];
         var files = steps.find('.file-holder');
+        steps.find('.has-error').removeClass('has-error');
         files.each(function(i, e){
             var $e = $(e);
             var versionId = $e.data('versionid');
             var title = $e.find('.title-autocomplete');
             var version = $e.find('.version-autocomplete');
-            var file = {"id": versionId, "title": title.val(), "version": version.val()};
-            res.push(file);
-        });
-
-        $.ajax({
-            url: fileFillingUrl,
-            method: "post",
-            headers : {
-                'Accept' : 'application/json',
-                'Content-Type' : 'application/json'
-            },
-            dataType: "json",
-            data: JSON.stringify(res),
-            success: function(data){
-                steps.find('.has-error').removeClass('has-error');
-                var success = data.success;
-                $(success).each(function(i ,e){
-                    files.each(function(index, elem){
-                        var $elem = $(elem);
-                        if ($elem.data('versionid') == e.id) {
-                            $elem.remove();
-                        }
-                    });
-                });
-                var errors = data.errors;
-                $(errors).each(function(i ,e) {
-                    files.each(function (index, elem) {
-                        var $elem = $(elem);
-                        if ($elem.data('versionid') == e.id) {
-                            if (e.msgTitle != undefined) {
-                                $elem.find('.title-block').addClass('has-error').find('.help-block').text(e.msgTitle);
-                            }
-                            if (e.msgVersion != undefined) {
-                                $elem.find('.version-block').addClass('has-error').find('.help-block').text(e.msgVersion);
-                            }
-                        }
-                    });
-                });
-            },
-            error: function(data){
-                toastr.error('Ошибка при сохранении', data.msg);
-            },
-            complete: function() {
+            var titleVal = title.val().trim();
+            var versionVal = version.val().trim();
+            var error = false;
+            if (titleVal.length == 0) {
+                error = true;
+                title.closest('.title-block').addClass('has-error').find('.help-block').text('Заполните название продукта');
+            }
+            if (versionVal.length == 0) {
+                error = true;
+                version.closest('.version-block').addClass('has-error').find('.help-block').text('Заполните версию файла');
+            }
+            if (!error) {
+                var file = {"id": versionId, "title": titleVal, "version": versionVal};
+                res.push(file);
             }
         });
+
+        // TODO: валидация на клиенте
+
+        // если хоть 1 файл заполнен
+        if (res.length > 0) {
+            $.ajax({
+                url: fileFillingUrl,
+                method: "post",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                dataType: "json",
+                data: JSON.stringify(res),
+                success: function (data) {
+                    steps.find('.has-error').removeClass('has-error');
+                    var success = data.success;
+                    $(success).each(function (i, e) {
+                        files.each(function (index, elem) {
+                            var $elem = $(elem);
+                            if ($elem.data('versionid') == e.id) {
+                                $elem.closest('.file-holder').remove();
+                            }
+                        });
+                    });
+                    var errors = data.errors;
+                    $(errors).each(function (i, e) {
+                        files.each(function (index, elem) {
+                            var $elem = $(elem);
+                            if ($elem.data('versionid') == e.id) {
+                                if (e.msgTitle != undefined) {
+                                    $elem.find('.title-block').addClass('has-error').find('.help-block').text(e.msgTitle);
+                                }
+                                if (e.msgVersion != undefined) {
+                                    $elem.find('.version-block').addClass('has-error').find('.help-block').text(e.msgVersion);
+                                }
+                            }
+                        });
+                    });
+                },
+                error: function (data) {
+                    toastr.error('Ошибка при сохранении', data.msg);
+                },
+                complete: function () {
+                }
+            });
+        }
     });
 
-    var isFileUploaded = false;
     Dropzone.options.myAwesomeDropzone = {
         //paramName: "file",
         autoProcessQueue: false,
@@ -101,17 +119,10 @@ $(function () {
         parallelUploads: 10,
         maxFiles: 10,
         maxFilesize: 5120, // MB
-        // Dropzone settings
         init: function() {
             var myDropzone = this;
 
-            this.on("addedfile", function(file) {
-                isFileUploaded = true;
-            });
             this.element.querySelector("button[type=submit]").addEventListener("click", function(e) {
-                if (isFileUploaded) {
-                    steps.find('ul[role="menu"]').show();
-                }
                 e.preventDefault();
                 e.stopPropagation();
                 myDropzone.processQueue();
@@ -128,11 +139,19 @@ $(function () {
                     elem.find('.dz-error-message').text(item.msg);
                     errorCount++;
                 });
+                var needNextBtn = false;
                 response.success.forEach(function(item, i){
                     filesInfo.push(item);
+                    if (!item.isFilled) {
+                        needNextBtn = true;
+                    }
+
                 });
                 if (errorCount < files.length) {
-                    // show next btn
+                    // показываем кнопку далее если хоть 1 файл не заполнен
+                    if (needNextBtn) {
+                        steps.find('ul[role="menu"]').show();
+                    }
                 }
             });
             this.on("errormultiple", function(files, response) {
@@ -143,6 +162,7 @@ $(function () {
 });
 
 var fileTemplate = '<div class="file-holder" data-versionid="{fileVersionId}">\
+                        <h3>Файл: {fileName}</h3>\
                         <div class="form-group title-block">\
                             <label>Название продукта</label>\
                             <input type="text" class="form-control title-autocomplete">\
@@ -159,16 +179,18 @@ function loadFinishStepContent() {
     var markup = '';
     filesInfo.forEach(function(item){
         console.log(item);
-        var str = '<h3>Файл: '+item.fileVersionName+'</h3>';
-        var line = fileTemplate;
-        str += line.replace('{fileVersionId}', item.fileVersionId);
-        markup += str;
+        // если файл не заполнен, то добавляем поля для заполнения
+        if (!item.isFilled) {
+            var str = fileTemplate;
+            str = str.replace('{fileVersionId}', item.fileVersionId).replace('{fileName}', item.fileVersionName);
+            markup += str;
+        }
     });
     secondStep.html(markup);
     secondStep.find('.title-autocomplete').autocomplete('dispose').autocomplete({
         serviceUrl: fileTitleUrl,
         onSelect: function (suggestion) {
-            console.log('You selected: ' + suggestion.value + ', ' + suggestion.data);
+
         }
     });
 }
