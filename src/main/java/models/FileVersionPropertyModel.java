@@ -1,6 +1,7 @@
 package models;
 
 import db.Database2;
+import exceptions.CustomWebException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -13,19 +14,33 @@ import java.util.List;
 import java.util.Map;
 
 public class FileVersionPropertyModel extends BaseModel implements ModelInterface {
+    private static final String getById = "SELECT fileVersionProperty.id, fileVersionProperty.fileVersionId, property.title, fileVersionProperty.propertyId, fileVersionProperty.value FROM fileVersionProperty LEFT JOIN property ON property.id = fileVersionProperty.propertyId WHERE fileVersionProperty.id = :id";
     private static final String saveNew = "INSERT INTO fileVersionProperty(fileVersionId, propertyId, value) VALUES(:fileVersionId, :propertyId, :value)";
     private static final String getByFileVersion = "SELECT fileVersionProperty.id, property.title, fileVersionProperty.value FROM fileVersionProperty LEFT JOIN property ON fileVersionProperty.propertyId = property.id WHERE fileVersionId = :fileVersionId";
+    private static final String deleteById = "DELETE FROM fileVersionProperty WHERE id = :id";
 
     private int id;
     private int fileVersionId;
     private int propertyId;
     private String value;
+    private String title;
 
     public HashMap<String, List<String>> errors = new HashMap<String, List<String>>();
 
     public boolean update() throws SQLException {
         // TODO
         return false;
+    }
+
+    public FileVersionPropertyModel() {
+    }
+
+    public FileVersionPropertyModel(int id, int fileVersionId, int propertyId, String value, String title) {
+        this.id = id;
+        this.fileVersionId = fileVersionId;
+        this.propertyId = propertyId;
+        this.value = value;
+        this.title = title;
     }
 
     public static ArrayList getProperties(int fileVersionId) throws SQLException {
@@ -58,6 +73,22 @@ public class FileVersionPropertyModel extends BaseModel implements ModelInterfac
             return true;
         }
         return false;
+    }
+
+    public static FileVersionPropertyModel findById(int id) throws SQLException {
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("id", id);
+        List<Map<String, Object>> rows = template.queryForList(getById, parameters);
+        for (Map row : rows) {
+            Integer rowId = (Integer) row.get("id");
+            Integer fileVersionId = (Integer) row.get("fileVersionId");
+            Integer propertyId = (Integer) row.get("propertyId");
+            String value = (String) row.get("value");
+            String title = (String) row.get("title");
+            return new FileVersionPropertyModel(rowId, fileVersionId, propertyId, value, title);
+        }
+        throw new CustomWebException("Свойство версии не найдено");
     }
 
     public boolean validate() {
@@ -100,8 +131,11 @@ public class FileVersionPropertyModel extends BaseModel implements ModelInterfac
     }
 
     public boolean delete() throws SQLException {
-        // TODO
-        return false;
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("id", id);
+        int rows = template.update(deleteById, parameters);
+        return rows > 0;
     }
 
     public int getId() {

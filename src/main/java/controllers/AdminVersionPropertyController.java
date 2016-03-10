@@ -1,7 +1,9 @@
 package controllers;
 
 import exceptions.CustomWebException;
+import models.FilePropertyModel;
 import models.FileVersionModel;
+import models.FileVersionPropertyModel;
 import models.PropertyModel;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Controller;
@@ -47,7 +49,18 @@ public class AdminVersionPropertyController {
     @RequestMapping(value = {"/file-version-property-delete"}, method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
     public String filePropertyDelete(@RequestParam("propertyLink") int propertyLink) {
         JSONObject result = new JSONObject();
-        // TODO
+        boolean error = true;
+
+        try {
+            FileVersionPropertyModel fileProperty = FileVersionPropertyModel.findById(propertyLink);
+            if (fileProperty.delete()) {
+                error = false;
+            }
+        } catch (SQLException e) {
+            throw new CustomWebException("Свойство файла не найдено");
+        }
+
+        result.put("error", error);
         return result.toJSONString();
     }
 

@@ -9,6 +9,7 @@
 <script src="<spring:url value="/resources/js/pages/admin/file/file-view.js" />"></script>
 <script>
     var filePropertyDeleteUrl = "<spring:url value="/admin/file-property-delete" />";
+    var fileVersionPropertyDeleteUrl = "<spring:url value="/admin/file-version-property-delete" />";
 </script>
 
 <h2>${pageTitle}</h2>
@@ -87,11 +88,20 @@
         <tr>
             <td>Дата загрузки</td>
             <td>${downloadDate}</td>
+            <td></td>
         </tr>
         <c:forEach items="${fileVersionProperties}" var="item" varStatus="itemStat">
-            <tr>
+            <tr class="file-version-property">
                 <td>${item.title}</td>
                 <td>${item.value}</td>
+                <td>
+                    <a href="<spring:url value="/admin/file-property-edit?id=" />${item.get("id")}" class="icon">
+                        <i class="fa fa-edit"></i>
+                    </a>
+                    <a data-link="${item.get("id")}" class="icon remove-file-version-property">
+                        <i class="fa fa-trash"></i>
+                    </a>
+                </td>
             </tr>
         </c:forEach>
     </tbody>
