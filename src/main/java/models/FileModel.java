@@ -19,6 +19,7 @@ public class FileModel extends BaseModel implements ModelInterface {
     private static final String isFileExist = "SELECT count(id) FROM fileVersion WHERE hash = :hash AND fileSize = :fileSize";
     private static final String getCount = "SELECT count(id) FROM file";
     private static final String getTitles = "SELECT id, title FROM file WHERE title LIKE :str";
+    private static final String getVersions = "SELECT id, version FROM fileVersion WHERE fileId = :fileId ORDER BY version DESC";
 
     private int id;
     private String title;
@@ -135,6 +136,23 @@ public class FileModel extends BaseModel implements ModelInterface {
             return  new FileVersionModel(id, fileId, version, hash, fileSize, date, isFilled, fileName);
         }
         throw new CustomWebException("Версия не найдена");
+    }
+
+    public ArrayList getVersionList() {
+        ArrayList<HashMap> result = new ArrayList<HashMap>();
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("fileId", id);
+        List<Map<String, Object>> rows = template.queryForList(getVersions, parameters);
+        for (Map row : rows) {
+            HashMap<String, String> info = new HashMap<String, String>();
+            Integer id = (Integer) row.get("id");
+            String version = (String) row.get("version");
+            info.put("id", String.valueOf(id));
+            info.put("version", version);
+            result.add(info);
+        }
+        return result;
     }
 
     public boolean validate() {

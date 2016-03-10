@@ -16,6 +16,7 @@ import java.util.Map;
 public class FileVersionModel implements ModelInterface {
     private static String updateElem = "UPDATE fileVersion SET fileId = :fileId, version = :version, hash = :hash, fileSize = :fileSize, date = :date, isFilled = :isFilled, fileName = :fileName WHERE id = :id";
     private static final String getById = "SELECT * FROM fileVersion WHERE id = :id";
+    private static final String getByIdAndFile = "SELECT * FROM fileVersion WHERE id = :id AND fileId = :fileId";
     private static final String saveNew = "INSERT INTO fileVersion(fileId, version, hash, fileSize, date, isFilled, fileName) VALUES(:fileId, :version, :hash, :fileSize, :date, :isFilled, :fileName)";
 
     private int id;
@@ -100,7 +101,27 @@ public class FileVersionModel implements ModelInterface {
             boolean isFilled = ((Integer) row.get("isFilled") == 1);
             return new FileVersionModel(modelId, fileId, version, hash, fileSize, date, isFilled, fileName);
         }
-        throw new CustomWebException("‘‡ÈÎ ÌÂ Ì‡È‰ÂÌ");
+        throw new CustomWebException("–í–µ—Ä—Å–∏—è –Ω–µ –Ω–∞–π–¥–µ–Ω–∞");
+    }
+
+    public static FileVersionModel findByIdAndFile(int id, int file) throws SQLException {
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("id", id);
+        parameters.addValue("fileId", file);
+        List<Map<String, Object>> rows = template.queryForList(getByIdAndFile, parameters);
+        for (Map row : rows) {
+            Integer modelId = (Integer) row.get("id");
+            Integer fileId = (Integer) row.get("fileId");
+            String version = (String) row.get("version");
+            String fileName = (String) row.get("fileName");
+            String hash = (String) row.get("hash");
+            Long fileSize = (Long) row.get("fileSize");
+            Long date = (Long) row.get("date");
+            boolean isFilled = ((Integer) row.get("isFilled") == 1);
+            return new FileVersionModel(modelId, fileId, version, hash, fileSize, date, isFilled, fileName);
+        }
+        throw new CustomWebException("–í–µ—Ä—Å–∏—è –Ω–µ –Ω–∞–π–¥–µ–Ω–∞");
     }
 
     public boolean validate() {
@@ -109,11 +130,11 @@ public class FileVersionModel implements ModelInterface {
         boolean isValid = true;
         if (hash.length() > 255) {
             isValid = false;
-            hashErrors.add("’˝¯ ‰ÓÎÊÂÌ ·˚Ú¸ ÏÂÌ¸¯Â 255 ÒËÏ‚ÓÎÓ‚");
+            hashErrors.add("–•—ç—à –¥–æ–ª–∂–µ–Ω –±—ã—Ç—å –º–µ–Ω—å—à–µ 255 —Å–∏–º–≤–æ–ª–æ–≤");
         }
         if (hash.trim().length() == 0) {
             isValid = false;
-            hashErrors.add("«‡ÔÓÎÌËÚÂ ı˝¯");
+            hashErrors.add("–ó–∞–ø–æ–ª–Ω–∏—Ç–µ —Ö—ç—à");
         }
         if (hashErrors.size() > 0) {
             errors.put("hash", hashErrors);
@@ -124,7 +145,7 @@ public class FileVersionModel implements ModelInterface {
         List<String> versionErrors = new ArrayList<String>();
         if (version.length() > 255) {
             isValid = false;
-            versionErrors.add("¬ÂÒËˇ ‰ÓÎÊÌ‡ ·˚Ú¸ ÏÂÌ¸¯Â 255 ÒËÏ‚ÓÎÓ‚");
+            versionErrors.add("–í–µ—Ä—Å–∏—è –¥–æ–ª–∂–Ω–∞ –±—ã—Ç—å –º–µ–Ω—å—à–µ 255 —Å–∏–º–≤–æ–ª–æ–≤");
         }
         if (versionErrors.size() > 0) {
             errors.put("version", versionErrors);
@@ -134,7 +155,7 @@ public class FileVersionModel implements ModelInterface {
         List<String> fileIdErrors = new ArrayList<String>();
         if (fileId < 0) {
             isValid = false;
-            fileIdErrors.add("Id Ù‡ÈÎ‡ ‰ÓÎÊÂÌ ·˚Ú¸ >= 0");
+            fileIdErrors.add("Id —Ñ–∞–π–ª–∞ –¥–æ–ª–∂–µ–Ω –±—ã—Ç—å >= 0");
         }
         if (fileIdErrors.size() > 0) {
             errors.put("fileId", fileIdErrors);
@@ -144,7 +165,7 @@ public class FileVersionModel implements ModelInterface {
         List<String> fileSizeErrors = new ArrayList<String>();
         if (fileSize < 0) {
             isValid = false;
-            fileSizeErrors.add("–‡ÁÏÂ ‰ÓÎÊÂÌ ·˚Ú¸ >= 0");
+            fileSizeErrors.add("–†–∞–∑–º–µ—Ä –¥–æ–ª–∂–µ–Ω –±—ã—Ç—å >= 0");
         }
         if (fileSizeErrors.size() > 0) {
             errors.put("fileSize", fileSizeErrors);

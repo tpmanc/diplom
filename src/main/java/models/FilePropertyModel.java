@@ -86,7 +86,7 @@ public class FilePropertyModel extends BaseModel implements ModelInterface {
             String title = (String) row.get("title");
             return new FilePropertyModel(rowId, fileId, propertyId, value, title);
         }
-        throw new CustomWebException("Свойство файла не найдено");
+        throw new CustomWebException("РЎРІРѕР№СЃС‚РІРѕ С„Р°Р№Р»Р° РЅРµ РЅР°Р№РґРµРЅРѕ");
     }
 
     public boolean add() throws SQLException {
@@ -110,11 +110,11 @@ public class FilePropertyModel extends BaseModel implements ModelInterface {
         List<String> valueErrors = new ArrayList<String>();
         if (value.length() > 255) {
             isValid = false;
-            valueErrors.add("Значение свойства должно быть меньше 255 символов");
+            valueErrors.add("Р—РЅР°С‡РµРЅРёРµ СЃРІРѕР№СЃС‚РІР° РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РјРµРЅСЊС€Рµ 255 СЃРёРјРІРѕР»РѕРІ");
         }
         if (value.trim().length() == 0) {
             isValid = false;
-            valueErrors.add("Заполните значение");
+            valueErrors.add("Р—Р°РїРѕР»РЅРёС‚Рµ Р·РЅР°С‡РµРЅРёРµ");
         }
         if (valueErrors.size() > 0) {
             errors.put("value", valueErrors);
@@ -124,7 +124,7 @@ public class FilePropertyModel extends BaseModel implements ModelInterface {
         List<String> fileIdErrors = new ArrayList<String>();
         if (fileId < 0) {
             isValid = false;
-            fileIdErrors.add("Id файла должен быть >= 0");
+            fileIdErrors.add("Id С„Р°Р№Р»Р° РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ >= 0");
         }
         if (fileIdErrors.size() > 0) {
             errors.put("fileId", fileIdErrors);
@@ -134,7 +134,7 @@ public class FilePropertyModel extends BaseModel implements ModelInterface {
         List<String> propertyIdErrors = new ArrayList<String>();
         if (propertyId < 0) {
             isValid = false;
-            propertyIdErrors.add("Id свойства должен быть >= 0");
+            propertyIdErrors.add("Id СЃРІРѕР№СЃС‚РІР° РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ >= 0");
         }
         if (propertyIdErrors.size() > 0) {
             errors.put("propertyId", propertyIdErrors);

@@ -66,11 +66,11 @@ public class FileVersionPropertyModel extends BaseModel implements ModelInterfac
         List<String> valueErrors = new ArrayList<String>();
         if (value.length() > 255) {
             isValid = false;
-            valueErrors.add("Çíà÷åíèå ñâîéñòâà äîëæíî áûòü ìåíüøå 255 ñèìâîëîâ");
+            valueErrors.add("Ð—Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ ÑÐ²Ð¾Ð¹ÑÑ‚Ð²Ð° Ð´Ð¾Ð»Ð¶Ð½Ð¾ Ð±Ñ‹Ñ‚ÑŒ Ð¼ÐµÐ½ÑŒÑˆÐµ 255 ÑÐ¸Ð¼Ð²Ð¾Ð»Ð¾Ð²");
         }
         if (value.trim().length() == 0) {
             isValid = false;
-            valueErrors.add("Çàïîëíèòå çíà÷åíèå");
+            valueErrors.add("Ð—Ð°Ð¿Ð¾Ð»Ð½Ð¸Ñ‚Ðµ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ");
         }
         if (valueErrors.size() > 0) {
             errors.put("value", valueErrors);
@@ -80,7 +80,7 @@ public class FileVersionPropertyModel extends BaseModel implements ModelInterfac
         List<String> fileIdErrors = new ArrayList<String>();
         if (fileVersionId < 0) {
             isValid = false;
-            fileIdErrors.add("Id ôàéëà äîëæåí áûòü >= 0");
+            fileIdErrors.add("Id Ñ„Ð°Ð¹Ð»Ð° Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð±Ñ‹Ñ‚ÑŒ >= 0");
         }
         if (fileIdErrors.size() > 0) {
             errors.put("fileId", fileIdErrors);
@@ -90,7 +90,7 @@ public class FileVersionPropertyModel extends BaseModel implements ModelInterfac
         List<String> propertyIdErrors = new ArrayList<String>();
         if (propertyId < 0) {
             isValid = false;
-            propertyIdErrors.add("Id ñâîéñòâà äîëæåí áûòü >= 0");
+            propertyIdErrors.add("Id ÑÐ²Ð¾Ð¹ÑÑ‚Ð²Ð° Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð±Ñ‹Ñ‚ÑŒ >= 0");
         }
         if (propertyIdErrors.size() > 0) {
             errors.put("propertyId", propertyIdErrors);

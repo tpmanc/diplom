@@ -49,21 +49,29 @@ public class AdminFileController {
     }
 
     @RequestMapping(value = {"/file-view" }, method = RequestMethod.GET)
-    public String view(@RequestParam("id") int id, Model model) {
+    public String view(@RequestParam("id") int id, @RequestParam(value="versionId", required=false, defaultValue = "0") int versionId, Model model) {
         try {
             FileModel file = FileModel.findById(id);
             model.addAttribute("file", file);
 
-            FileVersionModel lastVersion = file.getLastVersion();
-            model.addAttribute("lastVersion", lastVersion);
+            FileVersionModel currentVersion;
+            if (versionId == 0) {
+                currentVersion = file.getLastVersion();
+            } else {
+                currentVersion = FileVersionModel.findByIdAndFile(versionId, id);
+            }
+            model.addAttribute("currentVersion", currentVersion);
 
-            ArrayList fileVersionProperties = FileVersionPropertyModel.getProperties(lastVersion.getId());
+            ArrayList versionList = file.getVersionList();
+            model.addAttribute("versionList", versionList);
+
+            ArrayList fileVersionProperties = FileVersionPropertyModel.getProperties(currentVersion.getId());
             model.addAttribute("fileVersionProperties", fileVersionProperties);
 
             ArrayList fileProperties = FilePropertyModel.getProperties(file.getId());
             model.addAttribute("fileProperties", fileProperties);
 
-            Date date = new Date(lastVersion.getDate());
+            Date date = new Date(currentVersion.getDate());
             SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy");
             String downloadDate = df.format(date);
             model.addAttribute("downloadDate", downloadDate);
@@ -101,68 +109,6 @@ public class AdminFileController {
         model.addAttribute("pageTitle", "Добавить файл");
         //returns the view name
         return "admin/file/file-add";
-    }
-
-    @RequestMapping(value = {"/file-add-property" }, method = RequestMethod.GET)
-    public String fileAddProperty(@RequestParam("id") int id, Model model) {
-        try {
-            FileModel file = FileModel.findById(id);
-            model.addAttribute("file", file);
-
-            ArrayList<HashMap> properties = PropertyModel.findAllNotUsedCustom(file.getId());
-            model.addAttribute("properties", properties);
-        } catch (SQLException e) {
-            throw new CustomWebException("Файл не существует");
-        }
-
-        model.addAttribute("pageTitle", "Добавить свойство");
-        //returns the view name
-        return "admin/file/file-add-property";
-    }
-
-    @RequestMapping(value = {"/file-edit-property" }, method = RequestMethod.GET)
-    public String fileEditProperty(@RequestParam("id") int id, Model model) {
-        try {
-            FilePropertyModel fileProperty = FilePropertyModel.findById(id);
-            model.addAttribute("fileProperty", fileProperty);
-        } catch (SQLException e) {
-            throw new CustomWebException("Свойство файла не существует");
-        }
-
-        model.addAttribute("pageTitle", "Изменить свойство файла");
-        //returns the view name
-        return "admin/file/file-edit-property";
-    }
-
-    @RequestMapping(value = {"/file-property-handler" }, method = RequestMethod.POST)
-    public String fileAddPropertyHandler(
-            @RequestParam("fileId") int fileId,
-            @RequestParam("propertyId") int propertyId,
-            @RequestParam("value") String value,
-            @RequestParam(value="id", required=false, defaultValue = "0") int id
-    ) {
-        if (id == 0) {
-            FilePropertyModel fileProperty = new FilePropertyModel(fileId, propertyId, value);
-            try {
-                if (fileProperty.add()) {
-                    return "redirect:/admin/file-view?id="+fileId;
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        } else {
-            try {
-                FilePropertyModel fileProperty = FilePropertyModel.findById(id);
-                fileProperty.setValue(value);
-                if (fileProperty.update()) {
-                    return "redirect:/admin/file-view?id="+fileId;
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        //returns the view name
-        return "admin/file/file-add-property?id="+fileId;
     }
 
     @ResponseBody
@@ -419,24 +365,5 @@ public class AdminFileController {
         } catch (IOException e) {
             throw new CustomWebException("Ошибка", "500");
         }
-    }
-
-    @ResponseBody
-    @RequestMapping(value = {"/file-property-delete"}, method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
-    public String filePropertyDelete(@RequestParam("propertyLink") int propertyLink) {
-        JSONObject result = new JSONObject();
-        boolean error = true;
-
-        try {
-            FilePropertyModel fileProperty = FilePropertyModel.findById(propertyLink);
-            if (fileProperty.delete()) {
-                error = false;
-            }
-        } catch (SQLException e) {
-            throw new CustomWebException("Свойство файла не найдено");
-        }
-
-        result.put("error", error);
-        return result.toJSONString();
     }
 }
