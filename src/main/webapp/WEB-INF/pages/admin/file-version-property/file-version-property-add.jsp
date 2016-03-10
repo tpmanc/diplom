@@ -23,7 +23,7 @@
 <br>
 
 <form action="<spring:url value="/admin/file-version-property-handler" />" method="post" class="form-horizontal">
-    <input type="hidden" name="fileId" value="${fileVersion.id}">
+    <input type="hidden" name="fileVersionId" value="${fileVersion.id}">
     <div class="form-group">
         <label class="col-sm-2 control-label">Свойство</label>
         <div class="col-sm-10">

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 public class FileVersionPropertyModel extends BaseModel implements ModelInterface {
+    private static final String updateById = "UPDATE fileVersionProperty SET value = :value WHERE id = :id";
     private static final String getById = "SELECT fileVersionProperty.id, fileVersionProperty.fileVersionId, property.title, fileVersionProperty.propertyId, fileVersionProperty.value FROM fileVersionProperty LEFT JOIN property ON property.id = fileVersionProperty.propertyId WHERE fileVersionProperty.id = :id";
     private static final String saveNew = "INSERT INTO fileVersionProperty(fileVersionId, propertyId, value) VALUES(:fileVersionId, :propertyId, :value)";
     private static final String getByFileVersion = "SELECT fileVersionProperty.id, property.title, fileVersionProperty.value FROM fileVersionProperty LEFT JOIN property ON fileVersionProperty.propertyId = property.id WHERE fileVersionId = :fileVersionId";
@@ -28,11 +29,26 @@ public class FileVersionPropertyModel extends BaseModel implements ModelInterfac
     public HashMap<String, List<String>> errors = new HashMap<String, List<String>>();
 
     public boolean update() throws SQLException {
-        // TODO
+        if (validate()) {
+            NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+            MapSqlParameterSource parameters = new MapSqlParameterSource();
+            parameters.addValue("id", id);
+            parameters.addValue("value", value);
+            int rows = template.update(updateById, parameters);
+            if (rows > 0) {
+                return true;
+            }
+        }
         return false;
     }
 
     public FileVersionPropertyModel() {
+    }
+
+    public FileVersionPropertyModel(int fileVersionId, int propertyId, String value) {
+        this.fileVersionId = fileVersionId;
+        this.propertyId = propertyId;
+        this.value = value;
     }
 
     public FileVersionPropertyModel(int id, int fileVersionId, int propertyId, String value, String title) {
@@ -164,5 +180,13 @@ public class FileVersionPropertyModel extends BaseModel implements ModelInterfac
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

@@ -17,7 +17,7 @@ public class FilePropertyModel extends BaseModel implements ModelInterface {
     private static final String updateById = "UPDATE fileProperty SET value = :value WHERE id = :id";
     private static final String saveNew = "INSERT INTO fileProperty(fileId, propertyId, value) VALUES(:fileId, :propertyId, :value)";
     private static final String getById = "SELECT fileProperty.id, fileProperty.fileId, property.title, fileProperty.propertyId, fileProperty.value FROM fileProperty LEFT JOIN property ON property.id = fileProperty.propertyId WHERE fileProperty.id = :id";
-    private static final String getByFile = "SELECT fileProperty.id, property.title, fileProperty.value FROM fileProperty LEFT JOIN property ON fileProperty.propertyId = property.id WHERE fileId = :fileId";
+    private static final String getByFile = "SELECT fileProperty.id, property.title, fileProperty.value FROM fileProperty LEFT JOIN property ON fileProperty.propertyId = property.id WHERE fileId = :fileId AND propertyId <> :fileName AND propertyId <> :version";
     private static final String deleteById = "DELETE FROM fileProperty WHERE id = :id";
 
     private int id;
@@ -61,6 +61,8 @@ public class FilePropertyModel extends BaseModel implements ModelInterface {
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("fileId", fileId);
+        parameters.addValue("fileName", PropertyModel.PRODUCT_NAME);
+        parameters.addValue("version", PropertyModel.FILE_VERSION);
         List<Map<String, Object>> rows = template.queryForList(getByFile, parameters);
 
         for (Map row : rows) {

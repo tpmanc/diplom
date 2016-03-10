@@ -95,7 +95,7 @@
                 <td>${item.title}</td>
                 <td>${item.value}</td>
                 <td>
-                    <a href="<spring:url value="/admin/file-property-edit?id=" />${item.get("id")}" class="icon">
+                    <a href="<spring:url value="/admin/file-version-property-edit?id=" />${item.get("id")}" class="icon">
                         <i class="fa fa-edit"></i>
                     </a>
                     <a data-link="${item.get("id")}" class="icon remove-file-version-property">

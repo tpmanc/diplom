@@ -14,7 +14,7 @@
 <ol class="breadcrumb">
     <li><a href="<spring:url value="/admin" />">Главная</a></li>
     <li><a href="<spring:url value="/admin/files" />">Файлы</a></li>
-    <li><a href="<spring:url value="/admin/file-view?id=${fileProperty.fileId}" />">Просмотр файла</a></li>
+    <li><a href="<spring:url value="/admin/file-view?id=${fileVersion.fileId}&versionId=${fileVersion.id}" />">Просмотр файла</a></li>
     <li class="active">
         <strong>${pageTitle}</strong>
     </li>
@@ -22,14 +22,14 @@
 
 <br>
 
-<form action="<spring:url value="/admin/file-property-handler" />" method="post" class="form-horizontal">
+<form action="<spring:url value="/admin/file-version-property-handler" />" method="post" class="form-horizontal">
     <input type="hidden" name="id" value="${fileProperty.id}">
-    <input type="hidden" name="fileId" value="${fileProperty.fileId}">
+    <input type="hidden" name="fileVersionId" value="${fileProperty.fileVersionId}">
     <input type="hidden" name="propertyId" value="${fileProperty.propertyId}">
     <div class="form-group">
         <label class="col-sm-2 control-label">Свойство</label>
         <div class="col-sm-10">
-            ${fileProperty.title}
+            <input type="text" class="form-control" value="${fileProperty.title}" disabled="disabled">
         </div>
     </div>
 
@@ -42,7 +42,7 @@
 
     <div class="form-group">
         <div class="col-sm-4 col-sm-offset-2">
-            <button class="btn btn-success" type="submit">Добавить</button>
+            <button class="btn btn-success" type="submit">Сохранить</button>
         </div>
     </div>
 </form>

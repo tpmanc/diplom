@@ -1,10 +1,7 @@
 package controllers;
 
 import exceptions.CustomWebException;
-import models.FilePropertyModel;
-import models.FileVersionModel;
-import models.FileVersionPropertyModel;
-import models.PropertyModel;
+import models.*;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -41,7 +38,17 @@ public class AdminVersionPropertyController {
 
     @RequestMapping(value = {"/file-version-property-edit" }, method = RequestMethod.GET)
     public String fileEditProperty(@RequestParam("id") int id, Model model) {
-        // TODO
+        try {
+            FileVersionPropertyModel fileProperty = FileVersionPropertyModel.findById(id);
+            model.addAttribute("fileProperty", fileProperty);
+
+            FileVersionModel fileVersion = FileVersionModel.findById(fileProperty.getFileVersionId());
+            model.addAttribute("fileVersion", fileVersion);
+        } catch (SQLException e) {
+            throw new CustomWebException("Свойство версии не найдено");
+        }
+
+        model.addAttribute("pageTitle", "Изменить свойство версии");
         return "admin/file-version-property/file-version-property-edit";
     }
 
@@ -66,16 +73,34 @@ public class AdminVersionPropertyController {
 
     @RequestMapping(value = {"/file-version-property-handler" }, method = RequestMethod.POST)
     public String fileAddPropertyHandler(
-            @RequestParam("versionId") int fileId,
+            @RequestParam("fileVersionId") int fileVersionId,
             @RequestParam("propertyId") int propertyId,
             @RequestParam("value") String value,
             @RequestParam(value="id", required=false, defaultValue = "0") int id
     ) {
         if (id == 0) {
-            // TODO: add property
+            try {
+                FileVersionModel fileVersion = FileVersionModel.findById(fileVersionId);
+                FileVersionPropertyModel fileProperty = new FileVersionPropertyModel(fileVersion.getId(), propertyId, value);
+                if (fileProperty.add()) {
+                    return "redirect:/admin/file-view?id="+fileVersion.getFileId()+"&versionId="+fileVersion.getId();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         } else {
             // TODO: edit property
+            try {
+                FileVersionModel fileVersion = FileVersionModel.findById(fileVersionId);
+                FileVersionPropertyModel fileProperty = FileVersionPropertyModel.findById(id);
+                fileProperty.setValue(value);
+                if (fileProperty.update()) {
+                    return "redirect:/admin/file-view?id="+fileVersion.getFileId()+"&versionId="+fileVersion.getId();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-        return "admin/file-version-property/file-property-add?id="+fileId;
+        return "admin/file-version-property/file-property-add?id="+fileVersionId;
     }
 }
