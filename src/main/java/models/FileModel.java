@@ -16,6 +16,7 @@ public class FileModel extends BaseModel implements ModelInterface {
     private static final String getByTitle = "SELECT * FROM file WHERE title = :title";
     private static final String saveNew = "INSERT INTO file(title) VALUES(:title)";
     private static final String getAll = "SELECT * FROM file";
+    private static final String getAllLimit = "SELECT * FROM file LIMIT :limit OFFSET :offset";
     private static final String isFileExist = "SELECT count(id) FROM fileVersion WHERE hash = :hash AND fileSize = :fileSize";
     private static final String getCount = "SELECT count(id) FROM file";
     private static final String getTitles = "SELECT id, title FROM file WHERE title LIKE :str";
@@ -24,6 +25,8 @@ public class FileModel extends BaseModel implements ModelInterface {
     private int id;
     private String title;
     public HashMap<String, List<String>> errors = new HashMap<String, List<String>>();
+
+    public static final int PAGE_COUNT = 10;
 
     public boolean update() throws SQLException {
         // TODO: update data
@@ -66,6 +69,10 @@ public class FileModel extends BaseModel implements ModelInterface {
 
     public static ArrayList<HashMap> findAll() throws SQLException {
         return queryAll(getAll);
+    }
+
+    public static ArrayList<HashMap> findAll(int limit, int offset) throws SQLException {
+        return queryAll(getAllLimit, limit, offset);
     }
 
     public static int getCount() {

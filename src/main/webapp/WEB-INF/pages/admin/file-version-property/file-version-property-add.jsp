@@ -6,7 +6,7 @@
     <jsp:param name="activePage" value="file" />
 </jsp:include>
 
-<spring:url value="/resources/js/pages/admin/file/file-add-property.js" var="fileFormJs" />
+<spring:url value="/resources/js/pages/admin/file-version-property/file-version-add-property.js" var="fileFormJs" />
 <script src="${fileFormJs}"></script>
 
 <h2>${pageTitle}</h2>
@@ -14,7 +14,7 @@
 <ol class="breadcrumb">
     <li><a href="<spring:url value="/admin" />">Главная</a></li>
     <li><a href="<spring:url value="/admin/files" />">Файлы</a></li>
-    <li><a href="<spring:url value="/admin/file-view?id=${file.id}" />">Просмотр файла</a></li>
+    <li><a href="<spring:url value="/admin/file-view?id=${fileVersion.fileId}&versionId=${fileVersion.id}" />">Просмотр файла</a></li>
     <li class="active">
         <strong>${pageTitle}</strong>
     </li>
@@ -22,8 +22,8 @@
 
 <br>
 
-<form action="<spring:url value="/admin/file-property-handler" />" method="post" class="form-horizontal">
-    <input type="hidden" name="fileId" value="${file.id}">
+<form action="<spring:url value="/admin/file-version-property-handler" />" method="post" class="form-horizontal">
+    <input type="hidden" name="fileId" value="${fileVersion.id}">
     <div class="form-group">
         <label class="col-sm-2 control-label">Свойство</label>
         <div class="col-sm-10">

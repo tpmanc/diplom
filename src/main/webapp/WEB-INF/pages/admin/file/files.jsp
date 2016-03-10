@@ -47,4 +47,20 @@
     </tbody>
 </table>
 
+<c:if test="${pageCount > 1}">
+    <div class="btn-group">
+        <c:if test="${page > 1}">
+            <a href="<spring:url value="/admin/files?page=" />${page - 1}" type="button" class="btn btn-white"><i class="fa fa-chevron-left"></i></a>
+        </c:if>
+
+        <c:forEach begin="1" end="${pageCount}" var="page">
+            <a href="<spring:url value="/admin/files?page=" />${page}" class="btn btn-white">${page}</a>
+        </c:forEach>
+
+        <c:if test="${page < pageCount}">
+            <a href="<spring:url value="/admin/files?page=" />${page + 1}" type="button" class="btn btn-white"><i class="fa fa-chevron-right"></i></a>
+        </c:if>
+    </div>
+</c:if>
+
 <jsp:include page="../layout_bottom.jsp" />

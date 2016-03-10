@@ -1,7 +1,8 @@
 package controllers;
 
 import exceptions.CustomWebException;
-import models.FilePropertyModel;
+import models.FileVersionModel;
+import models.PropertyModel;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Контроллер для версий файлов
@@ -20,7 +23,17 @@ import java.sql.SQLException;
 public class AdminVersionPropertyController {
     @RequestMapping(value = {"/file-version-property-add" }, method = RequestMethod.GET)
     public String fileAddProperty(@RequestParam("id") int id, Model model) {
-        // TODO
+        try {
+            FileVersionModel fileVersion = FileVersionModel.findById(id);
+            model.addAttribute("fileVersion", fileVersion);
+
+            ArrayList<HashMap> properties = PropertyModel.findAllNotUsedCustom(fileVersion.getId());
+            model.addAttribute("properties", properties);
+        } catch (SQLException e) {
+            throw new CustomWebException("Версия не существует");
+        }
+
+        model.addAttribute("pageTitle", "Добавить свойство");
         return "admin/file-version-property/file-version-property-add";
     }
 

@@ -32,7 +32,6 @@ public class AdminFilePropertyController {
         }
 
         model.addAttribute("pageTitle", "Добавить свойство");
-        //returns the view name
         return "admin/file-property/file-property-add";
     }
 

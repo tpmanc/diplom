@@ -38,7 +38,10 @@
                                 <a href="<spring:url value="/admin/categories" />"><i class="fa fa-sitemap"></i> <span class="nav-label">Категории</span></a>
                             </li>
                             <li <c:if test="${param.activePage == 'file'}"> class="active" </c:if>>
-                                <a href="<spring:url value="/admin/files" />"><i class="fa fa-file"></i> <span class="nav-label">Файлы</span></a>
+                                <a href="<spring:url value="/admin/files" />"><i class="fa fa-file-text-o"></i> <span class="nav-label">Файлы</span></a>
+                            </li>
+                            <li <c:if test="${param.activePage == 'unfilled-files'}"> class="active" </c:if>>
+                                <a href="<spring:url value="/admin/unfilled-files" />"><i class="fa fa-file"></i> <span class="nav-label">Незаполненные Файлы</span></a>
                             </li>
                             <li <c:if test="${param.activePage == 'fileLink'}"> class="active" </c:if>>
                                 <a href="#"><i class="fa fa-link"></i> <span class="nav-label">Привязка файлов</span></a>
