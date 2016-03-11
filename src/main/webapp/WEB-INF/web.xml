@@ -60,8 +60,8 @@
         </init-param>
         <load-on-startup>1</load-on-startup>
         <multipart-config>
-            <location>C:\tmp</location>
-            <!--<location>/Users/tpmanc/Downloads</location>-->
+            <!--<location>C:\tmp</location>-->
+            <location>/Users/tpmanc/Downloads</location>
             <max-file-size>5368709120</max-file-size><!-- 5 gb -->
             <max-request-size>5368709120</max-request-size><!-- 5gb -->
             <file-size-threshold>0</file-size-threshold>

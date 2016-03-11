@@ -14,10 +14,18 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Контроллер свойств для администратора
+ */
 @Controller
 @RequestMapping("/admin")
 public class AdminPropertyController {
 
+    /**
+     * Список всех свойств
+     * @param model
+     * @return Путь до представления
+     */
     @RequestMapping(value = {"/properties" }, method = RequestMethod.GET)
     public String index(Model model) {
         ArrayList<HashMap> properties = null;
@@ -32,12 +40,23 @@ public class AdminPropertyController {
         return "admin/property/properties";
     }
 
+    /**
+     * Добавление свойства
+     * @param model
+     * @return Путь до представления
+     */
     @RequestMapping(value = {"/property-add" }, method = RequestMethod.GET)
     public String add(Model model) {
         model.addAttribute("pageTitle", "Добавить свойство файла");
         return "admin/property/property-add";
     }
 
+    /**
+     * Изменение свойства
+     * @param id Id свойства
+     * @param model
+     * @return Путь до представления
+     */
     @RequestMapping(value = {"/property-edit" }, method = RequestMethod.GET)
     public String update(@RequestParam("id") int id, Model model) {
         PropertyModel property = null;
@@ -51,6 +70,12 @@ public class AdminPropertyController {
         return "admin/property/property-edit";
     }
 
+    /**
+     * Просмотр свойства
+     * @param id Id свойства
+     * @param model
+     * @return Путь до представления
+     */
     @RequestMapping(value = {"/property-view" }, method = RequestMethod.GET)
     public String view(@RequestParam("id") int id, Model model) {
         try {
@@ -64,6 +89,13 @@ public class AdminPropertyController {
         return "admin/property/property-view";
     }
 
+    /**
+     * Обработчик создания и изменения свойства
+     * @param title Название свойства
+     * @param id Id свойства
+     * @param attr
+     * @return Перенаправление
+     */
     @RequestMapping(value = {"/property-handler" }, method = RequestMethod.POST)
     public String addHandler(
             @RequestParam("title") String title,
@@ -71,6 +103,7 @@ public class AdminPropertyController {
             RedirectAttributes attr
     ) {
         PropertyModel property;
+        // если это изменение свойства
         if (id > 0) {
             try {
                 property = PropertyModel.findCustomById(id);
@@ -85,6 +118,7 @@ public class AdminPropertyController {
                 throw new CustomWebException("Свойство не найдено", "404");
             }
         } else {
+            // если это добавление нового свойства
             property = new PropertyModel(title);
             try {
                 if (property.add()) {
@@ -99,29 +133,12 @@ public class AdminPropertyController {
         }
     }
 
-    @RequestMapping(value = {"/property-edit-handler" }, method = RequestMethod.POST)
-    public String updateHandler(
-            @RequestParam("id") int id,
-            @RequestParam("title") String title,
-            RedirectAttributes attr,
-            Model model
-    ) {
-        PropertyModel property = null;
-        try {
-            property = PropertyModel.findById(id);
-            property.setTitle(title);
-            if (property.update()) {
-                return "redirect:/properties";
-            } else {
-                attr.addFlashAttribute("errors", property.errors);
-                return "redirect:/property-edit?id=" + id;
-            }
-        } catch (SQLException e) {
-
-        }
-        return "redirect:/property-edit?id=" + id;
-    }
-
+    /**
+     * Обработчик ajax запроса на удаление свойства
+     * @param id Id свойства
+     * @param model
+     * @return json строка
+     */
     @RequestMapping(value = {"/property-delete" }, method = RequestMethod.POST)
     public @ResponseBody boolean deleteHandler(
             @RequestParam("id") int id,

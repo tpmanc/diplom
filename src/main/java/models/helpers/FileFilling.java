@@ -2,6 +2,9 @@ package models.helpers;
 
 import java.io.Serializable;
 
+/**
+ * Вспомогательный класс для заполнения основных свойств файла
+ */
 public class FileFilling implements Serializable {
     private Integer id;
     private String title;

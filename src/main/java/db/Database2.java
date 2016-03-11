@@ -1,20 +1,11 @@
 package db;
 
 
-import exceptions.CustomSQLException;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.springframework.jdbc.datasource.DataSourceUtils;
 
-import javax.sql.DataSource;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.Properties;
-
+/**
+ * Соединение с базой данных
+ */
 public class Database2 {
     private static final String DRIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
     private static final String DB_URL = "jdbc:mysql://127.0.0.1:3306/repository";
@@ -25,16 +16,17 @@ public class Database2 {
     private BasicDataSource bds = new BasicDataSource();
 
     private Database2() {
-        //Set database driver name
+        // имя дравйвера
         bds.setDriverClassName(DRIVER_CLASS_NAME);
-        //Set database url
+        // url БД
         bds.setUrl(DB_URL);
-        //Set database user
+        // пользователь БД
         bds.setUsername(DB_USER);
-        //Set database password
+        // пароль БД
         bds.setPassword(DB_PASSWORD);
-        //Set the connection pool size
+        // размер пула
         bds.setInitialSize(CONN_POOL_SIZE);
+        // свойства соединения
         bds.setConnectionProperties("useUnicode=yes;characterEncoding=utf8;");
     }
 

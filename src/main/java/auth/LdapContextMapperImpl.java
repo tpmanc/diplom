@@ -11,6 +11,9 @@ import org.springframework.security.ldap.userdetails.UserDetailsContextMapper;
 import javax.naming.directory.Attributes;
 import java.util.*;
 
+/**
+ * Класс для маппинга полей из Active Directory в дополнительные поля пользователя
+ */
 public class LdapContextMapperImpl implements UserDetailsContextMapper {
     public UserDetails mapUserFromContext(DirContextOperations ctx,
                                           String username, Collection<? extends GrantedAuthority> authorities) {

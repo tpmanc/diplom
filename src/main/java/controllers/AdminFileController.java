@@ -29,15 +29,25 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+/**
+ * Контроллер файлов для администратора
+ */
 @Controller
 @RequestMapping("/admin")
 public class AdminFileController {
 
+    /**
+     * Список всех файлов, разбитый по страницам
+     * @param page Номер страницы
+     * @param model
+     * @return Путь до представления
+     */
     @RequestMapping(value = {"/files"}, method = RequestMethod.GET)
     public String index(@RequestParam(value="page", required=false, defaultValue = "1") int page, Model model) {
         int limit = FileModel.PAGE_COUNT;
         int offset = (page - 1) * limit;
         try {
+            // массив файлов для нужной страницы
             ArrayList<HashMap> files = FileModel.findAll(limit, offset);
             model.addAttribute("files", files);
 
@@ -52,6 +62,13 @@ public class AdminFileController {
         return "admin/file/files";
     }
 
+    /**
+     * Просмотр файла
+     * @param id Id файла
+     * @param versionId Id версии
+     * @param model
+     * @return Путь до представления
+     */
     @RequestMapping(value = {"/file-view" }, method = RequestMethod.GET)
     public String view(@RequestParam("id") int id, @RequestParam(value="versionId", required=false, defaultValue = "0") int versionId, Model model) {
         try {
@@ -59,6 +76,7 @@ public class AdminFileController {
             model.addAttribute("file", file);
 
             FileVersionModel currentVersion;
+            // если id версии не указан, то берем последнюю
             if (versionId == 0) {
                 currentVersion = file.getLastVersion();
             } else {
@@ -66,15 +84,19 @@ public class AdminFileController {
             }
             model.addAttribute("currentVersion", currentVersion);
 
+            // список версий файла
             ArrayList versionList = file.getVersionList();
             model.addAttribute("versionList", versionList);
 
+            // свойства файла
             ArrayList fileVersionProperties = FileVersionPropertyModel.getProperties(currentVersion.getId());
             model.addAttribute("fileVersionProperties", fileVersionProperties);
 
+            // свойства версии
             ArrayList fileProperties = FilePropertyModel.getProperties(file.getId());
             model.addAttribute("fileProperties", fileProperties);
 
+            // преобразование даты загрузки для вывода на страницу
             Date date = new Date(currentVersion.getDate());
             SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy");
             String downloadDate = df.format(date);
@@ -87,23 +109,16 @@ public class AdminFileController {
         return "admin/file/file-view";
     }
 
-    @RequestMapping(value = {"/file-edit" }, method = RequestMethod.GET)
-    public String update(@RequestParam("id") int id, Model model) {
-        FileModel file = null;
-        try {
-            file = FileModel.findById(id);
-        } catch (SQLException e) {
-            throw new CustomWebException("Файл не существует");
-        }
-        model.addAttribute("file", file);
-        model.addAttribute("pageTitle", "Изменить файл");
-        return "admin/file/file-edit";
-    }
-
+    /**
+     * Добавление файлов
+     * @param model
+     * @return Путь до представления
+     */
     @RequestMapping(value = {"/file-add" }, method = RequestMethod.GET)
     public String fileAdd(Model model) {
         try {
             // список свойств
+            // TODO: нужны ли свойства?
             String properties = PropertyModel.getAllJson();
             model.addAttribute("properties", properties);
         } catch (SQLException e) {
@@ -111,10 +126,14 @@ public class AdminFileController {
         }
 
         model.addAttribute("pageTitle", "Добавить файл");
-        //returns the view name
         return "admin/file/file-add";
     }
 
+    /**
+     * Обработчик ajax запроса по поиску названия файла
+     * @param query Строка для поиска
+     * @return json строка
+     */
     @ResponseBody
     @RequestMapping(value = {"/file-title-autocomplete"}, method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
     public String fileTitleAutocomplete(@RequestParam("query") String query) {
@@ -134,6 +153,11 @@ public class AdminFileController {
         return result.toJSONString();
     }
 
+    /**
+     * Обработчик ajax запроса на заполнение файлов
+     * @param res Массив информации для запоолнения
+     * @return json строка
+     */
     @ResponseBody
     @RequestMapping(value = {"/file-filling"}, method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
     public String fileFilling(@RequestBody FileFilling[] res) {
@@ -145,6 +169,7 @@ public class AdminFileController {
             JSONObject file = new JSONObject();
             boolean isError = false;
             file.put("id", model.getId());
+            // валидация полученных данных
             if (model.getTitle().length() == 0) {
                 isError = true;
                 file.put("msgTitle", "Заполните название продукта");
@@ -156,6 +181,7 @@ public class AdminFileController {
             if (isError) {
                 errors.add(file);
             } else {
+                // если ошибок в данных нет, то сохраняем информацию
                 FileModel fileModel = null;
                 try {
                     FileVersionModel version = FileVersionModel.findById(model.getId());
@@ -184,6 +210,12 @@ public class AdminFileController {
         return result.toJSONString();
     }
 
+    /**
+     * Обработчик ajax запроса на загрузку файлов
+     * @param files Массив файлов
+     * @param request
+     * @return json строка
+     */
     @ResponseBody
     @RequestMapping(value = {"/file-add-handler" }, method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
     public String fileAddHandler(@RequestParam("file[]") MultipartFile[] files, HttpServletRequest request) {
@@ -231,6 +263,7 @@ public class AdminFileController {
                         }
 
                         // добавление конечного имени файла
+                        // к исходному имени добавляется хэш файла
                         StringBuilder fileName = new StringBuilder()
                                 .append(FilenameUtils.getBaseName(uploadedFileName))
                                 .append("_")
@@ -336,8 +369,15 @@ public class AdminFileController {
         return result.toJSONString();
     }
 
+    /**
+     * Загрузка файла с сервера
+     * @param id Id нужной версии
+     * @param model
+     * @param request
+     * @param response
+     */
     @RequestMapping(value = {"/file-download" }, method = RequestMethod.GET)
-    public String fileDownload(@RequestParam("id") int id, Model model, HttpServletRequest request, HttpServletResponse response) {
+    public void fileDownload(@RequestParam("id") int id, Model model, HttpServletRequest request, HttpServletResponse response) {
         try {
             FileVersionModel fileVersion = FileVersionModel.findById(id);
             StringBuilder filePath = new StringBuilder();
@@ -361,7 +401,6 @@ public class AdminFileController {
             FileCopyUtils.copy(inputStream, os);
             os.close();
             inputStream.close();
-            return "redirect:/admin/file-view?id="+fileVersion.getFileId();
         } catch (SQLException e) {
             throw new CustomWebException("Файла не существует");
         } catch (FileNotFoundException e) {

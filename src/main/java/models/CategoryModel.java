@@ -126,6 +126,11 @@ public class CategoryModel extends BaseModel implements ModelInterface {
         return result;
     }
 
+    /**
+     * Изменение информации о категории
+     * @return Boolean
+     * @throws SQLException
+     */
     public boolean update() throws SQLException {
         if (validate()) {
             NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
@@ -138,6 +143,10 @@ public class CategoryModel extends BaseModel implements ModelInterface {
         return false;
     }
 
+    /**
+     * Получение количества категорий
+     * @return Количество категорий
+     */
     public static int getCount() {
         JdbcTemplate template = new JdbcTemplate(Database2.getInstance().getBds());
         return template.queryForObject(getCount, Integer.class);

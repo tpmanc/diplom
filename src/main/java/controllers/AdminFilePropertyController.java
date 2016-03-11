@@ -16,9 +16,18 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Контроллер свойств файла для администратора
+ */
 @Controller
 @RequestMapping("/admin")
 public class AdminFilePropertyController {
+    /**
+     * Добавление свойства к файлу
+     * @param id Id файла
+     * @param model
+     * Путь до представления
+     */
     @RequestMapping(value = {"/file-property-add" }, method = RequestMethod.GET)
     public String fileAddProperty(@RequestParam("id") int id, Model model) {
         try {
@@ -35,6 +44,12 @@ public class AdminFilePropertyController {
         return "admin/file-property/file-property-add";
     }
 
+    /**
+     * Изменение значения свойства файла
+     * @param id Id файла
+     * @param model
+     * @return Путь до представления
+     */
     @RequestMapping(value = {"/file-property-edit" }, method = RequestMethod.GET)
     public String fileEditProperty(@RequestParam("id") int id, Model model) {
         try {
@@ -48,6 +63,11 @@ public class AdminFilePropertyController {
         return "admin/file-property/file-property-edit";
     }
 
+    /**
+     * Обработчик ajax запроса на удаление свойства файла
+     * @param propertyLink Id свойства файла
+     * @return json строка
+     */
     @ResponseBody
     @RequestMapping(value = {"/file-property-delete"}, method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
     public String filePropertyDelete(@RequestParam("propertyLink") int propertyLink) {
@@ -67,6 +87,14 @@ public class AdminFilePropertyController {
         return result.toJSONString();
     }
 
+    /**
+     * Обработчик добавление и изменения сайоства файла
+     * @param fileId Id файла
+     * @param propertyId Id свойства
+     * @param value Значение свойства
+     * @param id Id свойства файла
+     * @return Путь до представления
+     */
     @RequestMapping(value = {"/file-property-handler" }, method = RequestMethod.POST)
     public String fileAddPropertyHandler(
             @RequestParam("fileId") int fileId,
@@ -74,6 +102,7 @@ public class AdminFilePropertyController {
             @RequestParam("value") String value,
             @RequestParam(value="id", required=false, defaultValue = "0") int id
     ) {
+        // если это добавление нового свойства
         if (id == 0) {
             FilePropertyModel fileProperty = new FilePropertyModel(fileId, propertyId, value);
             try {
@@ -84,6 +113,7 @@ public class AdminFilePropertyController {
                 e.printStackTrace();
             }
         } else {
+            // если это изменение значения свойства
             try {
                 FilePropertyModel fileProperty = FilePropertyModel.findById(id);
                 fileProperty.setValue(value);

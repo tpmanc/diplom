@@ -16,7 +16,15 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Получение свойств из файла
+ */
 public class PEProperties {
+    /**
+     * ПОлучение свойств файла
+     * @param filePath Путь до файла
+     * @return Набор полученных свойств
+     */
     public static Map<Integer, String> parse(String filePath){
         Map<Integer, String> properties = new HashMap<Integer, String>();
         PE pe = null;
@@ -34,7 +42,7 @@ public class PEProperties {
                     StringTable table = strings.getTable(0);
                     for (int j = 0; j < table.getCount(); j++) {
                         String key = table.getString(j).getKey();
-                        String value = table.getString(j).getValue();
+                        String value = new String(table.getString(j).getValue().getBytes(), "UTF-8");
                         int propertyId = PropertyModel.getDefaultProperty(key);
                         if (propertyId > 0) {
                             properties.put(propertyId, value);

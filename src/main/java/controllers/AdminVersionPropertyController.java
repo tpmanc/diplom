@@ -15,11 +15,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Контроллер для версий файлов
+ * Контроллер свойств версии для администратора
  */
 @Controller
 @RequestMapping("/admin")
 public class AdminVersionPropertyController {
+    /**
+     * Добавление свойства версии
+     * @param id Id версии
+     * @param model
+     * @return Путь до представления
+     */
     @RequestMapping(value = {"/file-version-property-add" }, method = RequestMethod.GET)
     public String fileAddProperty(@RequestParam("id") int id, Model model) {
         try {
@@ -36,6 +42,12 @@ public class AdminVersionPropertyController {
         return "admin/file-version-property/file-version-property-add";
     }
 
+    /**
+     * Изменение значения свойства версии
+     * @param id Id свойства версии
+     * @param model
+     * @return Путь до представления
+     */
     @RequestMapping(value = {"/file-version-property-edit" }, method = RequestMethod.GET)
     public String fileEditProperty(@RequestParam("id") int id, Model model) {
         try {
@@ -52,6 +64,11 @@ public class AdminVersionPropertyController {
         return "admin/file-version-property/file-version-property-edit";
     }
 
+    /**
+     * Обработчик ajax запроса на удаления свойства версии
+     * @param propertyLink Id свойства версии
+     * @return json строка
+     */
     @ResponseBody
     @RequestMapping(value = {"/file-version-property-delete"}, method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
     public String filePropertyDelete(@RequestParam("propertyLink") int propertyLink) {
@@ -71,6 +88,14 @@ public class AdminVersionPropertyController {
         return result.toJSONString();
     }
 
+    /**
+     * Обработчик добавления и изменения свойства версии
+     * @param fileVersionId Id версии
+     * @param propertyId Id свойства
+     * @param value Значение свойства
+     * @param id Id свойства версии
+     * @return Перенаправление
+     */
     @RequestMapping(value = {"/file-version-property-handler" }, method = RequestMethod.POST)
     public String fileAddPropertyHandler(
             @RequestParam("fileVersionId") int fileVersionId,
@@ -78,6 +103,7 @@ public class AdminVersionPropertyController {
             @RequestParam("value") String value,
             @RequestParam(value="id", required=false, defaultValue = "0") int id
     ) {
+        // если это добавление нового свойства версии
         if (id == 0) {
             try {
                 FileVersionModel fileVersion = FileVersionModel.findById(fileVersionId);
@@ -89,7 +115,7 @@ public class AdminVersionPropertyController {
                 e.printStackTrace();
             }
         } else {
-            // TODO: edit property
+            // если это изменение значения свойства версии
             try {
                 FileVersionModel fileVersion = FileVersionModel.findById(fileVersionId);
                 FileVersionPropertyModel fileProperty = FileVersionPropertyModel.findById(id);

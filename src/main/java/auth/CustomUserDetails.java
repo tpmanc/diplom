@@ -5,11 +5,11 @@ import org.springframework.security.core.userdetails.User;
 
 import java.util.Collection;
 
+/**
+ * Класс для дополнительной информации по пользователю
+ */
 public class CustomUserDetails extends User {
-
-    private static final long serialVersionUID = 1416132138315457558L;
-
-    // extra instance variables
+    // дополнительные поля пользователя
     final String fullname;
     final String email;
     final String title;

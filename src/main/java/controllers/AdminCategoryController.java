@@ -10,10 +10,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Контроллер категорий для администратора
+ */
 @Controller
 @RequestMapping("/admin")
 public class AdminCategoryController {
 
+    /**
+     * Страница с деревом категорий
+     */
     @RequestMapping(value = {"/categories" }, method = RequestMethod.GET)
     public String index(Model model) {
         ArrayList<HashMap> trees = null;
@@ -28,6 +34,13 @@ public class AdminCategoryController {
         return "admin/category/categories";
     }
 
+    /**
+     * Обработчик ajax запроса на добавление категории
+     * @param parent Id родителя; 0 - если родителя нет
+     * @param title Название категории
+     * @param position Позиция для сортировки
+     * @return json строка
+     */
     @ResponseBody
     @RequestMapping(value = "/category/ajax-add-category", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
     public String addNewCategory(
@@ -54,6 +67,12 @@ public class AdminCategoryController {
         return result.toJSONString();
     }
 
+    /**
+     * Обработчик ajax запроса на переименование категории
+     * @param id Id категории
+     * @param title Новое название категории
+     * @return json строка
+     */
     @ResponseBody
     @RequestMapping(value = "/category/ajax-rename", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
     public String renameCategory(
@@ -75,6 +94,13 @@ public class AdminCategoryController {
         return result.toJSONString();
     }
 
+    /**
+     * Обработчик ajax запроса на изменение сортировки
+     * @param id Id перемещенной категории
+     * @param newParentId Id нового родителя
+     * @param position Новая позиция
+     * @return json строка
+     */
     @ResponseBody
     @RequestMapping(value = "/category/ajax-update-position", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
     public String categoryTreeUpdatePositionUrl(
@@ -99,6 +125,11 @@ public class AdminCategoryController {
         return result.toJSONString();
     }
 
+    /**
+     * Обработчик ajax запроса на удаление категории
+     * @param id Id категории
+     * @return json строка
+     */
     @ResponseBody
     @RequestMapping(value = "/category/ajax-delete", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
     public String categoryTreeDeleteUrl(
