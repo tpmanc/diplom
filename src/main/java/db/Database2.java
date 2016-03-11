@@ -35,6 +35,7 @@ public class Database2 {
         bds.setPassword(DB_PASSWORD);
         //Set the connection pool size
         bds.setInitialSize(CONN_POOL_SIZE);
+        bds.setConnectionProperties("useUnicode=yes;characterEncoding=utf8;");
     }
 
     private static class DataSourceHolder {
