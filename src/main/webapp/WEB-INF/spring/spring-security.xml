@@ -7,8 +7,10 @@
                                 http://www.springframework.org/schema/security
                                 http://www.springframework.org/schema/security/spring-security-3.2.xsd">
 
-    <http auto-config="true">
-        <intercept-url pattern="/admin/*" access="IS_AUTHENTICATED_FULLY" />
+    <http auto-config="true" use-expressions="true">
+        <intercept-url pattern="/login" access="permitAll()" />
+        <intercept-url pattern="/*" access="isAuthenticated()" />
+        <intercept-url pattern="/admin/*" access="hasRole('ROLE_FR-ADMIN')" />
         <form-login
                 login-page="/login"
                 default-target-url="/admin/"
@@ -26,8 +28,8 @@
     <authentication-manager>
         <ldap-authentication-provider
                 user-search-filter="(&amp;(employeeID={0})(objectCategory=user))"
-                group-search-filter="(&amp;(employeeID={0})(objectCategory=user))"
-                group-search-base="CN=Users"
+                group-search-base="CN=fr-admin,OU=FRAdmins"
+                group-search-filter="(member={0})"
                 group-role-attribute="CN"
                 role-prefix="ROLE_"
                 user-context-mapper-ref="ldapContextMapperImpl">

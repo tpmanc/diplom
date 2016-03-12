@@ -10,22 +10,27 @@ import java.util.Map;
 
 @Controller
 public class ErrorController {
-    private Map<Integer, String> errors = new HashMap<Integer, String>();
+//    private Map<Integer, String> errors = new HashMap<Integer, String>();
+//
+//    private ErrorController() {
+//        errors.put(400, "Bad Request");
+//        errors.put(401, "Unauthorized");
+//        errors.put(403, "Forbidden");
+//        errors.put(404, "Not Found");
+//    }
 
-    private ErrorController() {
-        errors.put(400, "Bad Request");
-        errors.put(401, "Unauthorized");
-        errors.put(403, "Forbidden");
-        errors.put(404, "Not Found");
+    @RequestMapping(value="/404")
+    public String error404(){
+        return "error";
     }
-
-    @RequestMapping("/error")
-    public String hello(Model model, @RequestParam(value="code", required = false, defaultValue="0") int errorCode) {
-
-        model.addAttribute("code", errorCode);
-        model.addAttribute("codeMessage", errors.get(errorCode));
-        model.addAttribute("pageTitle", "");
-
-        return "admin/error";
-    }
+//
+//    @RequestMapping("/error")
+//    public String hello(Model model, @RequestParam(value="code", required = false, defaultValue="0") int errorCode) {
+//
+//        model.addAttribute("code", errorCode);
+//        model.addAttribute("codeMessage", errors.get(errorCode));
+//        model.addAttribute("pageTitle", "");
+//
+//        return "admin/error";
+//    }
 }
