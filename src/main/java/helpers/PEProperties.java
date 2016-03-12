@@ -42,7 +42,8 @@ public class PEProperties {
                     StringTable table = strings.getTable(0);
                     for (int j = 0; j < table.getCount(); j++) {
                         String key = table.getString(j).getKey();
-                        String value = new String(table.getString(j).getValue().getBytes(), "UTF-8");
+                        String value = new String(table.getString(j).getValue().getBytes("ISO-8859-1"), "UTF-8");
+                        value = value.replaceAll("[^\\x20-\\x7e]", "").replaceAll("[^\\u0000-\\uFFFF]", "").trim();
                         int propertyId = PropertyModel.getDefaultProperty(key);
                         if (propertyId > 0) {
                             properties.put(propertyId, value);
