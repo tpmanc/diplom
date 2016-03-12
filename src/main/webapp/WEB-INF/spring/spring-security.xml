@@ -18,12 +18,7 @@
                 username-parameter="username"
                 password-parameter="password" />
         <logout logout-success-url="/login?logout" />
-        <!--<csrf />-->
     </http>
-
-    <!--<authentication-manager>-->
-        <!--<authentication-provider ref="ldapAuthProvider" />-->
-    <!--</authentication-manager>-->
 
     <authentication-manager>
         <ldap-authentication-provider
@@ -35,5 +30,5 @@
                 user-context-mapper-ref="ldapContextMapperImpl">
         </ldap-authentication-provider>
     </authentication-manager>
-    <ldap-server url="ldap://sis.moscow:25559/dc=test,dc=info" manager-dn="CN=test test,CN=Users,DC=test,DC=info" manager-password="Pa$$w0rd123" />
+    <ldap-server url="${ldap.url}" manager-dn="${ldap.manager-dn}" manager-password="${ldap.manager-password}" />
 </beans:beans>

@@ -1,31 +1,30 @@
 package db;
 
 
+import helpers.ConfigDB;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.ContextLoader;
 
 /**
  * Соединение с базой данных
  */
 public class Database2 {
-    private static final String DRIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
-    private static final String DB_URL = "jdbc:mysql://127.0.0.1:3306/repository";
-    private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "";
-    private static final int CONN_POOL_SIZE = 5;
-
     private BasicDataSource bds = new BasicDataSource();
 
     private Database2() {
+        ApplicationContext ctx = ContextLoader.getCurrentWebApplicationContext();
+        ConfigDB config = (ConfigDB) ctx.getBean("dbConfig");
         // имя дравйвера
-        bds.setDriverClassName(DRIVER_CLASS_NAME);
+        bds.setDriverClassName(config.getDriverClassName());
         // url БД
-        bds.setUrl(DB_URL);
+        bds.setUrl(config.getDbUrl());
         // пользователь БД
-        bds.setUsername(DB_USER);
+        bds.setUsername(config.getDbUser());
         // пароль БД
-        bds.setPassword(DB_PASSWORD);
+        bds.setPassword(config.getDbPassword());
         // размер пула
-        bds.setInitialSize(CONN_POOL_SIZE);
+        bds.setInitialSize(Integer.parseInt(config.getPoolSize()));
         // свойства соединения
         bds.setConnectionProperties("useUnicode=yes;characterEncoding=utf8;");
     }
