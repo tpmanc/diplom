@@ -116,15 +116,6 @@ public class AdminFileController {
      */
     @RequestMapping(value = {"/file-add" }, method = RequestMethod.GET)
     public String fileAdd(Model model) {
-        try {
-            // список свойств
-            // TODO: нужны ли свойства?
-            String properties = PropertyModel.getAllJson();
-            model.addAttribute("properties", properties);
-        } catch (SQLException e) {
-            throw new CustomWebException("Файл не существует");
-        }
-
         model.addAttribute("pageTitle", "Добавить файл");
         return "admin/file/file-add";
     }

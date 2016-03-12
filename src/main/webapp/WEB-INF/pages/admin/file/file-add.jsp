@@ -6,9 +6,6 @@
 </jsp:include>
 
 <script src="<spring:url value="/resources/js/pages/admin/file/file-form.js" />"></script>
-<script>
-    var properties = ${properties};
-</script>
 
 <h2>${pageTitle}</h2>
 
