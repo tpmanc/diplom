@@ -12,36 +12,36 @@ public class CustomUserDetails extends User {
     // дополнительные поля пользователя
     final String fullname;
     final String email;
-    final String title;
-    final String sid;
+    final String employeeId;
+    final String phone;
 
     public CustomUserDetails(String username, String password, boolean enabled, boolean accountNonExpired,
                              boolean credentialsNonExpired, boolean accountNonLocked,
-                             Collection<? extends GrantedAuthority> authorities, String fullname,
-                             String email, String title, String sid) {
+                             Collection<? extends GrantedAuthority> authorities, String displayName,
+                             String email, String employeeId, String phone) {
 
         super(username, password, enabled, accountNonExpired, credentialsNonExpired,
                 accountNonLocked, authorities);
 
-        this.fullname = fullname;
+        this.fullname = displayName;
         this.email = email;
-        this.title = title;
-        this.sid = sid;
+        this.employeeId = employeeId;
+        this.phone = phone;
     }
 
     public String getFullname() {
-        return this.fullname;
+        return fullname;
     }
 
     public String getEmail() {
-        return this.email;
+        return email;
     }
 
-    public String getTitle() {
-        return this.title;
+    public String getPhone() {
+        return phone;
     }
 
-    public String getSid() {
-        return this.sid;
+    public int getEmployeeId() {
+        return Integer.parseInt(employeeId);
     }
 }

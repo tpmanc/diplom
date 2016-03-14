@@ -3,7 +3,7 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 
-<jsp:include page="../layout_top.jsp">
+<jsp:include page="../../layout_top.jsp">
     <jsp:param name="activePage" value="categoryTree" />
 </jsp:include>
 
@@ -93,4 +93,4 @@
     </div>
 </div>
 
-<jsp:include page="../layout_bottom.jsp" />
+<jsp:include page="../../layout_bottom.jsp" />

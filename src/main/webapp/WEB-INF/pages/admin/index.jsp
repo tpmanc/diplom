@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<jsp:include page="layout_top.jsp">
+<jsp:include page="../layout_top.jsp">
     <jsp:param name="activePage" value="" />
 </jsp:include>
 
@@ -38,4 +38,4 @@
     </div>
 </div>
 
-<jsp:include page="layout_bottom.jsp" />
+<jsp:include page="../layout_bottom.jsp" />
