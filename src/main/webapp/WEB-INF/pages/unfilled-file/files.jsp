@@ -43,7 +43,7 @@
             <td>${item.get("id")}</td>
             <td>${item.get("fileName")}</td>
             <td>
-
+                <a href="<spring:url value="/unfilled-file-filling?versionId=${item.get(\"id\")}" />" class="btn btn-danger">Заполнить данные</a>
             </td>
         </tr>
     </c:forEach>

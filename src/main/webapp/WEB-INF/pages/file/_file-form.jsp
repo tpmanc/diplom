@@ -2,8 +2,8 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 
 <script>
-    var fileTitleUrl = "<spring:url value="/admin/file-title-autocomplete" />";
-    var fileFillingUrl = "<spring:url value="/admin/file-filling" />";
+    var fileTitleUrl = "<spring:url value="/file-title-autocomplete" />";
+    var fileFillingUrl = "<spring:url value="/file-filling" />";
 </script>
 
 <div class="row">
@@ -14,7 +14,7 @@
                     <h2>Загрузка файлов</h2>
                     <div class="step-content">
                         <div class="text-center m-t-md">
-                            <form id="my-awesome-dropzone" class="dropzone" action="<spring:url value="/admin/file-add-handler" />">
+                            <form id="my-awesome-dropzone" class="dropzone" action="<spring:url value="/file-add-handler" />">
                                 <div class="dropzone-previews"></div>
                                 <button type="submit" class="btn btn-primary pull-right">Загрузить файлы</button>
                             </form>
