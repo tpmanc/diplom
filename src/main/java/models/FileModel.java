@@ -135,13 +135,14 @@ public class FileModel extends BaseModel implements ModelInterface {
         for (Map row : rows) {
             Integer id = (Integer) row.get("id");
             Integer fileId = (Integer) row.get("fileId");
+            Integer userId = (Integer) row.get("userId");
             String version = (String) row.get("version");
             String fileName = (String) row.get("fileName");
             String hash = (String) row.get("hash");
             Long fileSize = (Long) row.get("fileSize");
             Long date = (Long) row.get("date");
             Boolean isFilled = ((Integer) row.get("isFilled") == 1);
-            return  new FileVersionModel(id, fileId, version, hash, fileSize, date, isFilled, fileName);
+            return  new FileVersionModel(id, fileId, userId, version, hash, fileSize, date, isFilled, fileName);
         }
         throw new CustomWebException("Версия не найдена");
     }

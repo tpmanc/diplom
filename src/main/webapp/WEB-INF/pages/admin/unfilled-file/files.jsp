@@ -1,5 +1,6 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 
 <jsp:include page="../layout_top.jsp">
@@ -21,11 +22,16 @@
     <a href="<spring:url value="/admin/file-add" />" class="btn btn-success">Добавить файлы</a>
 </p>
 
+<p>
+    <a href="<spring:url value="/admin/unfilled-files" />" class="btn btn-success">Мои файлы</a>
+    <a href="<spring:url value="/admin/unfilled-files-all" />" class="btn btn-success">Все файлы</a>
+</p>
+
 <table class="table table-striped models-view">
     <thead>
     <tr>
-        <td>id</td>
-        <td>title</td>
+        <td>Id</td>
+        <td>Имя файла</td>
         <td></td>
     </tr>
     </thead>
@@ -33,14 +39,9 @@
     <c:forEach items="${files}" var="item" varStatus="itemStat">
         <tr>
             <td>${item.get("id")}</td>
-            <td>${item.get("title")}</td>
+            <td>${item.get("fileName")}</td>
             <td>
-                <a href="<spring:url value="/admin/file-view?id=" />${item.get("id")}" class="icon">
-                    <i class="fa fa-eye"></i>
-                </a>
-                <a href="<spring:url value="/admin/file-edit?id=" />${item.get("id")}" class="icon">
-                    <i class="fa fa-edit"></i>
-                </a>
+
             </td>
         </tr>
     </c:forEach>
@@ -50,15 +51,16 @@
 <c:if test="${pageCount > 1}">
     <div class="btn-group">
         <c:if test="${page > 1}">
-            <a href="<spring:url value="/admin/files?page=" />${page - 1}" type="button" class="btn btn-white"><i class="fa fa-chevron-left"></i></a>
+            <a href="<spring:url value="/admin/unfilled-files?page=" />${page - 1}" type="button" class="btn btn-white"><i class="fa fa-chevron-left"></i></a>
         </c:if>
 
-        <c:forEach begin="1" end="${pageCount}" var="page">
-            <a href="<spring:url value="/admin/files?page=" />${page}" class="btn btn-white">${page}</a>
+        <c:forEach begin="1" end="${pageCount}" var="number">
+            <a href="<spring:url value="/admin/unfilled-files?page=" />${number}"
+               class="btn btn-white <c:if test="${page == number}">active</c:if>">${number}</a>
         </c:forEach>
 
         <c:if test="${page < pageCount}">
-            <a href="<spring:url value="/admin/files?page=" />${page + 1}" type="button" class="btn btn-white"><i class="fa fa-chevron-right"></i></a>
+            <a href="<spring:url value="/admin/unfilled-files?page=" />${page + 1}" type="button" class="btn btn-white"><i class="fa fa-chevron-right"></i></a>
         </c:if>
     </div>
 </c:if>

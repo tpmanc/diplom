@@ -18,24 +18,23 @@ public class LdapContextMapperImpl implements UserDetailsContextMapper {
     public UserDetails mapUserFromContext(DirContextOperations ctx,
                                           String username, Collection<? extends GrantedAuthority> authorities) {
 
-        String fullname = "";
         String email = "";
-        String title = "";
-        String sid = "";
+        String phone= "";
+        String employeeId = "";
+        String givenName = "";
+        String displayName = "";
 
         Attributes attributes = ctx.getAttributes();
         try {
-            fullname = (String) attributes.get("displayName").get();
-            sid = (String) attributes.get("objectcategory").get();
-//            email = (String) attributes.get("mail").get();
-//            title = (String) attributes.get("title").get();
+            employeeId = (String) attributes.get("employeeid").get();
+            displayName = (String) attributes.get("displayname").get();
         } catch (NamingException e) {
             e.printStackTrace();
         } catch (javax.naming.NamingException e) {
             e.printStackTrace();
         }
 
-        CustomUserDetails details = new CustomUserDetails(username, "", true, true, true, true, authorities, fullname, email, title, sid);
+        CustomUserDetails details = new CustomUserDetails(username, "", true, true, true, true, authorities, displayName, email, employeeId, phone);
         return details;
     }
 

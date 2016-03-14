@@ -1,5 +1,6 @@
 package controllers;
 
+import auth.CustomUserDetails;
 import exceptions.CustomSQLException;
 import exceptions.CustomWebException;
 import helpers.FileCheckSum;
@@ -10,6 +11,8 @@ import models.helpers.FileFilling;
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
@@ -23,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.lang.reflect.Array;
 import java.nio.charset.Charset;
+import java.security.Principal;
 import java.security.Timestamp;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -209,7 +213,7 @@ public class AdminFileController {
      */
     @ResponseBody
     @RequestMapping(value = {"/file-add-handler" }, method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
-    public String fileAddHandler(@RequestParam("file[]") MultipartFile[] files, HttpServletRequest request) {
+    public String fileAddHandler(@RequestParam("file[]") MultipartFile[] files, HttpServletRequest request, Principal principal) {
         JSONObject result = new JSONObject();
         JSONArray errors = new JSONArray();
         JSONArray success = new JSONArray();
@@ -313,6 +317,8 @@ public class AdminFileController {
                         fileVersion.setFileName(fileName.toString());
                         fileVersion.setHash(hash);
                         fileVersion.setIsFilled(isFilled);
+                        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+                        fileVersion.setUserId(activeUser.getEmployeeId());
                         long time = new Date().getTime();
                         fileVersion.setDate(time);
                         if (versionValue != null && !versionValue.trim().equals("")) {

@@ -53,8 +53,9 @@
             <a href="<spring:url value="/admin/files?page=" />${page - 1}" type="button" class="btn btn-white"><i class="fa fa-chevron-left"></i></a>
         </c:if>
 
-        <c:forEach begin="1" end="${pageCount}" var="page">
-            <a href="<spring:url value="/admin/files?page=" />${page}" class="btn btn-white">${page}</a>
+        <c:forEach begin="1" end="${pageCount}" var="number">
+            <a href="<spring:url value="/admin/unfilled-files?page=" />${number}"
+               class="btn btn-white <c:if test="${page == number}">active</c:if>">${number}</a>
         </c:forEach>
 
         <c:if test="${page < pageCount}">

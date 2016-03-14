@@ -14,13 +14,18 @@ import java.util.List;
 import java.util.Map;
 
 public class FileVersionModel implements ModelInterface {
-    private static String updateElem = "UPDATE fileVersion SET fileId = :fileId, version = :version, hash = :hash, fileSize = :fileSize, date = :date, isFilled = :isFilled, fileName = :fileName WHERE id = :id";
+    private static String updateElem = "UPDATE fileVersion SET fileId = :fileId, userId = :userId, version = :version, hash = :hash, fileSize = :fileSize, date = :date, isFilled = :isFilled, fileName = :fileName WHERE id = :id";
     private static final String getById = "SELECT * FROM fileVersion WHERE id = :id";
     private static final String getByIdAndFile = "SELECT * FROM fileVersion WHERE id = :id AND fileId = :fileId";
-    private static final String saveNew = "INSERT INTO fileVersion(fileId, version, hash, fileSize, date, isFilled, fileName) VALUES(:fileId, :version, :hash, :fileSize, :date, :isFilled, :fileName)";
+    private static final String saveNew = "INSERT INTO fileVersion(fileId, userId, version, hash, fileSize, date, isFilled, fileName) VALUES(:fileId, :userId, :version, :hash, :fileSize, :date, :isFilled, :fileName)";
+    private static final String getUserUnfilled = "SELECT * FROM fileVersion WHERE userId = :userId AND isFilled = :isFilled LIMIT :limit OFFSET :offset";
+    private static final String getAllUnfilled = "SELECT * FROM fileVersion WHERE isFilled = :isFilled LIMIT :limit OFFSET :offset";
+    private static final String getAllUnfilledCount = "SELECT count(id) FROM fileVersion WHERE isFilled = :isFilled";
+    private static final String getUserUnfilledCount = "SELECT count(id) FROM fileVersion WHERE userId = :userId AND isFilled = :isFilled";
 
     private int id;
     private int fileId;
+    private int userId;
     private String version = "";
     private String hash;
     private String fileName;
@@ -36,6 +41,7 @@ public class FileVersionModel implements ModelInterface {
             MapSqlParameterSource parameters = new MapSqlParameterSource();
             parameters.addValue("id", id);
             parameters.addValue("fileId", fileId);
+            parameters.addValue("userId", userId);
             parameters.addValue("version", version);
             parameters.addValue("hash", hash);
             parameters.addValue("fileSize", fileSize);
@@ -54,9 +60,10 @@ public class FileVersionModel implements ModelInterface {
 
     }
 
-    public FileVersionModel(int id, int fileId, String version, String hash, long fileSize, long date, boolean isFilled, String fileName) {
+    public FileVersionModel(int id, int fileId, int userId, String version, String hash, long fileSize, long date, boolean isFilled, String fileName) {
         this.id = id;
         this.fileId = fileId;
+        this.userId = userId;
         this.version = version;
         this.hash = hash;
         this.fileSize = fileSize;
@@ -70,6 +77,7 @@ public class FileVersionModel implements ModelInterface {
             NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
             MapSqlParameterSource parameters = new MapSqlParameterSource();
             parameters.addValue("fileId", fileId);
+            parameters.addValue("userId", userId);
             parameters.addValue("version", version);
             parameters.addValue("hash", hash);
             parameters.addValue("fileSize", fileSize);
@@ -93,13 +101,14 @@ public class FileVersionModel implements ModelInterface {
         for (Map row : rows) {
             Integer modelId = (Integer) row.get("id");
             Integer fileId = (Integer) row.get("fileId");
+            Integer userId = (Integer) row.get("userId");
             String version = (String) row.get("version");
             String fileName = (String) row.get("fileName");
             String hash = (String) row.get("hash");
             Long fileSize = (Long) row.get("fileSize");
             Long date = (Long) row.get("date");
             boolean isFilled = ((Integer) row.get("isFilled") == 1);
-            return new FileVersionModel(modelId, fileId, version, hash, fileSize, date, isFilled, fileName);
+            return new FileVersionModel(modelId, fileId, userId, version, hash, fileSize, date, isFilled, fileName);
         }
         throw new CustomWebException("Версия не найдена");
     }
@@ -113,15 +122,73 @@ public class FileVersionModel implements ModelInterface {
         for (Map row : rows) {
             Integer modelId = (Integer) row.get("id");
             Integer fileId = (Integer) row.get("fileId");
+            Integer userId = (Integer) row.get("userId");
             String version = (String) row.get("version");
             String fileName = (String) row.get("fileName");
             String hash = (String) row.get("hash");
             Long fileSize = (Long) row.get("fileSize");
             Long date = (Long) row.get("date");
             boolean isFilled = ((Integer) row.get("isFilled") == 1);
-            return new FileVersionModel(modelId, fileId, version, hash, fileSize, date, isFilled, fileName);
+            return new FileVersionModel(modelId, fileId, userId, version, hash, fileSize, date, isFilled, fileName);
         }
         throw new CustomWebException("Версия не найдена");
+    }
+
+    public static ArrayList<HashMap> findUnfilled(int userId, int limit, int offset) {
+        ArrayList<HashMap> result = new ArrayList<HashMap>();
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("userId", userId);
+        parameters.addValue("isFilled", false);
+        parameters.addValue("limit", limit);
+        parameters.addValue("offset", offset);
+        List<Map<String, Object>> rows = template.queryForList(getUserUnfilled, parameters);
+        for (Map row : rows) {
+            result.add(FileVersionModel.getVersionInfo(row));
+        }
+        return result;
+    }
+
+    public static ArrayList<HashMap> findUnfilled(int limit, int offset) {
+        ArrayList<HashMap> result = new ArrayList<HashMap>();
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("isFilled", false);
+        parameters.addValue("limit", limit);
+        parameters.addValue("offset", offset);
+        List<Map<String, Object>> rows = template.queryForList(getAllUnfilled, parameters);
+        for (Map row : rows) {
+            result.add(FileVersionModel.getVersionInfo(row));
+        }
+        return result;
+    }
+
+    public static int getUnfilledCount() {
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("isFilled", false);
+        return template.queryForObject(getAllUnfilledCount, parameters, Integer.class);
+    }
+
+    public static int getUnfilledCount(int userId) {
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("userId", userId);
+        parameters.addValue("isFilled", false);
+        return template.queryForObject(getUserUnfilledCount, parameters, Integer.class);
+    }
+
+    private static HashMap getVersionInfo(Map row) {
+        HashMap<String, String> info = new HashMap<String, String>();
+        info.put("id", String.valueOf(row.get("id")));
+        info.put("fileId", String.valueOf(row.get("fileId")));
+        info.put("userId", String.valueOf(row.get("userId")));
+        info.put("version", String.valueOf(row.get("version")));
+        info.put("fileName", String.valueOf(row.get("fileName")));
+        info.put("hash", String.valueOf(row.get("hash")));
+        info.put("fileSize", String.valueOf(row.get("fileSize")));
+        info.put("date", String.valueOf(row.get("date")));
+        return info;
     }
 
     public boolean validate() {
@@ -141,7 +208,6 @@ public class FileVersionModel implements ModelInterface {
         }
 
         // version
-
         List<String> versionErrors = new ArrayList<String>();
         if (version.length() > 255) {
             isValid = false;
@@ -237,5 +303,13 @@ public class FileVersionModel implements ModelInterface {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 }
