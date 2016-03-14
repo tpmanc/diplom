@@ -15,24 +15,24 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Контроллер незаполненных файлов для администратора
+ * Контроллер незаполненных файлов
  */
 @Controller
-@RequestMapping("/admin")
-public class AdminUnfilledFile {
-    @RequestMapping(value = {"/unfilled-files-all" }, method = RequestMethod.GET)
+public class UnfilledFile {
+    @RequestMapping(value = {"/unfilled-files" }, method = RequestMethod.GET)
     public String filesUnfilled(@RequestParam(value="page", required=false, defaultValue = "1") int page, Model model, Principal principal) {
         int limit = FileModel.PAGE_COUNT;
         int offset = (page - 1) * limit;
 
-        ArrayList<HashMap> unfilledFiles = FileVersionModel.findUnfilled(limit, offset);
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        ArrayList<HashMap> unfilledFiles = FileVersionModel.findUnfilled(activeUser.getEmployeeId(), limit, offset);
         model.addAttribute("files", unfilledFiles);
 
-        int pageCount = (int) Math.ceil((float)FileVersionModel.getUnfilledCount() / limit);
+        int pageCount = (int) Math.ceil((float)FileVersionModel.getUnfilledCount(activeUser.getEmployeeId()) / limit);
         model.addAttribute("pageCount", pageCount);
 
         model.addAttribute("page", page);
-        model.addAttribute("pageTitle", "Все незаполненные файлы");
-        return "admin/unfilled-file/files";
+        model.addAttribute("pageTitle", "Незаполненные файлы");
+        return "unfilled-file/files";
     }
 }
