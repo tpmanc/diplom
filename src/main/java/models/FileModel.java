@@ -22,6 +22,7 @@ public class FileModel extends BaseModel implements ModelInterface {
     private static final String getCount = "SELECT count(id) FROM file";
     private static final String getTitles = "SELECT id, title FROM file WHERE title LIKE :str";
     private static final String getVersions = "SELECT id, version FROM fileVersion WHERE fileId = :fileId ORDER BY version DESC";
+    private static final String deleteById = "DELETE FROM file WHERE id = :id";
 
     private int id;
     private String title;
@@ -184,8 +185,11 @@ public class FileModel extends BaseModel implements ModelInterface {
     }
 
     public boolean delete() throws SQLException {
-        // TODO: file deleting
-        return false;
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("id", id);
+        int rows = template.update(deleteById, parameters);
+        return rows > 0;
     }
 
     public int getId() {

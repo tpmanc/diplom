@@ -25,9 +25,12 @@
 <br>
 
 <p>
+    <a href="<spring:url value="/file-filling?versionId=${currentVersion.id}" />" class="btn btn-warning">Изменить</a>
+    <a href="<spring:url value="/admin/file-download?id=${currentVersion.id}" />" class="btn btn-primary">Скачать файл</a>
+</p>
+<p>
     <a href="<spring:url value="/admin/file-property-add?id=${file.id}" />" class="btn btn-success">Добавить свойство файла</a>
     <a href="<spring:url value="/admin/file-version-property-add?id=${currentVersion.id}" />" class="btn btn-success">Добавить свойство версии</a>
-    <a href="<spring:url value="/admin/file-download?id=${currentVersion.id}" />" class="btn btn-primary">Скачать файл</a>
 </p>
 
 <h3>${file.title}</h3>
@@ -43,9 +46,13 @@
             <td>${file.title}</td>
         </tr>
         <tr>
+            <td>Загрузил</td>
+            <td><a href="#">${user.displayName}</a></td>
+        </tr>
+        <tr>
             <td>Версия</td>
             <td>
-                <form action="<spring:url value="/admin/file-view" />" method="get">
+                <form action="<spring:url value="/file-view" />" method="get">
                     <input type="hidden" name="id" value="${file.id}">
                     <select id="versionSelect" name="versionId">
                         <c:forEach items="${versionList}" var="item" varStatus="itemStat">

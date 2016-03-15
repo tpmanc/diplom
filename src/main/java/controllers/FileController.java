@@ -56,6 +56,9 @@ public class FileController {
             }
             model.addAttribute("currentVersion", currentVersion);
 
+            UserModel user = UserModel.findById(currentVersion.getUserId());
+            model.addAttribute("user", user);
+
             // список версий файла
             ArrayList versionList = file.getVersionList();
             model.addAttribute("versionList", versionList);
