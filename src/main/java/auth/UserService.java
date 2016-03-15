@@ -1,6 +1,6 @@
 package auth;
 
-import exceptions.CustomWebException;
+import exceptions.NotFoundException;
 import models.UserModel;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
@@ -23,7 +23,7 @@ public class UserService implements ApplicationListener<AuthenticationSuccessEve
             }
 
         } catch (SQLException e) {
-            throw new CustomWebException("Ошибка БД при входе");
+            throw new NotFoundException("Ошибка БД при входе");
         }
     }
 }

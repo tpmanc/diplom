@@ -1,7 +1,7 @@
 package models;
 
 import db.Database2;
-import exceptions.CustomWebException;
+import exceptions.NotFoundException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -110,7 +110,7 @@ public class FileVersionModel implements ModelInterface {
             boolean isFilled = ((Integer) row.get("isFilled") == 1);
             return new FileVersionModel(modelId, fileId, userId, version, hash, fileSize, date, isFilled, fileName);
         }
-        throw new CustomWebException("Версия не найдена");
+        throw new NotFoundException("Версия не найдена");
     }
 
     public static FileVersionModel findByIdAndFile(int id, int file) throws SQLException {
@@ -131,7 +131,7 @@ public class FileVersionModel implements ModelInterface {
             boolean isFilled = ((Integer) row.get("isFilled") == 1);
             return new FileVersionModel(modelId, fileId, userId, version, hash, fileSize, date, isFilled, fileName);
         }
-        throw new CustomWebException("Версия не найдена");
+        throw new NotFoundException("Версия не найдена");
     }
 
     public static ArrayList<HashMap> findUnfilled(int userId, int limit, int offset) {

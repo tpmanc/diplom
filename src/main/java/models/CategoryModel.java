@@ -1,13 +1,12 @@
 package models;
 
 import db.Database2;
-import exceptions.CustomWebException;
+import exceptions.NotFoundException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.validation.Errors;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -91,7 +90,7 @@ public class CategoryModel extends BaseModel implements ModelInterface {
             int position = Integer.parseInt(String.valueOf(res.get(0).get("position")));
             return new CategoryModel(categoryId, parent, position, title);
         }
-        throw new CustomWebException("Категория не найдена");
+        throw new NotFoundException("Категория не найдена");
     }
 
     public static ArrayList<HashMap> findAll() throws SQLException {

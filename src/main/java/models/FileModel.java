@@ -1,13 +1,12 @@
 package models;
 
 import db.Database2;
-import exceptions.CustomWebException;
+import exceptions.NotFoundException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.security.acls.model.NotFoundException;
 
 import java.sql.*;
 import java.util.*;
@@ -53,7 +52,7 @@ public class FileModel extends BaseModel implements ModelInterface {
             String title = (String) row.get("title");
             return new FileModel(fileId, title);
         }
-        throw new CustomWebException("Файл не найден");
+        throw new NotFoundException("Файл не найден");
     }
 
     public static FileModel findByTitle(String title) throws SQLException {
@@ -145,7 +144,7 @@ public class FileModel extends BaseModel implements ModelInterface {
             Boolean isFilled = ((Integer) row.get("isFilled") == 1);
             return  new FileVersionModel(id, fileId, userId, version, hash, fileSize, date, isFilled, fileName);
         }
-        throw new CustomWebException("Версия не найдена");
+        throw new NotFoundException("Версия не найдена");
     }
 
     public ArrayList getVersionList() {

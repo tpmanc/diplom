@@ -1,6 +1,6 @@
 package controllers;
 
-import exceptions.CustomWebException;
+import exceptions.NotFoundException;
 import models.PropertyModel;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -63,7 +63,7 @@ public class AdminPropertyController {
         try {
             property = PropertyModel.findCustomById(id);
         } catch (SQLException e) {
-            throw new CustomWebException("Свойство не найдено");
+            throw new NotFoundException("Свойство не найдено");
         }
         model.addAttribute("property", property);
         model.addAttribute("pageTitle", "Изменить свойство файла");
@@ -82,7 +82,7 @@ public class AdminPropertyController {
             PropertyModel property = PropertyModel.findById(id);
             model.addAttribute("property", property);
         } catch (SQLException e) {
-            throw new CustomWebException("Свойство не найдено");
+            throw new NotFoundException("Свойство не найдено");
         }
 
         model.addAttribute("pageTitle", "Просмотр свойства");
@@ -115,7 +115,7 @@ public class AdminPropertyController {
                     return "redirect:/admin/property-edit?id="+id;
                 }
             } catch (SQLException e) {
-                throw new CustomWebException("Свойство не найдено", "404");
+                throw new NotFoundException("Свойство не найдено", "404");
             }
         } else {
             // если это добавление нового свойства
@@ -128,7 +128,7 @@ public class AdminPropertyController {
                     return "redirect:/admin/property-add";
                 }
             } catch (SQLException e) {
-                throw new CustomWebException("Ошибка при добавлении свойства", "500");
+                throw new NotFoundException("Ошибка при добавлении свойства", "500");
             }
         }
     }

@@ -1,6 +1,6 @@
 package controllers;
 
-import exceptions.CustomWebException;
+import exceptions.NotFoundException;
 import models.*;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Controller;
@@ -35,7 +35,7 @@ public class AdminVersionPropertyController {
             ArrayList<HashMap> properties = PropertyModel.findAllNotUsedCustom(fileVersion.getId());
             model.addAttribute("properties", properties);
         } catch (SQLException e) {
-            throw new CustomWebException("Версия не существует");
+            throw new NotFoundException("Версия не существует");
         }
 
         model.addAttribute("pageTitle", "Добавить свойство");
@@ -57,7 +57,7 @@ public class AdminVersionPropertyController {
             FileVersionModel fileVersion = FileVersionModel.findById(fileProperty.getFileVersionId());
             model.addAttribute("fileVersion", fileVersion);
         } catch (SQLException e) {
-            throw new CustomWebException("Свойство версии не найдено");
+            throw new NotFoundException("Свойство версии не найдено");
         }
 
         model.addAttribute("pageTitle", "Изменить свойство версии");
@@ -81,7 +81,7 @@ public class AdminVersionPropertyController {
                 error = false;
             }
         } catch (SQLException e) {
-            throw new CustomWebException("Свойство файла не найдено");
+            throw new NotFoundException("Свойство файла не найдено");
         }
 
         result.put("error", error);

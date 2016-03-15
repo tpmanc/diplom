@@ -1,7 +1,7 @@
 package models;
 
 import db.Database2;
-import exceptions.CustomWebException;
+import exceptions.NotFoundException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -104,7 +104,7 @@ public class FileVersionPropertyModel extends BaseModel implements ModelInterfac
             String title = (String) row.get("title");
             return new FileVersionPropertyModel(rowId, fileVersionId, propertyId, value, title);
         }
-        throw new CustomWebException("Свойство версии не найдено");
+        throw new NotFoundException("Свойство версии не найдено");
     }
 
     public boolean validate() {

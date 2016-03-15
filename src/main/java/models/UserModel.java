@@ -2,15 +2,8 @@ package models;
 
 import db.Database2;
 import exceptions.CustomSQLException;
-import exceptions.CustomWebException;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.security.core.userdetails.User;
 
 import java.sql.SQLException;
 import java.util.*;

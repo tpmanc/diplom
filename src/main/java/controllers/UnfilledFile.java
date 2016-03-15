@@ -1,10 +1,11 @@
 package controllers;
 
 import auth.CustomUserDetails;
-import exceptions.CustomWebException;
+import exceptions.NotFoundException;
+import helpers.UserHelper;
 import models.FileModel;
 import models.FileVersionModel;
-import models.helpers.FileFilling;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,12 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.io.File;
 import java.security.Principal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Контроллер незаполненных файлов
@@ -25,17 +24,30 @@ import java.util.Map;
 @Controller
 public class UnfilledFile {
     @RequestMapping(value = {"/unfilled-files" }, method = RequestMethod.GET)
-    public String filesUnfilled(@RequestParam(value="page", required=false, defaultValue = "1") int page, Model model, Principal principal) {
+    public String filesUnfilled(@RequestParam(value="page", required=false, defaultValue = "1") int page,
+                                @RequestParam(value="all", required=false, defaultValue = "0") boolean all,
+                                Model model,
+                                Principal principal) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.checkRole(activeUser)) {
+            throw new AccessDeniedException("Доступ запрещен");
+        }
+
         int limit = FileModel.PAGE_COUNT;
         int offset = (page - 1) * limit;
 
-        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
-        ArrayList<HashMap> unfilledFiles = FileVersionModel.findUnfilled(activeUser.getEmployeeId(), limit, offset);
+        ArrayList<HashMap> unfilledFiles;
+        if (all) {
+            unfilledFiles = FileVersionModel.findUnfilled(limit, offset);
+        } else {
+            unfilledFiles = FileVersionModel.findUnfilled(activeUser.getEmployeeId(), limit, offset);
+        }
         model.addAttribute("files", unfilledFiles);
 
         int pageCount = (int) Math.ceil((float)FileVersionModel.getUnfilledCount(activeUser.getEmployeeId()) / limit);
         model.addAttribute("pageCount", pageCount);
 
+        model.addAttribute("allFiles", all);
         model.addAttribute("page", page);
         model.addAttribute("pageTitle", "Незаполненные файлы");
         return "unfilled-file/files";
@@ -43,10 +55,16 @@ public class UnfilledFile {
 
     @RequestMapping(value = {"/file-filling" }, method = RequestMethod.GET)
     public String filesFilling(@RequestParam int versionId,
+                               Principal principal,
                                Model model) {
         try {
             FileVersionModel fileVersion = FileVersionModel.findById(versionId);
             model.addAttribute("fileVersion", fileVersion);
+
+            CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+            if (fileVersion.getUserId() != activeUser.getEmployeeId() && !UserHelper.checkRole(activeUser)) {
+                throw new AccessDeniedException("Доступ запрещен");
+            }
 
             FileModel file = null;
             if (fileVersion.getFileId() > 0) {
@@ -57,12 +75,15 @@ public class UnfilledFile {
             model.addAttribute("pageTitle", "Заполнение файла");
             return "unfilled-file/file-filling";
         } catch (SQLException e) {
-            throw new CustomWebException("Файл не найден");
+            throw new NotFoundException("Файл не найден");
         }
     }
 
     @RequestMapping(value = {"/file-filling-handler" }, method = RequestMethod.POST)
-    public String filesFillingHandler(@RequestParam int versionId, @RequestParam String title, @RequestParam String version) {
+    public String filesFillingHandler(@RequestParam int versionId,
+                                      @RequestParam String title,
+                                      @RequestParam String version,
+                                      Principal principal) {
         try {
             // todo validation
             FileVersionModel fileVersion = FileVersionModel.findById(versionId);
@@ -72,6 +93,14 @@ public class UnfilledFile {
                 file.setTitle(title);
                 file.add();
             }
+
+            // проверка прав
+            CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+            if (fileVersion.getUserId() != activeUser.getEmployeeId() && !UserHelper.checkRole(activeUser)) {
+                throw new AccessDeniedException("Доступ запрещен");
+            }
+
+            // если файл уже был заполнен, т.е. файл отредактировали
             if (fileVersion.isFilled()) {
                 FileModel prevFileModel = FileModel.findById(fileVersion.getFileId());
                 if (prevFileModel.getId() != file.getId()) {
@@ -95,7 +124,7 @@ public class UnfilledFile {
 
             return "redirect:/file-view?id="+file.getId()+"&versionId="+fileVersion.getId();
         } catch (SQLException e) {
-            throw new CustomWebException("Файл не найден");
+            throw new NotFoundException("Файл не найден");
         }
     }
 }

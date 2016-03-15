@@ -37,24 +37,33 @@
                             <li <c:if test="${param.activePage == 'categoryTree'}"> class="active" </c:if>>
                                 <a href="<spring:url value="/admin/categories" />"><i class="fa fa-sitemap"></i> <span class="nav-label">Категории</span></a>
                             </li>
-                            <li <c:if test="${param.activePage == 'file'}"> class="active" </c:if>>
-                                <a href="<spring:url value="/admin/files" />"><i class="fa fa-file-text-o"></i> <span class="nav-label">Файлы</span></a>
-                            </li>
+                            <sec:authorize access="hasRole('ROLE_FR-ADMIN')">
+                                <li <c:if test="${param.activePage == 'file'}"> class="active" </c:if>>
+                                    <a href="<spring:url value="/admin/files" />"><i class="fa fa-file-text-o"></i> <span class="nav-label">Файлы</span></a>
+                                </li>
+                            </sec:authorize>
+                            <sec:authorize access="!hasRole('ROLE_FR-ADMIN')">
+                                <li <c:if test="${param.activePage == 'file'}"> class="active" </c:if>>
+                                    <a href="<spring:url value="/files" />"><i class="fa fa-file-text-o"></i> <span class="nav-label">Мои файлы</span></a>
+                                </li>
+                            </sec:authorize>
                             <li <c:if test="${param.activePage == 'unfilled-files'}"> class="active" </c:if>>
                                 <a href="<spring:url value="/unfilled-files" />"><i class="fa fa-file"></i> <span class="nav-label">Незаполненные Файлы</span></a>
                             </li>
                             <li <c:if test="${param.activePage == 'fileLink'}"> class="active" </c:if>>
                                 <a href="#"><i class="fa fa-link"></i> <span class="nav-label">Привязка файлов</span></a>
                             </li>
-                            <li <c:if test="${param.activePage == 'property'}"> class="active" </c:if>>
-                                <a href="<spring:url value="/admin/properties" />"><i class="fa fa-list-ul"></i> <span class="nav-label">Свойства файлов</span></a>
-                            </li>
-                            <%--<li>--%>
-                                <%--<a href="<spring:url value="/admin/users" />"><i class="fa fa-user"></i> <span class="nav-label">Пользователи</span></a>--%>
-                            <%--</li>--%>
-                            <li>
-                                <a href="#"><i class="fa fa-warning"></i> <span class="nav-label">Логи</span></a>
-                            </li>
+                            <sec:authorize access="hasRole('ROLE_FR-ADMIN')">
+                                <li <c:if test="${param.activePage == 'property'}"> class="active" </c:if>>
+                                    <a href="<spring:url value="/admin/properties" />"><i class="fa fa-list-ul"></i> <span class="nav-label">Свойства файлов</span></a>
+                                </li>
+                                <li>
+                                    <a href="<spring:url value="/admin/users" />"><i class="fa fa-user"></i> <span class="nav-label">Пользователи</span></a>
+                                </li>
+                                <li>
+                                    <a href="#"><i class="fa fa-warning"></i> <span class="nav-label">Логи</span></a>
+                                </li>
+                            </sec:authorize>
                         </ul>
                     </div>
                 </div>
@@ -64,22 +73,6 @@
 </nav>
 
 <div id="page-wrapper" class="gray-bg">
-    <div id="header">
-        <nav class="navbar navbar-fixed-top white-bg show-menu-full" id="nav" role="navigation" style="margin-bottom: 0">
-            <div class="navbar-header">
-                <a class="navbar-minimalize minimalize-styl-2 btn" href="javascript:void(0)"><i class="fa fa-bars" style="font-size:27px;"></i> </a>
-            </div>
-            <ul class="nav navbar-top-links navbar-right">
-                <li class="dropdown pull-right">
-                    <a href="#">
-                        <span class="pl15"> Перейти на сайт</span>
-                        <i class="fa fa-external-link"></i>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </div>
-    <div style="clear: both; height: 61px;"></div>
     <div class="wrapper wrapper-content">
         <div class="row">
             <div class="col-lg-12">

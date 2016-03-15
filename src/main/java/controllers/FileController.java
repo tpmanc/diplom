@@ -2,9 +2,10 @@ package controllers;
 
 import auth.CustomUserDetails;
 import exceptions.CustomSQLException;
-import exceptions.CustomWebException;
+import exceptions.NotFoundException;
 import helpers.FileCheckSum;
 import helpers.PEProperties;
+import helpers.UserHelper;
 import models.*;
 import models.helpers.FileFilling;
 import org.apache.commons.io.FilenameUtils;
@@ -42,7 +43,10 @@ public class FileController {
      * @return Путь до представления
      */
     @RequestMapping(value = {"/file-view" }, method = RequestMethod.GET)
-    public String view(@RequestParam("id") int id, @RequestParam(value="versionId", required=false, defaultValue = "0") int versionId, Model model) {
+    public String view(@RequestParam("id") int id,
+                       @RequestParam(value="versionId", required=false, defaultValue = "0") int versionId,
+                       Principal principal,
+                       Model model) {
         try {
             FileModel file = FileModel.findById(id);
             model.addAttribute("file", file);
@@ -58,6 +62,13 @@ public class FileController {
 
             UserModel user = UserModel.findById(currentVersion.getUserId());
             model.addAttribute("user", user);
+
+            boolean isFileOwner = false;
+            CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+            if (user.getId() == activeUser.getEmployeeId() || UserHelper.checkRole(activeUser)) {
+                isFileOwner = true;
+            }
+            model.addAttribute("isFileOwner", isFileOwner);
 
             // список версий файла
             ArrayList versionList = file.getVersionList();
@@ -77,7 +88,7 @@ public class FileController {
             String downloadDate = df.format(date);
             model.addAttribute("downloadDate", downloadDate);
         } catch (SQLException e) {
-            throw new CustomWebException("Файл не существует");
+            throw new NotFoundException("Файл не существует");
         }
 
         model.addAttribute("pageTitle", "Просмотр файла");
@@ -370,11 +381,11 @@ public class FileController {
             os.close();
             inputStream.close();
         } catch (SQLException e) {
-            throw new CustomWebException("Файла не существует");
+            throw new NotFoundException("Файла не существует");
         } catch (FileNotFoundException e) {
-            throw new CustomWebException("Файла не найден");
+            throw new NotFoundException("Файла не найден");
         } catch (IOException e) {
-            throw new CustomWebException("Ошибка", "500");
+            throw new NotFoundException("Ошибка", "500");
         }
     }
 }

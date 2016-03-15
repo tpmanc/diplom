@@ -1,6 +1,6 @@
 package controllers;
 
-import exceptions.CustomWebException;
+import exceptions.NotFoundException;
 import models.FileModel;
 import models.FilePropertyModel;
 import models.PropertyModel;
@@ -37,7 +37,7 @@ public class AdminFilePropertyController {
             ArrayList<HashMap> properties = PropertyModel.findAllNotUsedCustom(file.getId());
             model.addAttribute("properties", properties);
         } catch (SQLException e) {
-            throw new CustomWebException("Файл не существует");
+            throw new NotFoundException("Файл не существует");
         }
 
         model.addAttribute("pageTitle", "Добавить свойство");
@@ -56,7 +56,7 @@ public class AdminFilePropertyController {
             FilePropertyModel fileProperty = FilePropertyModel.findById(id);
             model.addAttribute("fileProperty", fileProperty);
         } catch (SQLException e) {
-            throw new CustomWebException("Свойство файла не существует");
+            throw new NotFoundException("Свойство файла не существует");
         }
 
         model.addAttribute("pageTitle", "Изменить свойство файла");
@@ -80,7 +80,7 @@ public class AdminFilePropertyController {
                 error = false;
             }
         } catch (SQLException e) {
-            throw new CustomWebException("Свойство файла не найдено");
+            throw new NotFoundException("Свойство файла не найдено");
         }
 
         result.put("error", error);

@@ -2,7 +2,7 @@ package models;
 
 import db.Database2;
 import exceptions.CustomSQLException;
-import exceptions.CustomWebException;
+import exceptions.NotFoundException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -155,7 +155,7 @@ public class PropertyModel extends BaseModel implements ModelInterface {
                 return new PropertyModel(propertyId, title);
             }
         }
-        throw new CustomWebException("Свойство не найдено", "404");
+        throw new NotFoundException("Свойство не найдено", "404");
     }
 
     public boolean update() throws SQLException {

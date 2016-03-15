@@ -23,9 +23,9 @@
 </p>
 
 <p>
-    <a href="<spring:url value="/unfilled-files" />" class="btn btn-success">Мои файлы</a>
     <sec:authorize access="hasRole('ROLE_FR-ADMIN')">
-        <a href="<spring:url value="/admin/unfilled-files-all" />" class="btn btn-success">Все файлы</a>
+        <a href="<spring:url value="/unfilled-files" />" class="btn btn-success">Мои файлы</a>
+        <a href="<spring:url value="/unfilled-files?all=true" />" class="btn btn-success">Все файлы</a>
     </sec:authorize>
 </p>
 

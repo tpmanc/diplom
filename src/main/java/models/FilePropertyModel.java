@@ -1,7 +1,7 @@
 package models;
 
 import db.Database2;
-import exceptions.CustomWebException;
+import exceptions.NotFoundException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -88,7 +88,7 @@ public class FilePropertyModel extends BaseModel implements ModelInterface {
             String title = (String) row.get("title");
             return new FilePropertyModel(rowId, fileId, propertyId, value, title);
         }
-        throw new CustomWebException("Свойство файла не найдено");
+        throw new NotFoundException("Свойство файла не найдено");
     }
 
     public boolean add() throws SQLException {
