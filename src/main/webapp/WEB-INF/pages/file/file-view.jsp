@@ -49,7 +49,7 @@
         </tr>
         <tr>
             <td>Загрузил</td>
-            <td><a href="#">${user.displayName}</a></td>
+            <td><a href="<spring:url value="/user-view?id=${user.id}" />">${user.displayName}</a></td>
         </tr>
         <tr>
             <td>Версия</td>

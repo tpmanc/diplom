@@ -12,7 +12,7 @@ import java.util.Collection;
 public class UserHelper {
     public static final String ADMIN_ROLE = "ROLE_FR-ADMIN";
 
-    public static boolean checkRole(CustomUserDetails activeUser) {
+    public static boolean isAdmin(CustomUserDetails activeUser) {
         Collection<GrantedAuthority> authorities = activeUser.getAuthorities();
         boolean hasRole = false;
         for (GrantedAuthority authority : authorities) {

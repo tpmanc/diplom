@@ -65,7 +65,7 @@ public class FileController {
 
             boolean isFileOwner = false;
             CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
-            if (user.getId() == activeUser.getEmployeeId() || UserHelper.checkRole(activeUser)) {
+            if (user.getId() == activeUser.getEmployeeId() || UserHelper.isAdmin(activeUser)) {
                 isFileOwner = true;
             }
             model.addAttribute("isFileOwner", isFileOwner);

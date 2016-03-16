@@ -29,7 +29,7 @@ public class UnfilledFile {
                                 Model model,
                                 Principal principal) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
-        if (!UserHelper.checkRole(activeUser)) {
+        if (!UserHelper.isAdmin(activeUser)) {
             throw new AccessDeniedException("Доступ запрещен");
         }
 
@@ -62,7 +62,7 @@ public class UnfilledFile {
             model.addAttribute("fileVersion", fileVersion);
 
             CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
-            if (fileVersion.getUserId() != activeUser.getEmployeeId() && !UserHelper.checkRole(activeUser)) {
+            if (fileVersion.getUserId() != activeUser.getEmployeeId() && !UserHelper.isAdmin(activeUser)) {
                 throw new AccessDeniedException("Доступ запрещен");
             }
 
@@ -96,7 +96,7 @@ public class UnfilledFile {
 
             // проверка прав
             CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
-            if (fileVersion.getUserId() != activeUser.getEmployeeId() && !UserHelper.checkRole(activeUser)) {
+            if (fileVersion.getUserId() != activeUser.getEmployeeId() && !UserHelper.isAdmin(activeUser)) {
                 throw new AccessDeniedException("Доступ запрещен");
             }
 

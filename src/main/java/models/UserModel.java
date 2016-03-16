@@ -11,12 +11,15 @@ import java.util.*;
 public class UserModel extends BaseModel implements ModelInterface {
     private static final String saveNew = "INSERT INTO user(id, phone, email, displayName) VALUES(:id, :phone, :email, :displayName)";
     private static final String getById = "SELECT * FROM user WHERE id = :id";
+    private static final String getAllOnPage = "SELECT * FROM user LIMIT :limit OFFSET :offset";
     private static final String deleteById = "DELETE FROM property WHERE id = :id";
 
     private int id;
     private String phone;
     private String email;
     private String displayName;
+
+    public static final int PAGE_COUNT = 10;
 
     public HashMap<String, List<String>> errors = new HashMap<String, List<String>>();
 
@@ -58,6 +61,21 @@ public class UserModel extends BaseModel implements ModelInterface {
         } else {
             return null;
         }
+    }
+
+    public static ArrayList<HashMap> findAll(int limit, int offset) throws SQLException {
+        ArrayList<HashMap> result = new ArrayList<HashMap>();
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("limit", limit);
+        parameters.addValue("offset", offset);
+        List<Map<String, Object>> rows = template.queryForList(getAllOnPage, parameters);
+        for (Map row : rows) {
+            HashMap<String, String> info = new HashMap<String, String>();
+            info.put("id", String.valueOf(row.get("id")));
+            info.put("displayName", String.valueOf(row.get("displayName")));
+            result.add(info);
+        }
+        return result;
     }
 
     public static UserModel findById(int id) throws SQLException {
