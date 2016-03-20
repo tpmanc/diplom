@@ -18,7 +18,16 @@ public class UserService implements ApplicationListener<AuthenticationSuccessEve
         try {
             user = UserModel.isExist(details.getEmployeeId());
             if (user == null) {
-                user = new UserModel(details.getEmployeeId(), details.getPhone(), details.getEmail(), details.getFullname());
+                user = new UserModel(
+                        details.getEmployeeId(),
+                        details.getPhone(),
+                        details.getEmail(),
+                        details.getFullname(),
+                        details.getDepartment(),
+                        details.getDepartmentNumber(),
+                        details.getFax(),
+                        details.getAddress()
+                );
                 user.add();
             } else {
                 user.setEmail(details.getEmail());

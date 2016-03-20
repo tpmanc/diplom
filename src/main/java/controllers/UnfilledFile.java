@@ -29,7 +29,7 @@ public class UnfilledFile {
                                 Model model,
                                 Principal principal) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
-        if (!UserHelper.isAdmin(activeUser)) {
+        if (!UserHelper.isAdmin(activeUser) && all) {
             throw new AccessDeniedException("Доступ запрещен");
         }
 

@@ -34,7 +34,7 @@ public class AdminFilePropertyController {
             FileModel file = FileModel.findById(id);
             model.addAttribute("file", file);
 
-            ArrayList<HashMap> properties = PropertyModel.findAllNotUsedCustom(file.getId());
+            ArrayList<HashMap> properties = PropertyModel.findAllNotUsedCustom(file.getId(), false);
             model.addAttribute("properties", properties);
         } catch (SQLException e) {
             throw new NotFoundException("Файл не существует");
@@ -107,7 +107,7 @@ public class AdminFilePropertyController {
             FilePropertyModel fileProperty = new FilePropertyModel(fileId, propertyId, value);
             try {
                 if (fileProperty.add()) {
-                    return "redirect:/admin/file-view?id="+fileId;
+                    return "redirect:/file-view?id="+fileId;
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -118,12 +118,12 @@ public class AdminFilePropertyController {
                 FilePropertyModel fileProperty = FilePropertyModel.findById(id);
                 fileProperty.setValue(value);
                 if (fileProperty.update()) {
-                    return "redirect:/admin/file-view?id="+fileId;
+                    return "redirect:/file-view?id="+fileId;
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
-        return "admin/file-property/file-property-add?id="+fileId;
+        return "redirect:/admin/file-property-add?id="+fileId;
     }
 }

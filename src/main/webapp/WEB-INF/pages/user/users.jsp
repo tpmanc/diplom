@@ -3,7 +3,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 
 <jsp:include page="../layout_top.jsp">
-    <jsp:param name="activePage" value="file" />
+    <jsp:param name="activePage" value="user" />
 </jsp:include>
 
 <h2>${pageTitle}</h2>

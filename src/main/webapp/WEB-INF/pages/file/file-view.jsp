@@ -28,7 +28,7 @@
     <c:if test="${isFileOwner == true}">
         <a href="<spring:url value="/file-filling?versionId=${currentVersion.id}" />" class="btn btn-warning">Изменить</a>
     </c:if>
-    <a href="<spring:url value="/admin/file-download?id=${currentVersion.id}" />" class="btn btn-primary">Скачать файл</a>
+    <a href="<spring:url value="/file-download?id=${currentVersion.id}" />" class="btn btn-primary">Скачать файл</a>
 </p>
 <p>
     <a href="<spring:url value="/admin/file-property-add?id=${file.id}" />" class="btn btn-success">Добавить свойство файла</a>

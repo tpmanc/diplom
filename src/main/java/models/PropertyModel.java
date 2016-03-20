@@ -37,7 +37,8 @@ public class PropertyModel extends BaseModel implements ModelInterface {
     private static final String deleteById = "DELETE FROM property WHERE id = :id";
     private static final String updateById = "UPDATE property SET title = :title WHERE id = :id";
     private static final String duplicateCheck = "SELECT count(id) FROM property WHERE title = :title";
-    private static final String getNotUsed = "SELECT * FROM property WHERE id <> 3 AND id <> 10 AND id NOT IN (SELECT propertyId FROM fileProperty WHERE fileId = :fileId);";
+    private static final String getFileNotUsed = "SELECT * FROM property WHERE id <> 3 AND id <> 10 AND id NOT IN (SELECT propertyId FROM fileProperty WHERE fileId = :fileId);";
+    private static final String getVersionNotUsed = "SELECT * FROM property WHERE id <> 3 AND id <> 10 AND id NOT IN ( SELECT propertyId FROM fileVersionProperty WHERE fileVersionId = :fileId );";
 
     private int id;
     private String title;
@@ -95,12 +96,18 @@ public class PropertyModel extends BaseModel implements ModelInterface {
      * Получить список свойств, за исключением названия и версии, которые еще не назначены
      * @throws SQLException
      */
-    public static ArrayList<HashMap> findAllNotUsedCustom(int fileId) throws SQLException {
+    public static ArrayList<HashMap> findAllNotUsedCustom(int fileId, boolean isVersion) throws SQLException {
+        String query;
+        if (isVersion) {
+            query = getVersionNotUsed;
+        } else {
+            query = getFileNotUsed;
+        }
         ArrayList<HashMap> result = new ArrayList<HashMap>();
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("fileId", fileId);
-        List<Map<String, Object>> rows = template.queryForList(getNotUsed, parameters);
+        List<Map<String, Object>> rows = template.queryForList(query, parameters);
         for (Map row : rows) {
             HashMap<String, String> info = new HashMap<String, String>();
             Iterator it = row.keySet().iterator();

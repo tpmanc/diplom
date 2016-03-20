@@ -31,8 +31,20 @@
             <td>${user.email}</td>
         </tr>
         <tr>
-            <td>phone</td>
+            <td>Телефон</td>
             <td>${user.phone}</td>
+        </tr>
+        <tr>
+            <td>Факс</td>
+            <td>${user.fax}</td>
+        </tr>
+        <tr>
+            <td>Отдел</td>
+            <td>${user.department}</td>
+        </tr>
+        <tr>
+            <td>Номер отдела</td>
+            <td>${user.departmentNumber}</td>
         </tr>
     </tbody>
 </table>

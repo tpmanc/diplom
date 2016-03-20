@@ -28,11 +28,15 @@ public class UserModel extends BaseModel implements ModelInterface {
 
     public HashMap<String, List<String>> errors = new HashMap<String, List<String>>();
 
-    public UserModel(int id, String phone, String email, String displayName) {
+    public UserModel(int id, String phone, String email, String displayName, String department, String departmentNumber, String fax, String address) {
         this.id = id;
         this.phone = phone;
         this.email = email;
         this.displayName = displayName;
+        this.department = department;
+        this.departmentNumber = departmentNumber;
+        this.fax = fax;
+        this.address = address;
     }
 
     public UserModel(String phone, String email, String displayName) {
@@ -62,7 +66,11 @@ public class UserModel extends BaseModel implements ModelInterface {
             String phone = (String) result.get("phone");
             String email = (String) result.get("email");
             String displayName = (String) result.get("displayName");
-            return new UserModel(userId, phone, email, displayName);
+            String department = (String) result.get("department");
+            String departmentNumber = (String) result.get("departmentNumber");
+            String fax = (String) result.get("fax");
+            String address = (String) result.get("address");
+            return new UserModel(userId, phone, email, displayName, department, departmentNumber, fax, address);
         } else {
             return null;
         }
@@ -95,7 +103,11 @@ public class UserModel extends BaseModel implements ModelInterface {
             String phone = (String) result.get("phone");
             String email = (String) result.get("email");
             String displayName = (String) result.get("displayName");
-            return new UserModel(userId, phone, email, displayName);
+            String department = (String) result.get("department");
+            String departmentNumber = (String) result.get("departmentNumber");
+            String fax = (String) result.get("fax");
+            String address = (String) result.get("address");
+            return new UserModel(userId, phone, email, displayName, department, departmentNumber, fax, address);
         } else {
             throw new CustomSQLException("Пользователь не найден");
         }

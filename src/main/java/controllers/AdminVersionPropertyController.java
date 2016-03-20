@@ -32,7 +32,7 @@ public class AdminVersionPropertyController {
             FileVersionModel fileVersion = FileVersionModel.findById(id);
             model.addAttribute("fileVersion", fileVersion);
 
-            ArrayList<HashMap> properties = PropertyModel.findAllNotUsedCustom(fileVersion.getId());
+            ArrayList<HashMap> properties = PropertyModel.findAllNotUsedCustom(fileVersion.getId(), true);
             model.addAttribute("properties", properties);
         } catch (SQLException e) {
             throw new NotFoundException("Версия не существует");
