@@ -9,7 +9,8 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class UserModel extends BaseModel implements ModelInterface {
-    private static final String saveNew = "INSERT INTO user(id, phone, email, displayName) VALUES(:id, :phone, :email, :displayName)";
+    private static final String saveNew = "INSERT INTO user(id, phone, email, displayName, department, departmentNumber, fax, address) VALUES(:id, :phone, :email, :displayName, :department, :departmentNumber, :fax, :address)";
+    private static final String updateById = "UPDATE user SET phone = :phone, email = :email, displayName = :displayName, department = :department, departmentNumber = :departmentNumber, fax = :fax, address = :address WHERE id = :id";
     private static final String getById = "SELECT * FROM user WHERE id = :id";
     private static final String getAllOnPage = "SELECT * FROM user LIMIT :limit OFFSET :offset";
     private static final String deleteById = "DELETE FROM property WHERE id = :id";
@@ -18,6 +19,10 @@ public class UserModel extends BaseModel implements ModelInterface {
     private String phone;
     private String email;
     private String displayName;
+    private String department;
+    private String departmentNumber;
+    private String fax;
+    private String address;
 
     public static final int PAGE_COUNT = 10;
 
@@ -98,7 +103,18 @@ public class UserModel extends BaseModel implements ModelInterface {
 
     public boolean update() throws SQLException {
         if (validate()) {
-            // TODO
+            NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+            MapSqlParameterSource parameters = new MapSqlParameterSource();
+            parameters.addValue("id", id);
+            parameters.addValue("phone", phone);
+            parameters.addValue("email", email);
+            parameters.addValue("displayName", displayName);
+            parameters.addValue("department", department);
+            parameters.addValue("departmentNumber", departmentNumber);
+            parameters.addValue("fax", fax);
+            parameters.addValue("address", address);
+            int rows = template.update(updateById, parameters);
+            return rows > 0;
         }
         return false;
     }
@@ -158,5 +174,37 @@ public class UserModel extends BaseModel implements ModelInterface {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
+    public String getDepartmentNumber() {
+        return departmentNumber;
+    }
+
+    public void setDepartmentNumber(String departmentNumber) {
+        this.departmentNumber = departmentNumber;
+    }
+
+    public String getFax() {
+        return fax;
+    }
+
+    public void setFax(String fax) {
+        this.fax = fax;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

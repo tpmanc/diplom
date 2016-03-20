@@ -20,8 +20,16 @@ public class UserService implements ApplicationListener<AuthenticationSuccessEve
             if (user == null) {
                 user = new UserModel(details.getEmployeeId(), details.getPhone(), details.getEmail(), details.getFullname());
                 user.add();
+            } else {
+                user.setEmail(details.getEmail());
+                user.setPhone(details.getPhone());
+                user.setDisplayName(details.getFullname());
+                user.setAddress(details.getAddress());
+                user.setDepartment(details.getDepartment());
+                user.setDepartmentNumber(details.getDepartmentNumber());
+                user.setFax(details.getFax());
+                user.update();
             }
-
         } catch (SQLException e) {
             throw new NotFoundException("Ошибка БД при входе");
         }
