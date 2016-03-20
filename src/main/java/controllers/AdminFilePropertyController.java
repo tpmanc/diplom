@@ -102,6 +102,13 @@ public class AdminFilePropertyController {
             @RequestParam("value") String value,
             @RequestParam(value="id", required=false, defaultValue = "0") int id
     ) {
+        // проверяем, есть ли такое свойство
+        PropertyModel property = PropertyModel.findById(propertyId);
+        // проверяем, не заполнено ли уже это свойство
+        FilePropertyModel checkProperty = FilePropertyModel.isPropertyExist(fileId, propertyId);
+        if (checkProperty != null) {
+            id = checkProperty.getId();
+        }
         // если это добавление нового свойства
         if (id == 0) {
             FilePropertyModel fileProperty = new FilePropertyModel(fileId, propertyId, value);

@@ -132,7 +132,7 @@ public class PropertyModel extends BaseModel implements ModelInterface {
         return res.toJSONString();
     }
 
-    public static PropertyModel findById(int id) throws SQLException {
+    public static PropertyModel findById(int id) {
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("id", id);

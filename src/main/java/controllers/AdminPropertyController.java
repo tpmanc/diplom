@@ -78,12 +78,8 @@ public class AdminPropertyController {
      */
     @RequestMapping(value = {"/property-view" }, method = RequestMethod.GET)
     public String view(@RequestParam("id") int id, Model model) {
-        try {
-            PropertyModel property = PropertyModel.findById(id);
-            model.addAttribute("property", property);
-        } catch (SQLException e) {
-            throw new NotFoundException("Свойство не найдено");
-        }
+        PropertyModel property = PropertyModel.findById(id);
+        model.addAttribute("property", property);
 
         model.addAttribute("pageTitle", "Просмотр свойства");
         return "admin/property/property-view";

@@ -19,6 +19,7 @@ public class FilePropertyModel extends BaseModel implements ModelInterface {
     private static final String getById = "SELECT fileProperty.id, fileProperty.fileId, property.title, fileProperty.propertyId, fileProperty.value FROM fileProperty LEFT JOIN property ON property.id = fileProperty.propertyId WHERE fileProperty.id = :id";
     private static final String getByFile = "SELECT fileProperty.id, property.title, fileProperty.value FROM fileProperty LEFT JOIN property ON fileProperty.propertyId = property.id WHERE fileId = :fileId AND propertyId <> :fileName AND propertyId <> :version";
     private static final String deleteById = "DELETE FROM fileProperty WHERE id = :id";
+    private static final String checkIsExist = "SELECT * FROM fileProperty WHERE fileId = :fileId AND propertyId = :propertyId";
 
     private int id;
     private int fileId;
@@ -47,7 +48,12 @@ public class FilePropertyModel extends BaseModel implements ModelInterface {
         this.propertyId = propertyId;
         this.value = value;
     }
-
+    public FilePropertyModel(int id, int fileId, int propertyId, String value) {
+        this.id = id;
+        this.fileId = fileId;
+        this.propertyId = propertyId;
+        this.value = value;
+    }
     public FilePropertyModel(int id, int fileId, int propertyId, String value, String title) {
         this.id = id;
         this.fileId = fileId;
@@ -104,6 +110,20 @@ public class FilePropertyModel extends BaseModel implements ModelInterface {
             return true;
         }
         return false;
+    }
+
+    public static FilePropertyModel isPropertyExist(int fileId, int propertyId) {
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("fileId", fileId);
+        parameters.addValue("propertyId", propertyId);
+        List<Map<String, Object>> rows = template.queryForList(checkIsExist, parameters);
+        for (Map row : rows) {
+            Integer itemId = (Integer) row.get("id");
+            String value = (String) row.get("value");
+            return new FilePropertyModel(itemId, fileId, propertyId, value);
+        }
+        return null;
     }
 
     public boolean validate() {

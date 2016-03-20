@@ -103,6 +103,13 @@ public class AdminVersionPropertyController {
             @RequestParam("value") String value,
             @RequestParam(value="id", required=false, defaultValue = "0") int id
     ) {
+        // проверяем, есть ли такое свойство
+        PropertyModel property = PropertyModel.findById(propertyId);
+        // проверяем, не заполнено ли уже это свойство
+        FileVersionPropertyModel checkProperty = FileVersionPropertyModel.isPropertyExist(fileVersionId, propertyId);
+        if (checkProperty != null) {
+            id = checkProperty.getId();
+        }
         // если это добавление нового свойства версии
         if (id == 0) {
             try {

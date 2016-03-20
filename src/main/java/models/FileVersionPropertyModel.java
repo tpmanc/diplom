@@ -19,6 +19,7 @@ public class FileVersionPropertyModel extends BaseModel implements ModelInterfac
     private static final String saveNew = "INSERT INTO fileVersionProperty(fileVersionId, propertyId, value) VALUES(:fileVersionId, :propertyId, :value)";
     private static final String getByFileVersion = "SELECT fileVersionProperty.id, property.title, fileVersionProperty.value FROM fileVersionProperty LEFT JOIN property ON fileVersionProperty.propertyId = property.id WHERE fileVersionId = :fileVersionId";
     private static final String deleteById = "DELETE FROM fileVersionProperty WHERE id = :id";
+    private static final String checkIsExist = "SELECT * FROM fileVersionProperty WHERE fileVersionId = :fileVersionId AND propertyId = :propertyId";
 
     private int id;
     private int fileVersionId;
@@ -51,12 +52,33 @@ public class FileVersionPropertyModel extends BaseModel implements ModelInterfac
         this.value = value;
     }
 
+    public FileVersionPropertyModel(int id, int fileVersionId, int propertyId, String value) {
+        this.id = id;
+        this.fileVersionId = fileVersionId;
+        this.propertyId = propertyId;
+        this.value = value;
+    }
+
     public FileVersionPropertyModel(int id, int fileVersionId, int propertyId, String value, String title) {
         this.id = id;
         this.fileVersionId = fileVersionId;
         this.propertyId = propertyId;
         this.value = value;
         this.title = title;
+    }
+
+    public static FileVersionPropertyModel isPropertyExist(int fileVersionId, int propertyId) {
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("fileVersionId", fileVersionId);
+        parameters.addValue("propertyId", propertyId);
+        List<Map<String, Object>> rows = template.queryForList(checkIsExist, parameters);
+        for (Map row : rows) {
+            Integer itemId = (Integer) row.get("id");
+            String value = (String) row.get("value");
+            return new FileVersionPropertyModel(itemId, fileVersionId, propertyId, value);
+        }
+        return null;
     }
 
     public static ArrayList getProperties(int fileVersionId) throws SQLException {
