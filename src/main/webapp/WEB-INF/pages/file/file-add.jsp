@@ -5,13 +5,13 @@
     <jsp:param name="activePage" value="file" />
 </jsp:include>
 
-<script src="<spring:url value="/resources/js/pages/admin/file/file-form.js" />"></script>
+<script src="<spring:url value="/resources/js/pages/file/file-form.js" />"></script>
 
 <h2>${pageTitle}</h2>
 
 <ol class="breadcrumb">
     <li><a href="<spring:url value="/admin" />">Главная</a></li>
-    <li><a href="<spring:url value="/admin/files" />">Файлы</a></li>
+    <li><a href="<spring:url value="/files" />">Файлы</a></li>
     <li class="active">
         <strong>${pageTitle}</strong>
     </li>

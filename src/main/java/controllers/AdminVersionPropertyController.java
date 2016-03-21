@@ -116,7 +116,7 @@ public class AdminVersionPropertyController {
                 FileVersionModel fileVersion = FileVersionModel.findById(fileVersionId);
                 FileVersionPropertyModel fileProperty = new FileVersionPropertyModel(fileVersion.getId(), propertyId, value);
                 if (fileProperty.add()) {
-                    return "redirect:/admin/file-view?id="+fileVersion.getFileId()+"&versionId="+fileVersion.getId();
+                    return "redirect:/file-view?id="+fileVersion.getFileId()+"&versionId="+fileVersion.getId();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -128,7 +128,7 @@ public class AdminVersionPropertyController {
                 FileVersionPropertyModel fileProperty = FileVersionPropertyModel.findById(id);
                 fileProperty.setValue(value);
                 if (fileProperty.update()) {
-                    return "redirect:/admin/file-view?id="+fileVersion.getFileId()+"&versionId="+fileVersion.getId();
+                    return "redirect:/file-view?id="+fileVersion.getFileId()+"&versionId="+fileVersion.getId();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();

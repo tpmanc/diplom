@@ -11,12 +11,29 @@ import java.util.Collection;
  */
 public class UserHelper {
     public static final String ADMIN_ROLE = "ROLE_FR-ADMIN";
+    public static final String MODERATOR_ROLE = "ROLE_FR-MODERATOR";
 
     public static boolean isAdmin(CustomUserDetails activeUser) {
         Collection<GrantedAuthority> authorities = activeUser.getAuthorities();
         boolean hasRole = false;
         for (GrantedAuthority authority : authorities) {
             hasRole = authority.getAuthority().equals(ADMIN_ROLE);
+            if (hasRole) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isModerator(CustomUserDetails activeUser) {
+        Collection<GrantedAuthority> authorities = activeUser.getAuthorities();
+        boolean hasRole = false;
+        boolean isAdmin = UserHelper.isAdmin(activeUser);
+        if (isAdmin) {
+            return true;
+        }
+        for (GrantedAuthority authority : authorities) {
+            hasRole = authority.getAuthority().equals(MODERATOR_ROLE);
             if (hasRole) {
                 return true;
             }

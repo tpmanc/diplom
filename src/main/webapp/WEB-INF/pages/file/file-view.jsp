@@ -6,7 +6,7 @@
     <jsp:param name="activePage" value="file" />
 </jsp:include>
 
-<script src="<spring:url value="/resources/js/pages/admin/file/file-view.js" />"></script>
+<script src="<spring:url value="/resources/js/pages/file/file-view.js" />"></script>
 <script>
     var filePropertyDeleteUrl = "<spring:url value="/admin/file-property-delete" />";
     var fileVersionPropertyDeleteUrl = "<spring:url value="/admin/file-version-property-delete" />";

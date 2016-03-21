@@ -13,8 +13,8 @@
 
 <ol class="breadcrumb">
     <li><a href="<spring:url value="/admin" />">Главная</a></li>
-    <li><a href="<spring:url value="/admin/files" />">Файлы</a></li>
-    <li><a href="<spring:url value="/admin/file-view?id=${fileProperty.fileId}" />">Просмотр файла</a></li>
+    <li><a href="<spring:url value="/files" />">Файлы</a></li>
+    <li><a href="<spring:url value="/file-view?id=${fileProperty.fileId}" />">Просмотр файла</a></li>
     <li class="active">
         <strong>${pageTitle}</strong>
     </li>

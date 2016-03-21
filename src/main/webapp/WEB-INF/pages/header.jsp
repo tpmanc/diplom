@@ -34,12 +34,15 @@
                             <li <c:if test="${param.activePage == ''}"> class="active" </c:if>>
                                 <a href="<spring:url value="/admin/" />"><i class="fa fa-home"></i> <span class="nav-label">Главная</span></a>
                             </li>
+                            <li <c:if test="${param.activePage == 'catalog'}"> class="active" </c:if>>
+                                <a href="<spring:url value="/catalog" />"><i class="fa fa-folder-open"></i> <span class="nav-label">Каталог</span></a>
+                            </li>
                             <li <c:if test="${param.activePage == 'categoryTree'}"> class="active" </c:if>>
                                 <a href="<spring:url value="/admin/categories" />"><i class="fa fa-sitemap"></i> <span class="nav-label">Категории</span></a>
                             </li>
                             <sec:authorize access="hasRole('ROLE_FR-ADMIN')">
                                 <li <c:if test="${param.activePage == 'file'}"> class="active" </c:if>>
-                                    <a href="<spring:url value="/admin/files" />"><i class="fa fa-file-text-o"></i> <span class="nav-label">Файлы</span></a>
+                                    <a href="<spring:url value="/files" />"><i class="fa fa-file-text-o"></i> <span class="nav-label">Файлы</span></a>
                                 </li>
                             </sec:authorize>
                             <sec:authorize access="!hasRole('ROLE_FR-ADMIN')">
