@@ -50,8 +50,6 @@ $(function(){
                 method: "post",
                 dataType: "json",
                 data: {id: id, title: title},
-                beforeSend: function(){
-                },
                 success: function(data){
                     if (data.error == false) {
                         treesHolder.jstree(
@@ -246,15 +244,5 @@ $(function(){
         var node = tree.get_node(nodeId);
         var parent = tree.get_node(node.parent);
         return $.inArray(node.id, parent.children);
-    }
-
-    function parseId(str) {
-        var id = 0;
-        if (str == '#') {
-            id = 0;
-        } else {
-            id = parseInt(str.replace('jst_', ''));
-        }
-        return id;
     }
 });

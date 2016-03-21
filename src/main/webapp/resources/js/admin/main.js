@@ -16,7 +16,7 @@ $(document).ready(function () {
         "hideEasing": "linear",
         "showMethod": "fadeIn",
         "hideMethod": "fadeOut"
-    }
+    };
 
     // Add body-small class if window less than 768px
     if ($(this).width() < 769) {
@@ -289,4 +289,14 @@ function PushMenu() {
         // Remove all inline style from jquery fadeIn function to reset menu state
         $('#side-menu').removeAttr('style');
     }
+}
+
+function parseId(str) {
+    var id = 0;
+    if (str == '#') {
+        id = 0;
+    } else {
+        id = parseInt(str.replace('jst_', ''));
+    }
+    return id;
 }

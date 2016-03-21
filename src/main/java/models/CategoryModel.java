@@ -2,6 +2,7 @@ package models;
 
 import db.Database2;
 import exceptions.NotFoundException;
+import models.helpers.CategoryFile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -9,10 +10,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class CategoryModel extends BaseModel implements ModelInterface {
     private static String getById = "SELECT * FROM category where id = :id";
@@ -24,6 +24,9 @@ public class CategoryModel extends BaseModel implements ModelInterface {
     private static String deleteById = "DELETE FROM category WHERE id = :id";
     private static final String getTreeElements = "SELECT * FROM category ORDER BY position ASC, id ASC";
     private static final String getCount = "SELECT count(id) FROM category";
+    private static final String getFiles = "SELECT file.id, file.title, fileVersion.version, fileVersion.date, user.displayName FROM file " +
+            " LEFT JOIN fileVersion ON fileVersion.id = (SELECT id FROM fileVersion WHERE fileVersion.fileId = file.id ORDER BY version DESC LIMIT 1) " +
+            " LEFT JOIN user ON user.id = fileVersion.userId ORDER BY fileVersion.version DESC LIMIT :limit OFFSET :offset";
 
     public HashMap<String, List<String>> errors = new HashMap<String, List<String>>();
 
@@ -182,6 +185,35 @@ public class CategoryModel extends BaseModel implements ModelInterface {
             }
             template.update(sql, parameters);
         }
+    }
+
+    public ArrayList<CategoryFile> getFiles(int limit, int offset) {
+        ArrayList<CategoryFile> result = new ArrayList<CategoryFile>();
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("limit", limit);
+        parameters.addValue("offset", offset);
+        List<Map<String, Object>> rows = template.queryForList(getFiles, parameters);
+        for (Map row : rows) {
+            Integer fileId = (Integer) row.get("id");
+            String title = (String) row.get("title");
+            String version = (String) row.get("version");
+            Long intDate = (Long) row.get("date");
+            java.util.Date date = new java.util.Date(intDate);
+            SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+            String strDate = df.format(date);
+            String userDN = (String) row.get("displayName");
+
+            CategoryFile categoryFile = new CategoryFile();
+            categoryFile.setId(fileId);
+            categoryFile.setTitle(title);
+            categoryFile.setVersion(version);
+            categoryFile.setDate(strDate);
+            categoryFile.setUserDN(userDN);
+            result.add(categoryFile);
+        }
+
+        return result;
     }
 
     public boolean add() throws SQLException {
