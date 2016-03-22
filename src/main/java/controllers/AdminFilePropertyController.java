@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -100,7 +101,8 @@ public class AdminFilePropertyController {
             @RequestParam("fileId") int fileId,
             @RequestParam("propertyId") int propertyId,
             @RequestParam("value") String value,
-            @RequestParam(value="id", required=false, defaultValue = "0") int id
+            @RequestParam(value="id", required=false, defaultValue = "0") int id,
+            RedirectAttributes attr
     ) {
         // проверяем, есть ли такое свойство
         PropertyModel property = PropertyModel.findById(propertyId);
@@ -115,9 +117,13 @@ public class AdminFilePropertyController {
             try {
                 if (fileProperty.add()) {
                     return "redirect:/file-view?id="+fileId;
+                } else {
+                    attr.addFlashAttribute("errors", fileProperty.errors);
+                    attr.addFlashAttribute("selectedProperty", propertyId);
+                    return "redirect:/admin/file-property-add?id="+fileId;
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                throw new NotFoundException("Ошибка сервера");
             }
         } else {
             // если это изменение значения свойства
@@ -126,11 +132,13 @@ public class AdminFilePropertyController {
                 fileProperty.setValue(value);
                 if (fileProperty.update()) {
                     return "redirect:/file-view?id="+fileId;
+                } else {
+                    attr.addFlashAttribute("errors", fileProperty.errors);
+                    return "redirect:/admin/file-property-edit?id="+id;
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                throw new NotFoundException("Ошибка сервера");
             }
         }
-        return "redirect:/admin/file-property-add?id="+fileId;
     }
 }

@@ -156,7 +156,7 @@ public class FilePropertyModel extends BaseModel implements ModelInterface {
         List<String> propertyIdErrors = new ArrayList<String>();
         if (propertyId < 0) {
             isValid = false;
-            propertyIdErrors.add("Id свойства должен быть >= 0");
+            propertyIdErrors.add("Выберите свойство");
         }
         if (propertyIdErrors.size() > 0) {
             errors.put("propertyId", propertyIdErrors);

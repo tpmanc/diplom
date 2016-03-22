@@ -6,9 +6,6 @@
     <jsp:param name="activePage" value="file" />
 </jsp:include>
 
-<spring:url value="/resources/js/pages/admin/file/file-add-property.js" var="fileFormJs" />
-<script src="${fileFormJs}"></script>
-
 <h2>${pageTitle}</h2>
 
 <ol class="breadcrumb">
