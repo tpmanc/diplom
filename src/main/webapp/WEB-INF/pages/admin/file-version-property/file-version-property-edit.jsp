@@ -19,29 +19,6 @@
 
 <br>
 
-<form action="<spring:url value="/admin/file-version-property-handler" />" method="post" class="form-horizontal">
-    <input type="hidden" name="id" value="${fileProperty.id}">
-    <input type="hidden" name="fileVersionId" value="${fileProperty.fileVersionId}">
-    <input type="hidden" name="propertyId" value="${fileProperty.propertyId}">
-    <div class="form-group">
-        <label class="col-sm-2 control-label">Свойство</label>
-        <div class="col-sm-10">
-            <input type="text" class="form-control" value="${fileProperty.title}" disabled="disabled">
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="col-sm-2 control-label">Значение</label>
-        <div class="col-sm-10">
-            <input type="text" name="value" class="form-control" value="${fileProperty.value}">
-        </div>
-    </div>
-
-    <div class="form-group">
-        <div class="col-sm-4 col-sm-offset-2">
-            <button class="btn btn-success" type="submit">Сохранить</button>
-        </div>
-    </div>
-</form>
+<jsp:include page="_form.jsp" />
 
 <jsp:include page="../../layout_bottom.jsp" />
