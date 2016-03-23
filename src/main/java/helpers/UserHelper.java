@@ -1,6 +1,7 @@
 package helpers;
 
 import auth.CustomUserDetails;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -37,6 +38,16 @@ public class UserHelper {
             if (hasRole) {
                 return true;
             }
+        }
+        return false;
+    }
+
+    public static boolean isLogin() {
+        if (SecurityContextHolder.getContext().getAuthentication() != null &&
+                SecurityContextHolder.getContext().getAuthentication().isAuthenticated() &&
+                //when Anonymous Authentication is enabled
+                !(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken)) {
+            return true;
         }
         return false;
     }

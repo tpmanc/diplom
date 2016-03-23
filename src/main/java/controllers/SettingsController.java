@@ -1,16 +1,17 @@
 package controllers;
 
+import config.Settings;
+import models.helpers.ActiveDirectorySettings;
+import models.helpers.DatabaseSettings;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.ServletContext;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Properties;
 
 /**
  * Контроллер настроек приложения
@@ -21,27 +22,41 @@ public class SettingsController {
      * Страница с настройками
      */
     @RequestMapping(value = {"/init-settings" }, method = RequestMethod.GET)
-    public String initSettings(ServletContext servletContext, Model model) {
-        FileOutputStream out = null;
-        FileInputStream in = null;
-        Properties properties = new Properties();
-        try {
-            in = new FileInputStream(servletContext.getRealPath("/WEB-INF/config/database.properties"));
-            out = new FileOutputStream(servletContext.getRealPath("/WEB-INF/config/database.properties"));
-            properties.load(in);
+    public String initSettings(Model model) {
+        Settings settings = new Settings();
 
-            if (properties.getProperty("db.dbPassword").equals("")) {
-                properties.setProperty("db.dbPassword", "pass");
-            }
-            properties.store(out, null);
-            out.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        DatabaseSettings databaseSettings = settings.getDatabaseSettings();
+        model.addAttribute("database", databaseSettings);
+
+        ActiveDirectorySettings activeDirectorySettings = settings.getActiveDirectorySettings();
+        model.addAttribute("activeDirectory", activeDirectorySettings);
 
         model.addAttribute("pageTitle", "Настройки");
         return "setting/settings";
+    }
+
+    @RequestMapping(value = {"/settings-save"}, method = RequestMethod.POST)
+    public String saveSettings(
+            @RequestParam String dbDriver,
+            @RequestParam String dbUrl,
+            @RequestParam String dbUser,
+            @RequestParam String dbPassword,
+            @RequestParam String ldapUrl,
+            @RequestParam String ldapManagerDn,
+            @RequestParam String ldapManagerPass,
+            @RequestParam String ldapUserSearchFilter,
+            @RequestParam String ldapGroupSearch,
+            @RequestParam String ldapGroupSearchFilter,
+            @RequestParam String ldapRoleAttribute,
+            RedirectAttributes attr
+
+    ) {
+        Settings settings = new Settings();
+        settings.setDatabaseFile(dbDriver, dbUrl, dbUser, dbPassword);
+        settings.setActiveDirectoryFile(ldapUrl, ldapManagerDn, ldapManagerPass, ldapUserSearchFilter, ldapGroupSearch, ldapGroupSearchFilter, ldapRoleAttribute);
+        settings.save();
+
+        attr.addFlashAttribute("isSaved", true);
+        return "redirect:/init-settings";
     }
 }

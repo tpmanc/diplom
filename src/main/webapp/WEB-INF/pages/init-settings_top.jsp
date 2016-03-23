@@ -7,5 +7,5 @@
     <link href="<spring:url value="/resources/css/admin/kforms.css" />" rel="stylesheet" />
     <link href="<spring:url value="/resources/css/admin/style.css" />" rel="stylesheet" />
 </head>
-<body>
-<div id="wrapper">
+<body class="gray-bg">
+<div id="wrapper" class="passwordBox">
