@@ -132,6 +132,22 @@ public class FileController {
     }
 
     /**
+     * Изменение категорий фалов
+     * @return Путь до представления
+     */
+    @RequestMapping(value = {"/file-categories" }, method = RequestMethod.GET)
+    public String fileCategories(@RequestParam("fileId") int fileId, Model model) {
+        FileModel file = FileModel.findById(fileId);
+        model.addAttribute("pageTitle", "Редактировать категории");
+
+        ArrayList<HashMap> categories = FileCategoryModel.findByFile(file.getId());
+        model.addAttribute("categories", categories);
+
+        model.addAttribute("pageTitle", "Редактировать категории");
+        return "file/file-categories";
+    }
+
+    /**
      * Обработчик ajax запроса по поиску названия файла
      * @param query Строка для поиска
      * @return json строка

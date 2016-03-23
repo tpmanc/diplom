@@ -53,9 +53,6 @@
                             <li <c:if test="${param.activePage == 'unfilled-files'}"> class="active" </c:if>>
                                 <a href="<spring:url value="/unfilled-files" />"><i class="fa fa-file"></i> <span class="nav-label">Незаполненные Файлы</span></a>
                             </li>
-                            <li <c:if test="${param.activePage == 'fileLink'}"> class="active" </c:if>>
-                                <a href="#"><i class="fa fa-link"></i> <span class="nav-label">Привязка файлов</span></a>
-                            </li>
                             <sec:authorize access="hasRole('ROLE_FR-ADMIN')">
                                 <li <c:if test="${param.activePage == 'property'}"> class="active" </c:if>>
                                     <a href="<spring:url value="/admin/properties" />"><i class="fa fa-list-ul"></i> <span class="nav-label">Свойства файлов</span></a>

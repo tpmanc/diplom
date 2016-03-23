@@ -25,6 +25,7 @@
 <br>
 
 <p>
+    <a href="<spring:url value="/file-categories?fileId=${file.id}" />" class="btn btn-info">Редактировать катгеории</a>
     <c:if test="${isFileOwner == true}">
         <a href="<spring:url value="/file-filling?versionId=${currentVersion.id}" />" class="btn btn-warning">Изменить</a>
     </c:if>

@@ -42,7 +42,7 @@ public class FileModel extends BaseModel implements ModelInterface {
     public FileModel() {
     }
 
-    public static FileModel findById(int id) throws SQLException {
+    public static FileModel findById(int id) {
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("id", id);
