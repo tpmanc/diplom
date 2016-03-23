@@ -11,7 +11,7 @@
     <bean id="defaultAuthEventPublisher" class="auth.UserService"/>
 
     <context:property-placeholder
-            location="/WEB-INF/config/database.properties,/WEB-INF/config/active-directory.properties, /WEB-INF/config/other.properties"/>
+            location="/WEB-INF/config/database.properties,/WEB-INF/config/active-directory.properties"/>
 
     <bean id="dbConfig" class="helpers.ConfigDB">
         <property name="driverClassName" value="${db.driverClassName}"/>
