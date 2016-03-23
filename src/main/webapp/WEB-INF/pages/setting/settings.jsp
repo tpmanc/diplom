@@ -7,7 +7,7 @@
 
 <h2>${pageTitle}</h2>
 
-<c:if test="${isSaved != null}">
+<c:if test="${isNeedRestart == true}">
     <div class="panel panel-success">
         <div class="panel-heading">
             Настройки сохранены

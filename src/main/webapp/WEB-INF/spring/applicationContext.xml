@@ -10,6 +10,10 @@
 
     <bean id="defaultAuthEventPublisher" class="auth.UserService"/>
 
+    <bean id="startListener" class="config.StartupListener"/>
+
+    <bean id="isFilled" class="config.IsFilled"/>
+
     <context:property-placeholder
             location="/WEB-INF/config/database.properties,/WEB-INF/config/active-directory.properties"/>
 
