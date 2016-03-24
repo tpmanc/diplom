@@ -24,7 +24,7 @@ public class Settings {
 
     private ServletContext servletContext;
     private Properties database;
-    private Properties activeDirectory;
+//    private Properties activeDirectory;
 
     public final static String DRIVER_FIELD = "db.driverClassName";
     public final static String URL_FIELD = "db.url";
@@ -47,10 +47,10 @@ public class Settings {
             database.load(in);
             in.close();
 
-            in = new FileInputStream(servletContext.getRealPath(Settings.getActiveDirectoryFile()));
-            activeDirectory = new Properties();
-            activeDirectory.load(in);
-            in.close();
+//            in = new FileInputStream(servletContext.getRealPath(Settings.getActiveDirectoryFile()));
+//            activeDirectory = new Properties();
+//            activeDirectory.load(in);
+//            in.close();
         } catch (FileNotFoundException e) {
             // todo 500
             throw new NotFoundException("ERROR");
@@ -67,7 +67,7 @@ public class Settings {
         return CONFIG_PATH + ACTIVE_DIRECTORY_FILE;
     }
 
-    public boolean isFilled() {
+    public boolean isDBFilled() {
         boolean isValid = true;
         if (database.getProperty(DRIVER_FIELD).equals("")) {
             isValid = false;
@@ -84,29 +84,44 @@ public class Settings {
         if (database.getProperty(POOL_FIELD).equals("")) {
             isValid = false;
         }
-
-        if (activeDirectory.getProperty(LDAP_URL).equals("")) {
-            isValid = false;
-        }
-        if (activeDirectory.getProperty(LDAP_MANAGER_DN).equals("")) {
-            isValid = false;
-        }
-        if (activeDirectory.getProperty(LDAP_MANAGER_PASS).equals("")) {
-            isValid = false;
-        }
-        if (activeDirectory.getProperty(LDAP_USER_SEARCH_FILTER).equals("")) {
-            isValid = false;
-        }
-        if (activeDirectory.getProperty(LDAP_GROUP_SEARCH).equals("")) {
-            isValid = false;
-        }
-        if (activeDirectory.getProperty(LDAP_GROUP_SEARCH_FILTER).equals("")) {
-            isValid = false;
-        }
-        if (activeDirectory.getProperty(LDAP_ROLE_ATTRIBUTE).equals("")) {
-            isValid = false;
-        }
         return isValid;
+    }
+
+    public boolean isADFilled() {
+        ApplicationContext ctx = ContextLoader.getCurrentWebApplicationContext();
+        IsFilled isFilled = (IsFilled) ctx.getBean("isFilled");
+        boolean isADValid = true;
+
+        if (System.getProperty(LDAP_URL) == null || System.getProperty(LDAP_URL).equals("")) {
+            isADValid = false;
+            isFilled.setAdUrl(false);
+        }
+        if (System.getProperty(LDAP_MANAGER_DN).equals("")) {
+            isADValid = false;
+            isFilled.setAdManager(false);
+        }
+        if (System.getProperty(LDAP_MANAGER_PASS).equals("")) {
+            isADValid = false;
+            isFilled.setAdPassword(false);
+        }
+        if (System.getProperty(LDAP_USER_SEARCH_FILTER).equals("")) {
+            isADValid = false;
+            isFilled.setAdUserSearch(false);
+        }
+        if (System.getProperty(LDAP_GROUP_SEARCH).equals("")) {
+            isADValid = false;
+            isFilled.setAdGroupSearch(false);
+        }
+        if (System.getProperty(LDAP_GROUP_SEARCH_FILTER).equals("")) {
+            isADValid = false;
+            isFilled.setAdGroupFilter(false);
+        }
+        if (System.getProperty(LDAP_ROLE_ATTRIBUTE).equals("")) {
+            isADValid = false;
+            isFilled.setAdRoleAttribute(false);
+        }
+
+        return isADValid;
     }
 
     public void setDatabaseFile(String driver, String url, String user, String password) {
@@ -114,16 +129,6 @@ public class Settings {
         database.setProperty(URL_FIELD, url);
         database.setProperty(USER_FIELD, user);
         database.setProperty(PASSWORD_FIELD, password);
-    }
-
-    public void setActiveDirectoryFile(String url, String manager, String password, String userSearch, String groupSearch, String groupFilter, String roleAttribute) {
-        activeDirectory.setProperty(LDAP_URL, url);
-        activeDirectory.setProperty(LDAP_MANAGER_DN, manager);
-        activeDirectory.setProperty(LDAP_MANAGER_PASS, password);
-        activeDirectory.setProperty(LDAP_USER_SEARCH_FILTER, userSearch);
-        activeDirectory.setProperty(LDAP_GROUP_SEARCH, groupSearch);
-        activeDirectory.setProperty(LDAP_GROUP_SEARCH_FILTER, groupFilter);
-        activeDirectory.setProperty(LDAP_ROLE_ATTRIBUTE, roleAttribute);
     }
 
     public DatabaseSettings getDatabaseSettings() {
@@ -135,30 +140,11 @@ public class Settings {
         return databaseSettings;
     }
 
-    public ActiveDirectorySettings getActiveDirectorySettings() {
-        ActiveDirectorySettings activeDirectorySettings = new ActiveDirectorySettings();
-        activeDirectorySettings.setUrl(activeDirectory.getProperty(LDAP_URL));
-        activeDirectorySettings.setManager(activeDirectory.getProperty(LDAP_MANAGER_DN));
-        activeDirectorySettings.setPassword(activeDirectory.getProperty(LDAP_MANAGER_PASS));
-        activeDirectorySettings.setUserFilter(activeDirectory.getProperty(LDAP_USER_SEARCH_FILTER));
-        activeDirectorySettings.setGroupSearch(activeDirectory.getProperty(LDAP_GROUP_SEARCH));
-        activeDirectorySettings.setGroupFilter(activeDirectory.getProperty(LDAP_GROUP_SEARCH_FILTER));
-        activeDirectorySettings.setRoleAttribute(activeDirectory.getProperty(LDAP_ROLE_ATTRIBUTE));
-        return activeDirectorySettings;
-    }
-
     public void save() {
         try {
             FileOutputStream out = new FileOutputStream(servletContext.getRealPath(Settings.getDatabaseFile()));
             database.store(out, null);
             out.close();
-
-            out = new FileOutputStream(servletContext.getRealPath(Settings.getActiveDirectoryFile()));
-            activeDirectory.store(out, null);
-            out.close();
-
-            ApplicationContext ctx = ContextLoader.getCurrentWebApplicationContext();
-            ConfigDB config = (ConfigDB) ctx.getBean("dbConfig");
         } catch (FileNotFoundException e) {
             // todo 500
             throw new NotFoundException("ERROR");

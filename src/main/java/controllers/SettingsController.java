@@ -38,11 +38,7 @@ public class SettingsController {
         DatabaseSettings databaseSettings = settings.getDatabaseSettings();
         model.addAttribute("database", databaseSettings);
 
-        ActiveDirectorySettings activeDirectorySettings = settings.getActiveDirectorySettings();
-        model.addAttribute("activeDirectory", activeDirectorySettings);
-
-        boolean isNeedRestart = isFilled.isNeedRestart();
-        model.addAttribute("isNeedRestart", isNeedRestart);
+        model.addAttribute("isFilled", isFilled);
 
         model.addAttribute("pageTitle", "Настройки");
         return "setting/settings";
@@ -65,7 +61,6 @@ public class SettingsController {
     ) {
         Settings settings = new Settings();
         settings.setDatabaseFile(dbDriver, dbUrl, dbUser, dbPassword);
-        settings.setActiveDirectoryFile(ldapUrl, ldapManagerDn, ldapManagerPass, ldapUserSearchFilter, ldapGroupSearch, ldapGroupSearchFilter, ldapRoleAttribute);
         settings.save();
 
         ApplicationContext ctx = ContextLoader.getCurrentWebApplicationContext();

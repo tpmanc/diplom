@@ -7,17 +7,6 @@
 
 <h2>${pageTitle}</h2>
 
-<c:if test="${isNeedRestart == true}">
-    <div class="panel panel-success">
-        <div class="panel-heading">
-            Настройки сохранены
-        </div>
-        <div class="panel-body">
-            <p>Не забудьте перегазрузить сервер!</p>
-        </div>
-    </div>
-</c:if>
-
 <div class="row">
     <div class="col-lg-12">
         <div class="inqbox float-e-margins">
@@ -47,33 +36,15 @@
                     <h5>Active Directory</h5>
                 </div>
                 <div class="inqbox-content">
-                    <div class="form-group">
-                        <label class="col-sm-4 control-label">Адрес</label>
-                        <div class="col-sm-8"><input type="text" name="ldapUrl" value="${activeDirectory.url}" class="form-control"></div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-4 control-label">DN менеджера</label>
-                        <div class="col-sm-8"><input type="text" name="ldapManagerDn" value="${activeDirectory.manager}" class="form-control"></div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-4 control-label">Пароль</label>
-                        <div class="col-sm-8"><input type="text" name="ldapManagerPass" value="${activeDirectory.password}" class="form-control"></div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-4 control-label">Фильтр пользователей</label>
-                        <div class="col-sm-8"><input type="text" name="ldapUserSearchFilter" value="${activeDirectory.userFilter}" class="form-control"></div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-4 control-label">Поиск групп</label>
-                        <div class="col-sm-8"><input type="text" name="ldapGroupSearch" value="${activeDirectory.groupSearch}" class="form-control"></div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-4 control-label">Фильтр групп</label>
-                        <div class="col-sm-8"><input type="text" name="ldapGroupSearchFilter" value="${activeDirectory.groupFilter}" class="form-control"></div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-4 control-label">Аттрибут роли</label>
-                        <div class="col-sm-8"><input type="text" name="ldapRoleAttribute" value="${activeDirectory.roleAttribute}" class="form-control"></div>
+                    <div class="panel panel-danger">
+                        <div class="panel-heading">
+                            Не заданы настройки Active Directory
+                        </div>
+                        <div class="panel-body">
+                            <c:if test="${!isFilled.adUrl}">
+                                <p>Добавить системное свойство "ldap.url"</p>
+                            </c:if>
+                        </div>
                     </div>
                 </div>
                 <div class="inqbox-content">
