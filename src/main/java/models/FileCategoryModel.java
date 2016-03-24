@@ -18,6 +18,7 @@ public class FileCategoryModel extends BaseModel implements ModelInterface {
 
     private static final String saveNew = "INSERT INTO fileCategory(fileId, categoryId) VALUES (:fileId, :categoryId)";
     private static final String deleteById = "DELETE FROM fileCategory WHERE id = :id";
+    private static final String deleteByFile = "DELETE FROM fileCategory WHERE fileId = :fileId";
     private static final String getByFile = "SELECT category.title, category.id FROM fileCategory LEFT JOIN category ON category.id = fileCategory.categoryId WHERE fileId = :fileId";
 
     public int getId() {
@@ -81,15 +82,15 @@ public class FileCategoryModel extends BaseModel implements ModelInterface {
     }
 
     public boolean validate() {
-        boolean isError = false;
+        boolean isValid = true;
         if (categoryId <= 0) {
-            isError = true;
+            isValid = false;
         }
         if (fileId <= 0) {
-            isError = true;
+            isValid = false;
         }
 
-        return isError;
+        return isValid;
     }
 
     public boolean delete() throws SQLException {
@@ -97,6 +98,13 @@ public class FileCategoryModel extends BaseModel implements ModelInterface {
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("id", id);
         int rows = template.update(deleteById, parameters);
+        return rows > 0;
+    }
+    public static boolean deleteByFile(int fileId) {
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("fileId", fileId);
+        int rows = template.update(deleteByFile, parameters);
         return rows > 0;
     }
 }

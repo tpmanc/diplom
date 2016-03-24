@@ -25,7 +25,7 @@
 <br>
 
 <p>
-    <a href="<spring:url value="/file-categories?fileId=${file.id}" />" class="btn btn-info">Редактировать катгеории</a>
+    <a href="<spring:url value="/file-categories?fileId=${file.id}" />" class="btn btn-info">Редактировать категории</a>
     <c:if test="${isFileOwner == true}">
         <a href="<spring:url value="/file-filling?versionId=${currentVersion.id}" />" class="btn btn-warning">Изменить</a>
     </c:if>
@@ -63,6 +63,14 @@
                         </c:forEach>
                     </select>
                 </form>
+            </td>
+        </tr>
+        <tr>
+            <td>Категории</td>
+            <td>
+                <c:forEach items="${fileCategories}" var="category" varStatus="itemStat">
+                    <span class="label">${category.get("title")}</span>
+                </c:forEach>
             </td>
         </tr>
     </tbody>

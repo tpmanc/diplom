@@ -107,6 +107,10 @@ public class FileController {
             ArrayList fileProperties = FilePropertyModel.getProperties(file.getId());
             model.addAttribute("fileProperties", fileProperties);
 
+            // категории файла
+            ArrayList<HashMap> fileCategories = FileCategoryModel.findByFile(file.getId());
+            model.addAttribute("fileCategories", fileCategories);
+
             // преобразование даты загрузки для вывода на страницу
             Date date = new Date(currentVersion.getDate());
             SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy");
@@ -137,14 +141,22 @@ public class FileController {
      */
     @RequestMapping(value = {"/file-categories" }, method = RequestMethod.GET)
     public String fileCategories(@RequestParam("fileId") int fileId, Model model) {
-        FileModel file = FileModel.findById(fileId);
-        model.addAttribute("pageTitle", "Редактировать категории");
+        try {
+            FileModel file = FileModel.findById(fileId);
+            model.addAttribute("pageTitle", "Редактировать категории");
 
-        ArrayList<HashMap> categories = FileCategoryModel.findByFile(file.getId());
-        model.addAttribute("categories", categories);
+            ArrayList<HashMap> categories = CategoryModel.findAll();
+            model.addAttribute("categories", categories);
 
-        model.addAttribute("pageTitle", "Редактировать категории");
-        return "file/file-categories";
+            ArrayList<HashMap> fileCategories = FileCategoryModel.findByFile(file.getId());
+            model.addAttribute("fileCategories", fileCategories);
+
+            model.addAttribute("fileId", fileId);
+            model.addAttribute("pageTitle", "Редактировать категории");
+            return "file/file-categories";
+        } catch (SQLException e) {
+            throw new NotFoundException("Ошибка");
+        }
     }
 
     /**
@@ -387,6 +399,31 @@ public class FileController {
         result.put("errors", errors);
         result.put("success", success);
         return result.toJSONString();
+    }
+
+    /**
+     * Обработчик сохранения категорий файла
+     */
+    @RequestMapping(value = {"/file-categories-handler" }, method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
+    public String fileCategoriesHandler(
+            @RequestParam int fileId,
+            @RequestParam("categoriesId[]") int[] categoriesId
+    ) {
+            try {
+                FileModel file = FileModel.findById(fileId);
+                FileCategoryModel.deleteByFile(fileId);
+                for (int categoryId : categoriesId) {
+                    CategoryModel category = CategoryModel.findById(categoryId);
+                    FileCategoryModel fileCategory = new FileCategoryModel();
+                    fileCategory.setFileId(fileId);
+                    fileCategory.setCategoryId(categoryId);
+                    fileCategory.add();
+                }
+                return "";
+            } catch (SQLException e) {
+                // todo 500
+                throw new NotFoundException("Ошибка");
+            }
     }
 
     /**
