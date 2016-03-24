@@ -2,7 +2,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 
-<jsp:include page="../../layout_top.jsp" />
+<jsp:include page="../../layouts/layout_top.jsp" />
 
 <ol class="breadcrumb">
     <li><a href="<spring:url value="/index.html" />">Home</a></li>
@@ -44,4 +44,4 @@
     </div>
 </form>
 
-<jsp:include page="../../layout_bottom.jsp" />
+<jsp:include page="../../layouts/layout_bottom.jsp" />

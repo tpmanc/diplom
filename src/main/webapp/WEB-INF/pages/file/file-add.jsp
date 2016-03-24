@@ -1,7 +1,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 
-<jsp:include page="../layout_top.jsp">
+<jsp:include page="../layouts/layout_top.jsp">
     <jsp:param name="activePage" value="file" />
 </jsp:include>
 
@@ -21,4 +21,4 @@
 
 <jsp:include page="_file-form.jsp" />
 
-<jsp:include page="../layout_bottom.jsp" />
+<jsp:include page="../layouts/layout_bottom.jsp" />

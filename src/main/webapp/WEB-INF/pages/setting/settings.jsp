@@ -3,7 +3,7 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 
-<jsp:include page="../init-settings_top.jsp" />
+<jsp:include page="../layouts/init-settings_top.jsp" />
 
 <h2>${pageTitle}</h2>
 
@@ -55,4 +55,4 @@
     </div>
 </div>
 
-<jsp:include page="../init-settings_bottom.jsp" />
+<jsp:include page="../layouts/init-settings_bottom.jsp" />

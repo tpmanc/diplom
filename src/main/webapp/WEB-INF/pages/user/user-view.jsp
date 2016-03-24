@@ -2,7 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 
-<jsp:include page="../layout_top.jsp" />
+<jsp:include page="../layouts/layout_top.jsp" />
 
 <h2>${pageTitle}</h2>
 
@@ -49,4 +49,4 @@
     </tbody>
 </table>
 
-<jsp:include page="../layout_bottom.jsp" />
+<jsp:include page="../layouts/layout_bottom.jsp" />

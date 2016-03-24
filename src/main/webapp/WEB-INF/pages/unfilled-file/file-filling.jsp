@@ -3,7 +3,7 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 
-<jsp:include page="../layout_top.jsp" />
+<jsp:include page="../layouts/layout_top.jsp" />
 
 <script src="<spring:url value="/resources/js/pages/unfilled-file/file-filling.js" />"></script>
 <script>
@@ -45,4 +45,4 @@
     </div>
 </form>
 
-<jsp:include page="../layout_bottom.jsp" />
+<jsp:include page="../layouts/layout_bottom.jsp" />

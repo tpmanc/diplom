@@ -31,6 +31,6 @@
     </head>
     <body>
         <div id="wrapper">
-            <jsp:include page="header.jsp">
+            <jsp:include page="../header.jsp">
                 <jsp:param name="firstname" value="${param.activePage}" />
             </jsp:include>
