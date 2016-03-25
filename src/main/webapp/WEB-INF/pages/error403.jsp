@@ -1,9 +1,18 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<jsp:include page="layouts/layout_top.jsp" />
+<jsp:include page="layouts/init-settings_top.jsp" />
 
-<h1>403 Forbidden</h1>
-<p>Доступ запрещен</p>
+<div class="middle-box text-center">
+    <h1>403</h1>
+    <h3 class="font-bold">Доступ запрещен</h3>
 
-<jsp:include page="layouts/layout_bottom.jsp" />
+    <div class="row" style="margin-top: 40px;">
+        <a href="<spring:url value="/" />" class="btn btn-primary">
+            <i class="fa fa-home"></i>
+            Вернуться на главную
+        </a>
+    </div>
+</div>
+
+<jsp:include page="layouts/init-settings_bottom.jsp" />

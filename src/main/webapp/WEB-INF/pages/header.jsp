@@ -19,12 +19,10 @@
                 <li>
                     <div class="leftpanel-profile">
                         <div class="media-body profile-name">
-                            <%--<sec:authorize access="isAuthenticated()">--%>
-                                <h4 class="media-heading"><sec:authentication property="principal.username" /></h4>
-                                dn: <sec:authentication property="principal.fullname" />
-                                <span><sec:authentication property="principal.authorities"/></span>
-                                <div><a href="<spring:url value="/logout" />" class="logout-btn"><i class="fa fa-sign-out"></i> Выйти</a></div>
-                            <%--</sec:authorize>--%>
+                            <h4 class="media-heading"><sec:authentication property="principal.username" /></h4>
+                            dn: <sec:authentication property="principal.fullname" />
+                            <span><sec:authentication property="principal.authorities"/></span>
+                            <div><a href="<c:url value="/j_spring_security_logout" />" class="logout-btn"><i class="fa fa-sign-out"></i> Выйти</a></div>
                         </div>
                     </div>
                 </li>
@@ -86,7 +84,7 @@
                     </a>
                     <form role="search" action="<spring:url value="/search" />" method="get" class="navbar-form-custom">
                         <div class="input-group top-search-holder">
-                            <input type="text" class="form-control">
+                            <input type="text" class="form-control" placeholder="Поиск">
                             <span class="input-group-btn">
                                 <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
                             </span>
@@ -95,7 +93,7 @@
                 </div>
                 <ul class="nav navbar-top-links navbar-right">
                     <li class="dropdown hidden-xs">
-                        <a class="dropdown-toggle count-info" data-toggle="dropdown" href="<spring:url value="/requests" />">
+                        <a class="dropdown-toggle count-info" href="<spring:url value="/requests" />">
                             Мои заявки
                             <i class="fa fa-envelope"></i>  <span class="label label-danger">4</span>
                         </a>
@@ -106,7 +104,7 @@
                             <span class="caret caret-tp"></span>
                         </a>
                         <ul class="dropdown-menu m-t-xs">
-                            <li><a href="<spring:url value="/logout" />"><i class="fa fa-sign-out"></i> Выйти</a></li>
+                            <li><a href="<c:url value="j_spring_security_logout" />"><i class="fa fa-sign-out"></i> Выйти</a></li>
                         </ul>
                     </li>
                 </ul>
