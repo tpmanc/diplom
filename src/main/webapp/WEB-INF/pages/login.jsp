@@ -7,8 +7,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Панель администратора - Войти</title>
-    <link href="<spring:url value="/resources/css/admin/bootstrap.min.css" />" rel="stylesheet">
-    <link href="<spring:url value="/resources/css/admin/style.css" />" rel="stylesheet">
+    <link href="<spring:url value="/resources/css/bootstrap.min.css" />" rel="stylesheet">
+    <link href="<spring:url value="/resources/css/style.css" />" rel="stylesheet">
 </head>
 <body class="gray-bg">
 <div class="loginColumns">

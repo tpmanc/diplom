@@ -1,15 +1,9 @@
 package controllers;
 
-import config.IsFilled;
-import config.Settings;
 import exceptions.NotFoundException;
 import helpers.UserHelper;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.context.ContextLoader;
-
-import java.security.Principal;
 
 
 /**
@@ -28,7 +22,7 @@ public class LoginController {
 //            return "redirect:/init-settings";
 //        }
 
-        return "admin/login";
+        return "login";
     }
 
     @RequestMapping("/logout")
