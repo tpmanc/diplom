@@ -2,6 +2,7 @@ package models;
 
 import db.Database2;
 import exceptions.NotFoundException;
+import models.helpers.CategoryFile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -9,6 +10,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class FileModel extends BaseModel implements ModelInterface {
@@ -22,6 +24,9 @@ public class FileModel extends BaseModel implements ModelInterface {
     private static final String getTitles = "SELECT id, title FROM file WHERE title LIKE :str";
     private static final String getVersions = "SELECT id, version FROM fileVersion WHERE fileId = :fileId ORDER BY CONVERT(version, decimal) DESC";
     private static final String deleteById = "DELETE FROM file WHERE id = :id";
+    private static final String getFilesByTitle = "SELECT file.id, file.title, fileVersion.version, fileVersion.date, user.displayName FROM file " +
+            "LEFT JOIN fileVersion ON fileVersion.id = (SELECT id FROM fileVersion WHERE fileVersion.fileId = file.id ORDER BY version DESC LIMIT 1) " +
+            "LEFT JOIN user ON user.id = fileVersion.userId WHERE file.title like :str ORDER BY fileVersion.version DESC LIMIT 100";
 
     private int id;
     private String title;
@@ -122,6 +127,33 @@ public class FileModel extends BaseModel implements ModelInterface {
             info.put("id", fileId);
             info.put("title", title);
             result.add(info);
+        }
+        return result;
+    }
+
+    public static ArrayList<CategoryFile> findFilesByTitles(String query){
+        ArrayList<CategoryFile> result = new ArrayList<CategoryFile>();
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("str", "%" + query + "%");
+        List<Map<String, Object>> rows = template.queryForList(getFilesByTitle, parameters);
+        for (Map row : rows) {
+            Integer fileId = (Integer) row.get("id");
+            String title = (String) row.get("title");
+            String version = (String) row.get("version");
+            Long intDate = (Long) row.get("date");
+            java.util.Date date = new java.util.Date(intDate);
+            SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+            String strDate = df.format(date);
+            String userDN = (String) row.get("displayName");
+
+            CategoryFile file = new CategoryFile();
+            file.setId(fileId);
+            file.setTitle(title);
+            file.setVersion(version);
+            file.setDate(strDate);
+            file.setUserDN(userDN);
+            result.add(file);
         }
         return result;
     }

@@ -81,7 +81,11 @@
                     </a>
                     <form role="search" action="<spring:url value="/search" />" method="get" class="navbar-form-custom">
                         <div class="input-group top-search-holder">
-                            <input type="text" class="form-control" placeholder="Поиск">
+                            <input type="text"
+                                   name="text"
+                                   class="form-control"
+                                    <c:if test="${searchText != null}"> value="${searchText}" </c:if>
+                                   placeholder="Поиск">
                             <span class="input-group-btn">
                                 <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
                             </span>
@@ -101,7 +105,7 @@
                             <span class="caret caret-tp"></span>
                         </a>
                         <ul class="dropdown-menu m-t-xs">
-                            <li><a href="<c:url value="j_spring_security_logout" />"><i class="fa fa-sign-out"></i> Выйти</a></li>
+                            <li><a href="<c:url value="/j_spring_security_logout" />"><i class="fa fa-sign-out"></i> Выйти</a></li>
                         </ul>
                     </li>
                 </ul>

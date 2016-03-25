@@ -419,7 +419,7 @@ public class FileController {
                     fileCategory.setCategoryId(categoryId);
                     fileCategory.add();
                 }
-                return "";
+                return "redirect:/file-view?id=" + file.getId();
             } catch (SQLException e) {
                 // todo 500
                 throw new NotFoundException("Ошибка");
