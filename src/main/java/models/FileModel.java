@@ -20,7 +20,7 @@ public class FileModel extends BaseModel implements ModelInterface {
     private static final String isFileExist = "SELECT count(id) FROM fileVersion WHERE hash = :hash AND fileSize = :fileSize";
     private static final String getCount = "SELECT count(id) FROM file";
     private static final String getTitles = "SELECT id, title FROM file WHERE title LIKE :str";
-    private static final String getVersions = "SELECT id, version FROM fileVersion WHERE fileId = :fileId ORDER BY version DESC";
+    private static final String getVersions = "SELECT id, version FROM fileVersion WHERE fileId = :fileId ORDER BY CONVERT(version, decimal) DESC";
     private static final String deleteById = "DELETE FROM file WHERE id = :id";
 
     private int id;
