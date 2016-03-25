@@ -127,7 +127,7 @@ public class FileModel extends BaseModel implements ModelInterface {
     }
 
     public FileVersionModel getLastVersion() {
-        String sql = "SELECT * FROM fileVersion WHERE fileId = :fileId ORDER BY version DESC LIMIT 1;";
+        String sql = "SELECT * FROM fileVersion WHERE fileId = :fileId ORDER BY CONVERT(version, decimal) DESC LIMIT 1;";
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("fileId", id);
