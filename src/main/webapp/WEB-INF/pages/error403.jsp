@@ -8,8 +8,10 @@
     <h3 class="font-bold">Доступ запрещен</h3>
 
     <div class="row" style="margin-top: 40px;">
+        <a href="#" onclick="history.go(-1);" class="btn btn-success">
+            Назад
+        </a>
         <a href="<spring:url value="/" />" class="btn btn-primary">
-            <i class="fa fa-home"></i>
             Вернуться на главную
         </a>
     </div>
