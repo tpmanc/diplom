@@ -18,7 +18,7 @@ import java.util.HashMap;
 
 @Controller
 public class CatalogController {
-    @RequestMapping(value = {"/catalog" }, method = RequestMethod.GET)
+    @RequestMapping(value = {"/catalog", "/"}, method = RequestMethod.GET)
     public String users(
             @RequestParam(value="categoryId", required=false, defaultValue = "0") int categoryId,
             @RequestParam(value="page", required=false, defaultValue = "1") int page,
