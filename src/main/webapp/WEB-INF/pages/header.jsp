@@ -42,9 +42,6 @@
                                 <li <c:if test="${param.activePage == 'file'}"> class="active" </c:if>>
                                     <a href="<spring:url value="/files" />"><i class="fa fa-file-text-o"></i> <span class="nav-label">Файлы</span></a>
                                 </li>
-                                <li <c:if test="${param.activePage == 'file'}"> class="active" </c:if>>
-                                    <a href="<spring:url value="/files" />"><i class="fa fa-file-text-o"></i> <span class="nav-label">Мои файлы</span></a>
-                                </li>
                                 <li <c:if test="${param.activePage == 'unfilled-files'}"> class="active" </c:if>>
                                     <a href="<spring:url value="/unfilled-files" />"><i class="fa fa-file"></i> <span class="nav-label">Незаполненные Файлы</span></a>
                                 </li>
