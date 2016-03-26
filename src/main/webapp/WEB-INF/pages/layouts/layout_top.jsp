@@ -9,12 +9,11 @@
 
         <link href="<spring:url value="/resources/css/bootstrap.min.css" />" rel="stylesheet" />
         <link href="<spring:url value="/resources/fonts/font-awesome/css/font-awesome.css" />" rel="stylesheet" />
-        <link href="<spring:url value="/resources/css/animate.css" />" rel="stylesheet" />
         <link href="<spring:url value="/resources/css/kforms.css" />" rel="stylesheet" />
         <link href="<spring:url value="/resources/css/dropzone.css" />" rel="stylesheet" />
         <link href="<spring:url value="/resources/css/toastr.min.css" />" rel="stylesheet" />
         <link href="<spring:url value="/resources/css/jquery.steps.css" />" rel="stylesheet" />
-        <link href="<spring:url value="/resources/css/js-tree/style.min.css" />" rel="stylesheet" />
+        <link href="<spring:url value="/resources/css/js-tree/style.css" />" rel="stylesheet" />
         <link href="<spring:url value="/resources/css/choosen/chosen.css" />" rel="stylesheet" />
         <link href="<spring:url value="/resources/css/style.css" />" rel="stylesheet" />
 
