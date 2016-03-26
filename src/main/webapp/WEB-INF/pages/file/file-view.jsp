@@ -34,6 +34,7 @@
 <p>
     <a href="<spring:url value="/admin/file-property-add?id=${file.id}" />" class="btn btn-success">Добавить свойство файла</a>
     <a href="<spring:url value="/admin/file-version-property-add?id=${currentVersion.id}" />" class="btn btn-success">Добавить свойство версии</a>
+    <a href="<spring:url value="/file-export?versionId=${currentVersion.id}" />" class="btn btn-warning">Экспорт</a>
 </p>
 
 <h3>${file.title}</h3>

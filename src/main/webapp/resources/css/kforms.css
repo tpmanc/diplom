@@ -48,7 +48,6 @@
  margin: 0;
  font-size: 14px;
  font-weight: 400;
- color: #626262;
  outline: none;
 }
 .kform .radio,
@@ -308,9 +307,6 @@
 .kform .select > select:focus {
  z-index: 10;
  z-index: 20\9;
-}
-.kform .gui-textarea:focus {
- height: 120px;
 }
 .kform .select > select:focus {
  z-index: 10;
