@@ -8,7 +8,7 @@
         <meta charset="UTF-8">
 
         <link href="<spring:url value="/resources/css/bootstrap.min.css" />" rel="stylesheet" />
-        <link href="<spring:url value="/resources/fonts/admin/font-awesome/css/font-awesome.css" />" rel="stylesheet" />
+        <link href="<spring:url value="/resources/fonts/font-awesome/css/font-awesome.css" />" rel="stylesheet" />
         <link href="<spring:url value="/resources/css/animate.css" />" rel="stylesheet" />
         <link href="<spring:url value="/resources/css/kforms.css" />" rel="stylesheet" />
         <link href="<spring:url value="/resources/css/dropzone.css" />" rel="stylesheet" />

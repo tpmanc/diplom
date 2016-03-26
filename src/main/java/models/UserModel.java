@@ -1,9 +1,9 @@
 package models;
 
 import db.Database2;
-import exceptions.CustomSQLException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.security.acls.model.NotFoundException;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -109,7 +109,7 @@ public class UserModel extends BaseModel implements ModelInterface {
             String address = (String) result.get("address");
             return new UserModel(userId, phone, email, displayName, department, departmentNumber, fax, address);
         } else {
-            throw new CustomSQLException("Пользователь не найден");
+            throw new NotFoundException("Пользователь не найден");
         }
     }
 

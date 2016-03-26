@@ -2,7 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 
-<jsp:include page="../../layouts/layout_top.jsp">
+<jsp:include page="../layouts/layout_top.jsp">
     <jsp:param name="activePage" value="property" />
 </jsp:include>
 
@@ -18,8 +18,17 @@
 
 <br>
 
-<jsp:include page="_form.jsp" >
-    <jsp:param name="property" value="${property}" />
-</jsp:include>
+<table class="table table-striped models-view">
+    <tbody>
+        <tr>
+            <td>Id</td>
+            <td>${property.id}</td>
+        </tr>
+        <tr>
+            <td>Название</td>
+            <td>${property.title}</td>
+        </tr>
+    </tbody>
+</table>
 
-<jsp:include page="../../layouts/layout_bottom.jsp" />
+<jsp:include page="../layouts/layout_bottom.jsp" />

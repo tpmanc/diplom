@@ -1,9 +1,12 @@
 package exceptions;
 
-public class CustomSQLException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+@ResponseStatus(value= HttpStatus.INTERNAL_SERVER_ERROR)
+public class InternalException extends RuntimeException {
     private String code;
     private String message;
-    private String stackTrace;
 
     @Override
     public String getMessage() {
@@ -14,12 +17,12 @@ public class CustomSQLException extends RuntimeException {
         return code;
     }
 
-    public CustomSQLException(String message, String code) {
+    public InternalException(String message, String code) {
         this.code = code;
         this.message = message;
     }
 
-    public CustomSQLException(String message) {
+    public InternalException(String message) {
         this.code = "";
         this.message = message;
     }

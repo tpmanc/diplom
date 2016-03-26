@@ -1,9 +1,7 @@
 package controllers;
 
-import auth.CustomUserDetails;
 import models.FileModel;
 import models.FileVersionModel;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,6 +31,6 @@ public class AdminUnfilledFile {
 
         model.addAttribute("page", page);
         model.addAttribute("pageTitle", "Все незаполненные файлы");
-        return "admin/unfilled-file/files";
+        return "unfilled-file/files";
     }
 }

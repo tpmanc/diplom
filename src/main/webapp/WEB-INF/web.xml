@@ -31,11 +31,15 @@
 
     <error-page>
         <error-code>404</error-code>
-        <location>/WEB-INF/pages/error404.jsp</location>
+        <location>/not-found</location>
     </error-page>
     <error-page>
         <error-code>403</error-code>
-        <location>/WEB-INF/pages/error403.jsp</location>
+        <location>/forbidden</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/internal-error</location>
     </error-page>
 
     <context-param>

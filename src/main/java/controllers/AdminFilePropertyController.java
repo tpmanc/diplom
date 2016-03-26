@@ -42,7 +42,7 @@ public class AdminFilePropertyController {
         }
 
         model.addAttribute("pageTitle", "Добавить свойство");
-        return "admin/file-property/file-property-add";
+        return "file-property/file-property-add";
     }
 
     /**
@@ -61,7 +61,7 @@ public class AdminFilePropertyController {
         }
 
         model.addAttribute("pageTitle", "Изменить свойство файла");
-        return "admin/file-property/file-property-edit";
+        return "file-property/file-property-edit";
     }
 
     /**

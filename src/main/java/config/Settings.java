@@ -1,5 +1,6 @@
 package config;
 
+import exceptions.InternalException;
 import exceptions.NotFoundException;
 import helpers.ConfigDB;
 import models.helpers.ActiveDirectorySettings;
@@ -53,10 +54,10 @@ public class Settings {
 //            in.close();
         } catch (FileNotFoundException e) {
             // todo 500
-            throw new NotFoundException("ERROR");
+            throw new InternalException("ERROR");
         } catch (IOException e) {
             // todo 500
-            throw new NotFoundException("ERROR");
+            throw new InternalException("ERROR");
         }
     }
 
@@ -147,10 +148,10 @@ public class Settings {
             out.close();
         } catch (FileNotFoundException e) {
             // todo 500
-            throw new NotFoundException("ERROR");
+            throw new InternalException("ERROR");
         } catch (IOException e) {
             // todo 500
-            throw new NotFoundException("ERROR");
+            throw new InternalException("ERROR");
         }
     }
 }

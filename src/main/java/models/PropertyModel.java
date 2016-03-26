@@ -1,7 +1,6 @@
 package models;
 
 import db.Database2;
-import exceptions.CustomSQLException;
 import exceptions.NotFoundException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -144,7 +143,7 @@ public class PropertyModel extends BaseModel implements ModelInterface {
             String title = (String) result.get("title");
             return new PropertyModel(propertyId, title);
         } else {
-            throw new CustomSQLException("Свойство не найдено");
+            throw new NotFoundException("Свойство не найдено");
         }
     }
 

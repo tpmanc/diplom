@@ -6,9 +6,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.security.Principal;
 
 /**
  * Контроллер главной страницы для администратора
@@ -32,6 +29,6 @@ public class AdminIndexController {
         int categoryCount = CategoryModel.getCount();
         model.addAttribute("categoryCount", categoryCount);
 
-        return "admin/index";
+        return "dashboard/index";
     }
 }

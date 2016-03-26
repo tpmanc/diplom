@@ -1,18 +1,18 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 
 <jsp:include page="layouts/init-settings_top.jsp" />
 
 <div class="middle-box text-center">
-    <h1>403</h1>
+    <h1>500</h1>
     <h3 class="font-bold">
         <c:choose>
         <c:when test="${message != null}">
             ${message}
         </c:when>
         <c:otherwise>
-            Доступ запрещен
+            Внутренняя ошибка сервера
         </c:otherwise>
         </c:choose>
     </h3>

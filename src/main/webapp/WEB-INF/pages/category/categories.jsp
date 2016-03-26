@@ -3,11 +3,11 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 
-<jsp:include page="../../layouts/layout_top.jsp">
+<jsp:include page="../layouts/layout_top.jsp">
     <jsp:param name="activePage" value="categoryTree" />
 </jsp:include>
 
-<spring:url value="/resources/js/pages/admin/category/categories.js" var="categoryTreeJs" />
+<spring:url value="/resources/js/pages/category/categories.js" var="categoryTreeJs" />
 <spring:url value="/admin/category/ajax-delete" var="categoryTreeDeleteUrl" />
 <spring:url value="/admin/category/ajax-add-category" var="addCategoryToTreeUrl" />
 <spring:url value="/admin/category/ajax-update-position" var="updatePosition" />
@@ -93,4 +93,4 @@
     </div>
 </div>
 
-<jsp:include page="../../layouts/layout_bottom.jsp" />
+<jsp:include page="../layouts/layout_bottom.jsp" />

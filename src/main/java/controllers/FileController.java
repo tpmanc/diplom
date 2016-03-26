@@ -1,8 +1,8 @@
 package controllers;
 
 import auth.CustomUserDetails;
-import exceptions.CustomSQLException;
 import exceptions.ForbiddenException;
+import exceptions.InternalException;
 import exceptions.NotFoundException;
 import helpers.CommandHelper;
 import helpers.FileCheckSum;
@@ -228,7 +228,7 @@ public class FileController {
                     version.setFileId(fileModel.getId());
                     version.update();
                 } catch (SQLException e) {
-                    throw new CustomSQLException(e.getMessage());
+                    throw new InternalException(e.getMessage());
                 }
                 success.add(file);
             }
@@ -421,8 +421,7 @@ public class FileController {
                 }
                 return "redirect:/file-view?id=" + file.getId();
             } catch (SQLException e) {
-                // todo 500
-                throw new NotFoundException("Ошибка");
+                throw new InternalException("Ошибка при сохранении");
             }
     }
 
@@ -453,8 +452,7 @@ public class FileController {
             throw new ForbiddenException("Доступ запрещен");
         }
         if (names.length != values.length || names.length != types.length) {
-            // todo 500
-            throw new NotFoundException("Ошибка");
+            throw new InternalException("Ошибка при обработке запроса");
         }
 
         ArrayList<ExportParam> parameters = new ArrayList<ExportParam>();

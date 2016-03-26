@@ -37,7 +37,7 @@ public class AdminPropertyController {
         }
 
         model.addAttribute("pageTitle", "Свойства файлов");
-        return "admin/property/properties";
+        return "property/properties";
     }
 
     /**
@@ -48,7 +48,7 @@ public class AdminPropertyController {
     @RequestMapping(value = {"/property-add" }, method = RequestMethod.GET)
     public String add(Model model) {
         model.addAttribute("pageTitle", "Добавить свойство файла");
-        return "admin/property/property-add";
+        return "property/property-add";
     }
 
     /**
@@ -67,7 +67,7 @@ public class AdminPropertyController {
         }
         model.addAttribute("property", property);
         model.addAttribute("pageTitle", "Изменить свойство файла");
-        return "admin/property/property-edit";
+        return "property/property-edit";
     }
 
     /**
@@ -82,7 +82,7 @@ public class AdminPropertyController {
         model.addAttribute("property", property);
 
         model.addAttribute("pageTitle", "Просмотр свойства");
-        return "admin/property/property-view";
+        return "property/property-view";
     }
 
     /**

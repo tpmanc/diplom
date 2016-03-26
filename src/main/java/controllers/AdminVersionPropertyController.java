@@ -40,7 +40,7 @@ public class AdminVersionPropertyController {
         }
 
         model.addAttribute("pageTitle", "Добавить свойство");
-        return "admin/file-version-property/file-version-property-add";
+        return "file-version-property/file-version-property-add";
     }
 
     /**
@@ -62,7 +62,7 @@ public class AdminVersionPropertyController {
         }
 
         model.addAttribute("pageTitle", "Изменить свойство версии");
-        return "admin/file-version-property/file-version-property-edit";
+        return "file-version-property/file-version-property-edit";
     }
 
     /**

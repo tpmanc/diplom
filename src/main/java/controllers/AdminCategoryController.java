@@ -31,7 +31,7 @@ public class AdminCategoryController {
         }
 
         model.addAttribute("pageTitle", "Деревья категорий");
-        return "admin/category/categories";
+        return "category/categories";
     }
 
     /**
