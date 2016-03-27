@@ -1,15 +1,12 @@
 package controllers;
 
 import auth.CustomUserDetails;
-import exceptions.ForbiddenException;
 import exceptions.InternalException;
 import exceptions.NotFoundException;
-import helpers.CommandHelper;
-import helpers.FileCheckSum;
+import helpers.FileHelper;
 import helpers.PEProperties;
 import helpers.UserHelper;
 import models.*;
-import models.helpers.ExportParam;
 import models.helpers.FileFilling;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -21,7 +18,6 @@ import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -111,6 +107,9 @@ public class FileController {
             // категории файла
             ArrayList<HashMap> fileCategories = FileCategoryModel.findByFile(file.getId());
             model.addAttribute("fileCategories", fileCategories);
+
+            int requestCount = RequestModel.getNewCountForUser(activeUser.getEmployeeId());
+            model.addAttribute("requestCount", requestCount);
 
             // преобразование даты загрузки для вывода на страницу
             Date date = new Date(currentVersion.getDate());
@@ -268,7 +267,7 @@ public class FileController {
                     String uploadedFileName = new String(file.getOriginalFilename().getBytes("ISO-8859-1"), "UTF-8");
                     InputStream inputStream = file.getInputStream();
                     // формирование пути до файла
-                    String hash = FileCheckSum.get(inputStream);
+                    String hash = FileHelper.getHash(inputStream);
                     inputStream.close();
                     String firstDir = hash.substring(0, 2);
                     String secondDir = hash.substring(2, 4);

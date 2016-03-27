@@ -1,21 +1,21 @@
 package helpers;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import org.apache.commons.codec.binary.Base64OutputStream;
+
+import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
  * Получение хэша файла
  */
-public class FileCheckSum {
+public class FileHelper {
     /**
      * Взять хэш от файла
      * @param filePath Путь до файла
      * @return хэш
      */
-    public static String get(String filePath){
+    public static String getHash(String filePath){
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
             FileInputStream fis = new FileInputStream(filePath);
@@ -45,7 +45,7 @@ public class FileCheckSum {
      * @param stream Input stream файла
      * @return хэш
      */
-    public static String get(InputStream stream){
+    public static String getHash(InputStream stream){
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] dataBytes = new byte[1024];
@@ -73,7 +73,7 @@ public class FileCheckSum {
      * @param bytes Массив байт
      * @return хэш
      */
-    public static String get(byte[] bytes){
+    public static String getHash(byte[] bytes){
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] hashBytes = md.digest(bytes);
@@ -87,5 +87,18 @@ public class FileCheckSum {
             e.printStackTrace();
         }
         return "";
+    }
+
+    public static void encodeBase64(InputStream inputStream, String outPath) throws IOException {
+        int BUFFER_SIZE = 4096;
+        byte[] buffer = new byte[BUFFER_SIZE];
+        OutputStream output = new Base64OutputStream(new FileOutputStream(outPath));
+        int n = inputStream.read(buffer, 0, BUFFER_SIZE);
+        while (n >= 0) {
+            output.write(buffer, 0, n);
+            n = inputStream.read(buffer, 0, BUFFER_SIZE);
+        }
+//        inputStream.close();
+        output.close();
     }
 }

@@ -2,11 +2,8 @@ package db;
 
 
 import config.Settings;
-import helpers.ConfigDB;
 import models.helpers.DatabaseSettings;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.ContextLoader;
 
 /**
  * Соединение с базой данных

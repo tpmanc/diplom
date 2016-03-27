@@ -48,6 +48,9 @@
                                 <li <c:if test="${param.activePage == 'property'}"> class="active" </c:if>>
                                     <a href="<spring:url value="/admin/properties" />"><i class="fa fa-list-ul"></i> <span class="nav-label">Свойства файлов</span></a>
                                 </li>
+                                <li <c:if test="${param.activePage == 'request'}"> class="active" </c:if>>
+                                    <a href="<spring:url value="/request-list" />"><i class="fa fa-clipboard"></i> <span class="nav-label">Заявки</span></a>
+                                </li>
                                 <li <c:if test="${param.activePage == 'user'}"> class="active" </c:if>>
                                     <a href="<spring:url value="/users" />"><i class="fa fa-user"></i> <span class="nav-label">Пользователи</span></a>
                                 </li>
@@ -94,9 +97,9 @@
                 </div>
                 <ul class="nav navbar-top-links navbar-right">
                     <li class="dropdown hidden-xs">
-                        <a class="dropdown-toggle count-info" href="<spring:url value="/requests" />">
+                        <a class="dropdown-toggle count-info" href="<spring:url value="/request-list" />">
                             Мои заявки
-                            <i class="fa fa-envelope"></i>  <span class="label label-danger">4</span>
+                            <i class="fa fa-envelope"></i>  <span class="label label-danger">${requestCount}</span>
                         </a>
                     </li>
                     <li class="dropdown pull-right">
