@@ -21,6 +21,7 @@ import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -423,58 +424,6 @@ public class FileController {
             } catch (SQLException e) {
                 throw new InternalException("Ошибка при сохранении");
             }
-    }
-
-    /**
-     * Экспорт файла
-     * @param versionId Id версии файла
-     */
-    @RequestMapping(value = {"/file-export" }, method = RequestMethod.GET)
-    public String fileExport(@RequestParam int versionId, Principal principal, Model model) {
-        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
-        if (!UserHelper.isAdmin(activeUser)) {
-            throw new ForbiddenException("Доступ запрещен");
-        }
-        model.addAttribute("pageTitle", "Экспорт файла - шаг 1");
-        return "file/file-export-1";
-    }
-
-    @RequestMapping(value = {"/file-export-handler" }, method = RequestMethod.POST)
-    public String fileExportHandler(
-            @RequestParam("names[]") String[] names,
-            @RequestParam("types[]") int[] types,
-            @RequestParam("values[]") String[] values,
-            Principal principal,
-            Model model
-    ) {
-        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
-        if (!UserHelper.isAdmin(activeUser)) {
-            throw new ForbiddenException("Доступ запрещен");
-        }
-        if (names.length != values.length || names.length != types.length) {
-            throw new InternalException("Ошибка при обработке запроса");
-        }
-
-        ArrayList<ExportParam> parameters = new ArrayList<ExportParam>();
-        int count = names.length;
-        for (int i = 0; i < count; i++) {
-            ExportParam params = new ExportParam();
-            params.setName(names[i]);
-            params.setType(types[i]);
-            if (types[i] == 2) {
-                ArrayList<String> commandResult = CommandHelper.execute(values[i]);
-                params.setVariants(commandResult);
-            } else {
-                params.setValue(values[i]);
-            }
-            parameters.add(params);
-        }
-
-        CommandHelper.generateXsd(parameters);
-
-        model.addAttribute("parameters", parameters);
-        model.addAttribute("pageTitle", "Экспорт файла - шаг 2");
-        return "file/file-export-2";
     }
 
     /**

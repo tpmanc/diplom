@@ -40,8 +40,7 @@
 <h2>${pageTitle}</h2>
 
 <ol class="breadcrumb">
-    <li><a href="<spring:url value="/admin" />">Главная</a></li>
-    <li><a href="<spring:url value="/admin/files" />">Файлы</a></li>
+    <li><a href="<spring:url value="/file-view?id=${version.fileId}&versionId=${version.id}" />">Просмотр файла</a></li>
     <li class="active">
         <strong>${pageTitle}</strong>
     </li>
@@ -51,6 +50,7 @@
 
 <div class="kform">
     <form action="<spring:url value="/file-export-handler" />" method="post" id="parameters" class="form-horizontal" name="params">
+        <input type="hidden" name="versionId" value="${version.id}">
         <table class="table export-table">
             <thead>
                 <tr>
@@ -61,6 +61,45 @@
                 </tr>
             </thead>
             <tbody>
+                <c:forEach items="${savedParameters}" var="item" varStatus="itemStat">
+                    <tr>
+                        <td class="param-name">
+                            <input type="text" name="names[]" placeholder="Название" required class="form-control" value="${item.name}">
+                        </td>
+                        <td class="param-type">
+                            <div class="select">
+                                <select name="types[]">\
+                                    <option value="1">Значение</option>
+                                    <option value="2" <c:if test="${item.type == 2}">selected</c:if>>Команды</option>
+                                </select>
+                            </div>
+                        </td>
+                        <td class="param-commands">
+                            <div class="section">
+                                <label class="field">
+                                    <c:choose>
+                                        <c:when test="${item.type == 2}">
+                                            <textarea
+                                                    class="gui-textarea"
+                                                    required name="values[]"
+                                                    placeholder="Значение"
+                                            >${item.commands}</textarea>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <textarea class="gui-textarea" required name="values[]" placeholder="Значение">${item.value}</textarea>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </label>
+                            </div>
+                        </td>
+                        <td class="param-delete">
+                            <a class="btn btn-white btn-bitbucket add-parameter">
+                                <i class="fa fa-times"></i>
+                                Удалить
+                            </a>
+                        </td>
+                    </tr>
+                </c:forEach>
             </tbody>
         </table>
         <div class="form-group">

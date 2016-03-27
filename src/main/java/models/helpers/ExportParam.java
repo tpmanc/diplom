@@ -10,6 +10,7 @@ public class ExportParam {
     private int type;
     private String value;
     private ArrayList<String> variants;
+    private String commands;
 
     public String getName() {
         return name;
@@ -41,5 +42,13 @@ public class ExportParam {
 
     public void setVariants(ArrayList<String> variants) {
         this.variants = variants;
+    }
+
+    public String getCommands() {
+        return commands;
+    }
+
+    public void setCommands(String commands) {
+        this.commands = commands;
     }
 }
