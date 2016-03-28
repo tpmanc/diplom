@@ -5,6 +5,7 @@ import exceptions.NotFoundException;
 import helpers.UserHelper;
 import models.FileModel;
 import models.FileVersionModel;
+import models.LogModel;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -108,6 +109,7 @@ public class UnfilledFile {
             // проверка прав
             CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
             if (fileVersion.getUserId() != activeUser.getEmployeeId() && !UserHelper.isAdmin(activeUser)) {
+                LogModel.addWarning(activeUser.getEmployeeId(), "Попытка заполнения чужого файла id=" + versionId);
                 throw new AccessDeniedException("Доступ запрещен");
             }
 
@@ -132,6 +134,7 @@ public class UnfilledFile {
             fileVersion.setVersion(version);
             fileVersion.setIsFilled(true);
             fileVersion.update();
+            LogModel.addInfo(activeUser.getEmployeeId(), "Заполнен файл id=" + versionId);
 
             return "redirect:/file-view?id="+file.getId()+"&versionId="+fileVersion.getId();
         } catch (SQLException e) {

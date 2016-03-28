@@ -8,6 +8,7 @@ import helpers.CommandHelper;
 import helpers.UserHelper;
 import models.FileModel;
 import models.FileVersionModel;
+import models.LogModel;
 import models.helpers.ExportParam;
 import models.helpers.ExportParamForUse;
 import org.springframework.security.core.Authentication;
@@ -66,9 +67,11 @@ public class ExportController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isAdmin(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка экспотра файла без прав администратора");
             throw new ForbiddenException("Доступ запрещен");
         }
         if (names.length != values.length || names.length != types.length) {
+            LogModel.addError(activeUser.getEmployeeId(), "При экспорте файла, на 1 шаге, не все поля были заполнены");
             throw new InternalException("Ошибка при обработке запроса");
         }
 
@@ -143,9 +146,11 @@ public class ExportController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isAdmin(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка экспотра файла без прав администратора");
             throw new ForbiddenException("Доступ запрещен");
         }
         if (names != null && values != null && names.length != values.length) {
+            LogModel.addError(activeUser.getEmployeeId(), "При экспорте файла, на 2 шаге, не все поля были заполнены");
             throw new InternalException("Ошибка при обработке запроса");
         }
 
@@ -242,6 +247,7 @@ public class ExportController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isAdmin(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка экспотра файла без прав администратора");
             throw new ForbiddenException("Доступ запрещен");
         }
 
@@ -257,6 +263,7 @@ public class ExportController {
             }
 
             // todo: execute resultCommand
+            // todo: LogModel.addInfo
 
             return "redirect:/file-export-3?versionId="+versionId;
         } catch (SQLException e) {

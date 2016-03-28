@@ -1,11 +1,16 @@
 package controllers;
 
+import auth.CustomUserDetails;
+import exceptions.NotFoundException;
 import models.CategoryModel;
+import models.LogModel;
 import org.json.simple.JSONObject;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,16 +27,15 @@ public class AdminCategoryController {
      */
     @RequestMapping(value = {"/categories" }, method = RequestMethod.GET)
     public String index(Model model) {
-        ArrayList<HashMap> trees = null;
         try {
-            trees = CategoryModel.findAll();
+            ArrayList<HashMap> trees = CategoryModel.findAll();
             model.addAttribute("trees", trees);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
 
-        model.addAttribute("pageTitle", "Деревья категорий");
-        return "category/categories";
+            model.addAttribute("pageTitle", "Деревья категорий");
+            return "category/categories";
+        } catch (SQLException e) {
+            throw new NotFoundException("Станица не найдена");
+        }
     }
 
     /**
@@ -46,7 +50,8 @@ public class AdminCategoryController {
     public String addNewCategory(
             @RequestParam("parent") int parent,
             @RequestParam("title") String title,
-            @RequestParam("position") int position
+            @RequestParam("position") int position,
+            Principal principal
     ) {
         JSONObject result = new JSONObject();
         try {
@@ -55,6 +60,8 @@ public class AdminCategoryController {
                 result.put("title", title);
                 result.put("id", category.getId());
                 result.put("error", false);
+                CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+                LogModel.addInfo(activeUser.getEmployeeId(), "Добавлена категория "+title+", id="+category.getId());
             } else {
                 result.put("error", true);
                 result.put("msg", category.errors);
@@ -77,15 +84,19 @@ public class AdminCategoryController {
     @RequestMapping(value = "/category/ajax-rename", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
     public String renameCategory(
             @RequestParam("id") int id,
-            @RequestParam("title") String title
+            @RequestParam("title") String title,
+            Principal principal
     ) {
         JSONObject result = new JSONObject();
         try {
             CategoryModel model = CategoryModel.findById(id);
+            String oldTitle = model.getTitle();
             model.setTitle(title);
             model.update();
             result.put("title", title);
             result.put("error", false);
+            CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+            LogModel.addInfo(activeUser.getEmployeeId(), "Категория "+oldTitle+" переименована в "+title+", id="+id);
         } catch (SQLException e) {
             result.put("error", true);
             result.put("msg", e.getMessage());
@@ -106,7 +117,8 @@ public class AdminCategoryController {
     public String categoryTreeUpdatePositionUrl(
             @RequestParam("treeId") int id,
             @RequestParam("newParentId") int newParentId,
-            @RequestParam("position") int position
+            @RequestParam("position") int position,
+            Principal principal
             ) {
         JSONObject result = new JSONObject();
         try {
@@ -116,6 +128,8 @@ public class AdminCategoryController {
                 model.update();
             }
             CategoryModel.updateSortingOfNode(newParentId, id, position);
+            CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+            LogModel.addInfo(activeUser.getEmployeeId(), "Изменен порядок подкатегорий у родителя с id="+newParentId);
             result.put("error", false);
         } catch (SQLException e) {
             result.put("error", true);
@@ -133,12 +147,16 @@ public class AdminCategoryController {
     @ResponseBody
     @RequestMapping(value = "/category/ajax-delete", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
     public String categoryTreeDeleteUrl(
-            @RequestParam("id") int id
+            @RequestParam("id") int id,
+            Principal principal
     ) {
         JSONObject result = new JSONObject();
         try {
             CategoryModel model = CategoryModel.findById(id);
+            String title = model.getTitle();
             model.delete();
+            CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+            LogModel.addInfo(activeUser.getEmployeeId(), "Категория "+title+" удалена");
             result.put("error", false);
         } catch (SQLException e) {
             result.put("error", true);

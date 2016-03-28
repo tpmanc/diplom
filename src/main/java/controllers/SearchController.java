@@ -4,6 +4,7 @@ import auth.CustomUserDetails;
 import exceptions.NotFoundException;
 import models.CategoryModel;
 import models.FileModel;
+import models.LogModel;
 import models.RequestModel;
 import models.helpers.CategoryFile;
 import org.json.simple.JSONObject;
@@ -37,6 +38,8 @@ public class SearchController {
 
         model.addAttribute("searchText", text);
         model.addAttribute("pageTitle", "Результаты поиска \"" + text + "\"");
+
+        LogModel.addInfo(activeUser.getEmployeeId(), "Поиск файла, поисковый запрос: " + text);
         return "search/search";
     }
 }

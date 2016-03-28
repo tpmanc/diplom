@@ -52,7 +52,7 @@ public class LogModel extends BaseModel implements ModelInterface {
     public static void addWarning(int userId, String message) {
         addMessage(userId, WARNING, message);
     }
-    public static void addEror(int userId, String message) {
+    public static void addError(int userId, String message) {
         addMessage(userId, ERROR, message);
     }
 

@@ -1,8 +1,10 @@
 package controllers;
 
+import auth.CustomUserDetails;
 import exceptions.NotFoundException;
 import models.*;
 import org.json.simple.JSONObject;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -72,14 +75,22 @@ public class AdminVersionPropertyController {
      */
     @ResponseBody
     @RequestMapping(value = {"/file-version-property-delete"}, method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
-    public String filePropertyDelete(@RequestParam("propertyLink") int propertyLink) {
+    public String filePropertyDelete(
+            @RequestParam("propertyLink") int propertyLink,
+            Principal principal
+    ) {
         JSONObject result = new JSONObject();
         boolean error = true;
 
         try {
+            CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+
             FileVersionPropertyModel fileProperty = FileVersionPropertyModel.findById(propertyLink);
+            int versionId = fileProperty.getFileVersionId();
+            int propertyId = fileProperty.getPropertyId();
             if (fileProperty.delete()) {
                 error = false;
+                LogModel.addInfo(activeUser.getEmployeeId(), "У версии id="+versionId+" удалено свойство id="+propertyId);
             }
         } catch (SQLException e) {
             throw new NotFoundException("Свойство файла не найдено");
@@ -103,7 +114,8 @@ public class AdminVersionPropertyController {
             @RequestParam("propertyId") int propertyId,
             @RequestParam("value") String value,
             @RequestParam(value="id", required=false, defaultValue = "0") int id,
-            RedirectAttributes attr
+            RedirectAttributes attr,
+            Principal principal
     ) {
         // проверяем, есть ли такое свойство
         PropertyModel property = PropertyModel.findById(propertyId);
@@ -112,12 +124,14 @@ public class AdminVersionPropertyController {
         if (checkProperty != null) {
             id = checkProperty.getId();
         }
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         // если это добавление нового свойства версии
         if (id == 0) {
             try {
                 FileVersionModel fileVersion = FileVersionModel.findById(fileVersionId);
                 FileVersionPropertyModel fileProperty = new FileVersionPropertyModel(fileVersion.getId(), propertyId, value);
                 if (fileProperty.add()) {
+                    LogModel.addInfo(activeUser.getEmployeeId(), "Версии файла id="+fileProperty.getFileVersionId()+" добавлено свойство id="+fileProperty.getPropertyId());
                     return "redirect:/file-view?id="+fileVersion.getFileId()+"&versionId="+fileVersion.getId();
                 } else {
                     attr.addFlashAttribute("errors", fileProperty.errors);
@@ -134,6 +148,7 @@ public class AdminVersionPropertyController {
                 FileVersionPropertyModel fileProperty = FileVersionPropertyModel.findById(id);
                 fileProperty.setValue(value);
                 if (fileProperty.update()) {
+                    LogModel.addInfo(activeUser.getEmployeeId(), "У версии файла id="+fileProperty.getFileVersionId()+" изменено свойство id="+fileProperty.getPropertyId());
                     return "redirect:/file-view?id="+fileVersion.getFileId()+"&versionId="+fileVersion.getId();
                 } else {
                     attr.addFlashAttribute("errors", fileProperty.errors);

@@ -1,10 +1,13 @@
 package controllers;
 
+import auth.CustomUserDetails;
 import exceptions.NotFoundException;
 import models.FileModel;
 import models.FilePropertyModel;
+import models.LogModel;
 import models.PropertyModel;
 import org.json.simple.JSONObject;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -102,20 +106,24 @@ public class AdminFilePropertyController {
             @RequestParam("propertyId") int propertyId,
             @RequestParam("value") String value,
             @RequestParam(value="id", required=false, defaultValue = "0") int id,
-            RedirectAttributes attr
+            RedirectAttributes attr,
+            Principal principal
     ) {
         // проверяем, есть ли такое свойство
         PropertyModel property = PropertyModel.findById(propertyId);
         // проверяем, не заполнено ли уже это свойство
+        FileModel fileModel = FileModel.findById(fileId);
         FilePropertyModel checkProperty = FilePropertyModel.isPropertyExist(fileId, propertyId);
         if (checkProperty != null) {
             id = checkProperty.getId();
         }
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         // если это добавление нового свойства
         if (id == 0) {
             FilePropertyModel fileProperty = new FilePropertyModel(fileId, propertyId, value);
             try {
                 if (fileProperty.add()) {
+                    LogModel.addInfo(activeUser.getEmployeeId(), "Файлу "+fileModel.getTitle()+", id="+fileModel.getId()+" добавлено свойство "+property.getTitle()+" = "+value);
                     return "redirect:/file-view?id="+fileId;
                 } else {
                     attr.addFlashAttribute("errors", fileProperty.errors);
@@ -131,6 +139,7 @@ public class AdminFilePropertyController {
                 FilePropertyModel fileProperty = FilePropertyModel.findById(id);
                 fileProperty.setValue(value);
                 if (fileProperty.update()) {
+                    LogModel.addInfo(activeUser.getEmployeeId(), "У файла "+fileModel.getTitle()+", id="+fileModel.getId()+" имзменено значение свойства "+property.getTitle()+" на "+value);
                     return "redirect:/file-view?id="+fileId;
                 } else {
                     attr.addFlashAttribute("errors", fileProperty.errors);

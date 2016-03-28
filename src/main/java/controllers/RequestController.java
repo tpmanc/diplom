@@ -249,6 +249,7 @@ public class RequestController {
                     fileModel.add();
                     counter++;
                 }
+                LogModel.addInfo(activeUser.getEmployeeId(), "Добавлена заявка, id="+requestModel.getId());
                 return "redirect:/request-view?requestId="+requestModel.getId();
             } else{
                 attr.addFlashAttribute("errors", errors);

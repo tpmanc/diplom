@@ -1,7 +1,10 @@
 package controllers;
 
+import auth.CustomUserDetails;
 import exceptions.NotFoundException;
+import models.LogModel;
 import models.PropertyModel;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -96,15 +100,20 @@ public class AdminPropertyController {
     public String addHandler(
             @RequestParam("title") String title,
             @RequestParam(value="id", required=false, defaultValue = "0") int id,
-            RedirectAttributes attr
+            RedirectAttributes attr,
+            Principal principal
     ) {
         PropertyModel property;
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+
         // если это изменение свойства
         if (id > 0) {
             try {
                 property = PropertyModel.findCustomById(id);
+                String oldTitle = property.getTitle();
                 property.setTitle(title);
                 if (property.update()) {
+                    LogModel.addInfo(activeUser.getEmployeeId(), "Название свойства было изменено с "+oldTitle+"на "+property.getTitle()+", id=" + property.getId());
                     return "redirect:/admin/properties";
                 } else {
                     attr.addFlashAttribute("errors", property.errors);
@@ -118,6 +127,7 @@ public class AdminPropertyController {
             property = new PropertyModel(title);
             try {
                 if (property.add()) {
+                    LogModel.addInfo(activeUser.getEmployeeId(), "Добавлено новое свойство "+property.getTitle()+", id=" + property.getId());
                     return "redirect:/admin/properties";
                 } else {
                     attr.addFlashAttribute("errors", property.errors);
