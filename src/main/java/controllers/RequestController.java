@@ -46,17 +46,21 @@ public class RequestController {
             CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
             UserModel user = UserModel.findById(activeUser.getEmployeeId());
 
-            int pageCount = (int) Math.ceil((float)RequestModel.getCountForUser(user.getId()) / limit);
-            model.addAttribute("pageCount", pageCount);
-
+            int pageCount = 0;
             ArrayList<RequestModel> requests = null;
             if (UserHelper.isModerator(activeUser)) {
+                // для модератора выбираем все заявки
                 requests = RequestModel.findAll(limit, offset);
+                pageCount = (int) Math.ceil((float)RequestModel.getCount() / limit);
             } else {
+                // для пользователя выбираем только его заявки
                 requests = RequestModel.findAllByUser(user.getId(), limit, offset);
+                pageCount = (int) Math.ceil((float)RequestModel.getCountForUser(user.getId()) / limit);
             }
+            model.addAttribute("pageCount", pageCount);
             model.addAttribute("requests", requests);
 
+            // количество необработанных заявок текущего пользователя
             int requestCount = RequestModel.getNewCountForUser(activeUser.getEmployeeId());
             model.addAttribute("requestCount", requestCount);
 
@@ -153,6 +157,9 @@ public class RequestController {
             if (text.trim().length() == 0) {
                 errors.put("text", "Заполните текст заявки");
             }
+            if (files.length == 0) {
+                errors.put("file", "Добавить файлы");
+            }
 
             RequestModel requestModel = new RequestModel();
             requestModel.setStatus(RequestModel.NEW);
@@ -169,6 +176,7 @@ public class RequestController {
             }
             ArrayList<String> names = new ArrayList<String>();
             ArrayList<String> hashes = new ArrayList<String>();
+            // проверка файлов на дублирование
             for (MultipartFile file : files) {
                 if (!file.isEmpty()) {
                     String uploadedFileName = new String(file.getOriginalFilename().getBytes("ISO-8859-1"), "UTF-8");
@@ -189,6 +197,7 @@ public class RequestController {
                 }
             }
 
+            // если ошибок не было, то сохраняем
             if (errors.size() == 0) {
                 // сохраняем заявку в БД
                 requestModel.add();

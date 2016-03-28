@@ -30,6 +30,10 @@ public class BaseModel {
         return result;
     }
 
+    /**
+     * Выборка всех записей из таблицы постранично
+     * @param query Запрос в БД на выборку
+     */
     public static ArrayList<HashMap> queryAll(String query ,int limit, int offset) throws SQLException {
         ArrayList<HashMap> result = new ArrayList<HashMap>();
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());

@@ -17,6 +17,7 @@ public class RequestModel extends BaseModel implements ModelInterface {
     private static final String getAll = "SELECT * FROM request ORDER BY date DESC LIMIT :limit OFFSET :offset";
     private static final String getAllByUser = "SELECT * FROM request WHERE userId = :userId LIMIT :limit OFFSET :offset";
     private static final String getCountByUser = "SELECT count(id) FROM request WHERE userId = :userId";
+    private static final String getCount = "SELECT count(id) FROM request";
     private static final String getById = "SELECT * FROM request WHERE id = :id ORDER BY date DESC";
     private static final String getFiles = "SELECT * FROM requestFile WHERE requestId = :requestId";
     private static final String deleteById = "DELETE FROM request WHERE id = :id";
@@ -159,6 +160,12 @@ public class RequestModel extends BaseModel implements ModelInterface {
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("userId", userId);
         return template.queryForObject(getCountByUser, parameters, Integer.class);
+    }
+
+    public static int getCount() {
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        return template.queryForObject(getCount, parameters, Integer.class);
     }
 
     public static int getNewCountForUser(int userId) {

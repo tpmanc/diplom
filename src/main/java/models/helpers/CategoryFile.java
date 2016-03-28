@@ -1,5 +1,8 @@
 package models.helpers;
 
+/**
+ * Вспомогательная модель для вывода файлов в каталоге
+ */
 public class CategoryFile {
     private int id;
     private String title;

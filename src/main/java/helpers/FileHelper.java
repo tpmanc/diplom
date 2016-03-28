@@ -89,6 +89,9 @@ public class FileHelper {
         return "";
     }
 
+    /**
+     * Кодирование файла в Base64
+     */
     public static void encodeBase64(InputStream inputStream, String outPath) throws IOException {
         int BUFFER_SIZE = 4096;
         byte[] buffer = new byte[BUFFER_SIZE];

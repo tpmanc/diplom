@@ -10,12 +10,14 @@ import java.sql.SQLException;
 /**
  * Реализация события AuthenticationSuccessEvent
  * Вызывается после успешного логина
+ * Используется для получения доп полей из Active Directory
  */
 public class UserService implements ApplicationListener<AuthenticationSuccessEvent> {
     public void onApplicationEvent(AuthenticationSuccessEvent event) {
         CustomUserDetails details = (CustomUserDetails) event.getAuthentication().getPrincipal();
         UserModel user;
         try {
+            // при входе на сайте сохраняем информацию из AD в БД для текущего пользователя
             user = UserModel.isExist(details.getEmployeeId());
             if (user == null) {
                 user = new UserModel(

@@ -28,6 +28,7 @@ public class LdapContextMapperImpl implements UserDetailsContextMapper {
         String address = "";
 
         Attributes attributes = ctx.getAttributes();
+        // получение аттрибутов из Active Directory
         try {
             employeeId = (String) attributes.get("employeeid").get();
             if (attributes.get("displayname") != null) {

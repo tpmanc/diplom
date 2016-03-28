@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class AdminIndexController {
 
     /**
-     * Главная страница
+     * Dashboard
      * @param model
      * @return Путь до представления
      */

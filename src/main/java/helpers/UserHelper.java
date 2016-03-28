@@ -14,6 +14,9 @@ public class UserHelper {
     public static final String ADMIN_ROLE = "ROLE_FR-ADMIN";
     public static final String MODERATOR_ROLE = "ROLE_FR-MODERATOR";
 
+    /**
+     * Проверка прав админа
+     */
     public static boolean isAdmin(CustomUserDetails activeUser) {
         Collection<GrantedAuthority> authorities = activeUser.getAuthorities();
         boolean hasRole = false;
@@ -26,6 +29,9 @@ public class UserHelper {
         return false;
     }
 
+    /**
+     * Проверка прав модератора
+     */
     public static boolean isModerator(CustomUserDetails activeUser) {
         Collection<GrantedAuthority> authorities = activeUser.getAuthorities();
         boolean hasRole = false;
@@ -42,6 +48,9 @@ public class UserHelper {
         return false;
     }
 
+    /**
+     * Проверка на аутентификацию
+     */
     public static boolean isLogin() {
         if (SecurityContextHolder.getContext().getAuthentication() != null &&
                 SecurityContextHolder.getContext().getAuthentication().isAuthenticated() &&

@@ -23,6 +23,9 @@ import java.util.HashMap;
  */
 @Controller
 public class UnfilledFile {
+    /**
+     * Список незаполненных файлов
+     */
     @RequestMapping(value = {"/unfilled-files" }, method = RequestMethod.GET)
     public String filesUnfilled(@RequestParam(value="page", required=false, defaultValue = "1") int page,
                                 @RequestParam(value="all", required=false, defaultValue = "0") boolean all,
@@ -47,12 +50,17 @@ public class UnfilledFile {
         int pageCount = (int) Math.ceil((float)FileVersionModel.getUnfilledCount(activeUser.getEmployeeId()) / limit);
         model.addAttribute("pageCount", pageCount);
 
+        // todo: добавить файлы без категории
+
         model.addAttribute("allFiles", all);
         model.addAttribute("page", page);
         model.addAttribute("pageTitle", "Незаполненные файлы");
         return "unfilled-file/files";
     }
 
+    /**
+     * Заполнение файла
+     */
     @RequestMapping(value = {"/file-filling" }, method = RequestMethod.GET)
     public String filesFilling(@RequestParam int versionId,
                                Principal principal,
@@ -79,6 +87,9 @@ public class UnfilledFile {
         }
     }
 
+    /**
+     * Обработчик формы по заполнению файла
+     */
     @RequestMapping(value = {"/file-filling-handler" }, method = RequestMethod.POST)
     public String filesFillingHandler(@RequestParam int versionId,
                                       @RequestParam String title,

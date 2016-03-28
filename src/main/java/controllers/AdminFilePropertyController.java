@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Контроллер свойств файла для администратора
+ * Контроллер свойств файла для модератора
  */
 @Controller
 @RequestMapping("/admin")

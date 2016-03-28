@@ -188,6 +188,9 @@ public class CategoryModel extends BaseModel implements ModelInterface {
         }
     }
 
+    /**
+     * Список файлов в категории постранично
+     */
     public ArrayList<CategoryFile> getFiles(int limit, int offset) {
         ArrayList<CategoryFile> result = new ArrayList<CategoryFile>();
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());

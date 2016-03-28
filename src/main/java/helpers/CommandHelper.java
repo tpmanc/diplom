@@ -18,7 +18,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Команды для экспорта
+ * Команды для экспорта и выполнение команд
  */
 public class CommandHelper {
     private final static String defaultXsd = "";

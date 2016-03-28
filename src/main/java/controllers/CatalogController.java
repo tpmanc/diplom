@@ -55,12 +55,4 @@ public class CatalogController {
             throw new NotFoundException("Страница не найдена");
         }
     }
-
-    @ResponseBody
-    @RequestMapping(value = {"/ajax-load-files" }, method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
-    public String ajaxLoadFiles(@RequestParam("categoryId") int categoryId) {
-        JSONObject result = new JSONObject();
-
-        return result.toJSONString();
-    }
 }

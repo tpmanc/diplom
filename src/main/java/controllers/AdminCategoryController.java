@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Контроллер категорий для администратора
+ * Контроллер категорий для модератора
  */
 @Controller
 @RequestMapping("/admin")
