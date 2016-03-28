@@ -21,7 +21,7 @@ public class RequestModel extends BaseModel implements ModelInterface {
     private static final String getById = "SELECT * FROM request WHERE id = :id ORDER BY date DESC";
     private static final String getFiles = "SELECT * FROM requestFile WHERE requestId = :requestId";
     private static final String deleteById = "DELETE FROM request WHERE id = :id";
-    private static final String getNewCount = "SELECT count(id) FROM request WHERE userId = :userId";
+    private static final String getNewCount = "SELECT count(id) FROM request WHERE status = :status AND userId = :userId";
     private static final String updateById = "UPDATE request SET text = :text, status = :status WHERE id = :id";
 
     public final static int NEW = 1;
@@ -172,6 +172,7 @@ public class RequestModel extends BaseModel implements ModelInterface {
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("userId", userId);
+        parameters.addValue("status", NEW);
         return template.queryForObject(getNewCount, parameters, Integer.class);
     }
 
