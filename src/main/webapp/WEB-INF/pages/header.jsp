@@ -30,11 +30,11 @@
                     <div class="nano left-sidebar">
                         <div class="nano-content">
                             <ul class="nav nav-pills nav-stacked nav-inq">
-                                <li <c:if test="${param.activePage == ''}"> class="active" </c:if>>
-                                    <a href="<spring:url value="/admin/" />"><i class="fa fa-home"></i> <span class="nav-label">Главная</span></a>
-                                </li>
                                 <li <c:if test="${param.activePage == 'catalog'}"> class="active" </c:if>>
                                     <a href="<spring:url value="/catalog" />"><i class="fa fa-folder-open"></i> <span class="nav-label">Каталог</span></a>
+                                </li>
+                                <li <c:if test="${param.activePage == ''}"> class="active" </c:if>>
+                                    <a href="<spring:url value="/admin/" />"><i class="fa fa-home"></i> <span class="nav-label">Главная</span></a>
                                 </li>
                                 <li <c:if test="${param.activePage == 'categoryTree'}"> class="active" </c:if>>
                                     <a href="<spring:url value="/admin/categories" />"><i class="fa fa-sitemap"></i> <span class="nav-label">Категории</span></a>
@@ -55,8 +55,8 @@
                                     <a href="<spring:url value="/users" />"><i class="fa fa-user"></i> <span class="nav-label">Пользователи</span></a>
                                 </li>
                                 <sec:authorize access="hasRole('ROLE_FR-ADMIN')">
-                                    <li>
-                                        <a href="#"><i class="fa fa-warning"></i> <span class="nav-label">Логи</span></a>
+                                    <li <c:if test="${param.activePage == 'log'}"> class="active" </c:if>>
+                                        <a href="<spring:url value="/logs" />"><i class="fa fa-warning"></i> <span class="nav-label">Логи</span></a>
                                     </li>
                                 </sec:authorize>
                             </ul>

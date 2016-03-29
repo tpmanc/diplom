@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,6 +25,7 @@ public class LogModel extends BaseModel implements ModelInterface {
     public final static String INFO = "info";
     public final static String WARNING = "warning";
     public final static String ERROR = "error";
+    public final static int PAGE_COUNT = 10;
 
     private int id;
     private int userId;
@@ -151,5 +153,11 @@ public class LogModel extends BaseModel implements ModelInterface {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getStringDate() {
+        Date d = new Date(date);
+        SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+        return df.format(d);
     }
 }
