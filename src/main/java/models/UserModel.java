@@ -1,6 +1,7 @@
 package models;
 
 import db.Database2;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.acls.model.NotFoundException;
@@ -14,6 +15,7 @@ public class UserModel extends BaseModel implements ModelInterface {
     private static final String getById = "SELECT * FROM user WHERE id = :id";
     private static final String getAllOnPage = "SELECT * FROM user LIMIT :limit OFFSET :offset";
     private static final String deleteById = "DELETE FROM property WHERE id = :id";
+    private static final String getCount = "SELECT count(id) FROM user";
 
     private int id;
     private String phone;
@@ -74,6 +76,11 @@ public class UserModel extends BaseModel implements ModelInterface {
         } else {
             return null;
         }
+    }
+
+    public static int getCount() {
+        JdbcTemplate template = new JdbcTemplate(Database2.getInstance().getBds());
+        return template.queryForObject(getCount, Integer.class);
     }
 
     public static ArrayList<HashMap> findAll(int limit, int offset) throws SQLException {

@@ -41,19 +41,23 @@ public class UnfilledFile {
         int offset = (page - 1) * limit;
 
         ArrayList<HashMap> unfilledFiles;
+        String allUrl;
+        int pageCount;
         if (all) {
-            unfilledFiles = FileVersionModel.findUnfilled(limit, offset);
+            allUrl = "all=true";
+            unfilledFiles = FileModel.findUnfilled(limit, offset);
+            pageCount = (int) Math.ceil((float)FileModel.getUnfilledCount() / limit);
         } else {
-            unfilledFiles = FileVersionModel.findUnfilled(activeUser.getEmployeeId(), limit, offset);
+            allUrl = "";
+            unfilledFiles = FileModel.findUnfilled(activeUser.getEmployeeId(), limit, offset);
+            pageCount = (int) Math.ceil((float)FileModel.getUnfilledCount(activeUser.getEmployeeId()) / limit);
         }
         model.addAttribute("files", unfilledFiles);
-
-        int pageCount = (int) Math.ceil((float)FileVersionModel.getUnfilledCount(activeUser.getEmployeeId()) / limit);
         model.addAttribute("pageCount", pageCount);
 
-        // todo: добавить файлы без категории
 
         model.addAttribute("allFiles", all);
+        model.addAttribute("allUrl", allUrl);
         model.addAttribute("page", page);
         model.addAttribute("pageTitle", "Незаполненные файлы");
         return "unfilled-file/files";

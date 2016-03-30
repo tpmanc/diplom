@@ -33,7 +33,7 @@ public class UserController {
         int limit = UserModel.PAGE_COUNT;
         int offset = (page - 1) * limit;
 
-        int pageCount = (int) Math.ceil((float)FileVersionModel.getUnfilledCount(activeUser.getEmployeeId()) / limit);
+        int pageCount = (int) Math.ceil((float)UserModel.getCount() / limit);
         model.addAttribute("pageCount", pageCount);
 
         try {

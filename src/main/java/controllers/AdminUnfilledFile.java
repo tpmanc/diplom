@@ -18,19 +18,19 @@ import java.util.HashMap;
 @Controller
 @RequestMapping("/admin")
 public class AdminUnfilledFile {
-    @RequestMapping(value = {"/unfilled-files-all" }, method = RequestMethod.GET)
-    public String filesUnfilled(@RequestParam(value="page", required=false, defaultValue = "1") int page, Model model, Principal principal) {
-        int limit = FileModel.PAGE_COUNT;
-        int offset = (page - 1) * limit;
-
-        ArrayList<HashMap> unfilledFiles = FileVersionModel.findUnfilled(limit, offset);
-        model.addAttribute("files", unfilledFiles);
-
-        int pageCount = (int) Math.ceil((float)FileVersionModel.getUnfilledCount() / limit);
-        model.addAttribute("pageCount", pageCount);
-
-        model.addAttribute("page", page);
-        model.addAttribute("pageTitle", "Все незаполненные файлы");
-        return "unfilled-file/files";
-    }
+//    @RequestMapping(value = {"/unfilled-files-all" }, method = RequestMethod.GET)
+//    public String filesUnfilled(@RequestParam(value="page", required=false, defaultValue = "1") int page, Model model, Principal principal) {
+//        int limit = FileModel.PAGE_COUNT;
+//        int offset = (page - 1) * limit;
+//
+//        ArrayList<HashMap> unfilledFiles = FileVersionModel.findUnfilled(limit, offset);
+//        model.addAttribute("files", unfilledFiles);
+//
+//        int pageCount = (int) Math.ceil((float)FileVersionModel.getUnfilledCount() / limit);
+//        model.addAttribute("pageCount", pageCount);
+//
+//        model.addAttribute("page", page);
+//        model.addAttribute("pageTitle", "Все незаполненные файлы");
+//        return "unfilled-file/files";
+//    }
 }

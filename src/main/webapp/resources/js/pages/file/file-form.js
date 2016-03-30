@@ -115,7 +115,7 @@ $(function () {
         autoProcessQueue: false,
         uploadMultiple: true,
         parallelUploads: 10,
-        maxFiles: 10,
+        maxFiles: 50,
         maxFilesize: 5120, // MB
         init: function() {
             var myDropzone = this;

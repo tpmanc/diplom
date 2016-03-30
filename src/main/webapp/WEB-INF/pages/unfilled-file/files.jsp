@@ -41,9 +41,16 @@
     <c:forEach items="${files}" var="item" varStatus="itemStat">
         <tr>
             <td>${item.get("id")}</td>
-            <td>${item.get("fileName")}</td>
+            <td>${item.get("title")}</td>
             <td>
-                <a href="<spring:url value="/file-filling?versionId=${item.get(\"id\")}" />" class="btn btn-danger">Заполнить данные</a>
+                <c:choose>
+                    <c:when test="${item.get(\"isNoCategory\") == 0}">
+                        <a href="<spring:url value="/file-filling?versionId=${item.get(\"id\")}" />" class="btn btn-danger">Заполнить данные</a>
+                    </c:when>
+                    <c:when test="${item.get(\"isNoCategory\") == 1}">
+                        <a href="<spring:url value="/file-categories?fileId=${item.get(\"id\")}" />" class="btn btn-danger">Привязать к категориям</a>
+                    </c:when>
+                </c:choose>
             </td>
         </tr>
     </c:forEach>
@@ -53,16 +60,16 @@
 <c:if test="${pageCount > 1}">
     <div class="btn-group">
         <c:if test="${page > 1}">
-            <a href="<spring:url value="/unfilled-files?page=" />${page - 1}" type="button" class="btn btn-white"><i class="fa fa-chevron-left"></i></a>
+            <a href="<spring:url value="/unfilled-files?page=${page - 1}&${allUrl}" />" type="button" class="btn btn-white"><i class="fa fa-chevron-left"></i></a>
         </c:if>
 
         <c:forEach begin="1" end="${pageCount}" var="number">
-            <a href="<spring:url value="/unfilled-files?page=" />${number}"
+            <a href="<spring:url value="/unfilled-files?page=${number}&${allUrl}" />"
                class="btn btn-white <c:if test="${page == number}">active</c:if>">${number}</a>
         </c:forEach>
 
         <c:if test="${page < pageCount}">
-            <a href="<spring:url value="/unfilled-files?page=" />${page + 1}" type="button" class="btn btn-white"><i class="fa fa-chevron-right"></i></a>
+            <a href="<spring:url value="/unfilled-files?page=${page + 1}&${allUrl}" />" type="button" class="btn btn-white"><i class="fa fa-chevron-right"></i></a>
         </c:if>
     </div>
 </c:if>

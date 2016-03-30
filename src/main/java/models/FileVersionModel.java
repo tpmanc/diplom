@@ -134,62 +134,62 @@ public class FileVersionModel implements ModelInterface {
         throw new NotFoundException("Версия не найдена");
     }
 
-    public static ArrayList<HashMap> findUnfilled(int userId, int limit, int offset) {
-        ArrayList<HashMap> result = new ArrayList<HashMap>();
-        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
-        MapSqlParameterSource parameters = new MapSqlParameterSource();
-        parameters.addValue("userId", userId);
-        parameters.addValue("isFilled", false);
-        parameters.addValue("limit", limit);
-        parameters.addValue("offset", offset);
-        List<Map<String, Object>> rows = template.queryForList(getUserUnfilled, parameters);
-        for (Map row : rows) {
-            result.add(FileVersionModel.getVersionInfo(row));
-        }
-        return result;
-    }
+//    public static ArrayList<HashMap> findUnfilled(int userId, int limit, int offset) {
+//        ArrayList<HashMap> result = new ArrayList<HashMap>();
+//        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+//        MapSqlParameterSource parameters = new MapSqlParameterSource();
+//        parameters.addValue("userId", userId);
+//        parameters.addValue("isFilled", false);
+//        parameters.addValue("limit", limit);
+//        parameters.addValue("offset", offset);
+//        List<Map<String, Object>> rows = template.queryForList(getUserUnfilled, parameters);
+//        for (Map row : rows) {
+//            result.add(FileVersionModel.getVersionInfo(row));
+//        }
+//        return result;
+//    }
+//
+//    public static ArrayList<HashMap> findUnfilled(int limit, int offset) {
+//        ArrayList<HashMap> result = new ArrayList<HashMap>();
+//        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+//        MapSqlParameterSource parameters = new MapSqlParameterSource();
+//        parameters.addValue("isFilled", false);
+//        parameters.addValue("limit", limit);
+//        parameters.addValue("offset", offset);
+//        List<Map<String, Object>> rows = template.queryForList(getAllUnfilled, parameters);
+//        for (Map row : rows) {
+//            result.add(FileVersionModel.getVersionInfo(row));
+//        }
+//        return result;
+//    }
 
-    public static ArrayList<HashMap> findUnfilled(int limit, int offset) {
-        ArrayList<HashMap> result = new ArrayList<HashMap>();
-        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
-        MapSqlParameterSource parameters = new MapSqlParameterSource();
-        parameters.addValue("isFilled", false);
-        parameters.addValue("limit", limit);
-        parameters.addValue("offset", offset);
-        List<Map<String, Object>> rows = template.queryForList(getAllUnfilled, parameters);
-        for (Map row : rows) {
-            result.add(FileVersionModel.getVersionInfo(row));
-        }
-        return result;
-    }
+//    public static int getUnfilledCount() {
+//        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+//        MapSqlParameterSource parameters = new MapSqlParameterSource();
+//        parameters.addValue("isFilled", false);
+//        return template.queryForObject(getAllUnfilledCount, parameters, Integer.class);
+//    }
+//
+//    public static int getUnfilledCount(int userId) {
+//        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+//        MapSqlParameterSource parameters = new MapSqlParameterSource();
+//        parameters.addValue("userId", userId);
+//        parameters.addValue("isFilled", false);
+//        return template.queryForObject(getUserUnfilledCount, parameters, Integer.class);
+//    }
 
-    public static int getUnfilledCount() {
-        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
-        MapSqlParameterSource parameters = new MapSqlParameterSource();
-        parameters.addValue("isFilled", false);
-        return template.queryForObject(getAllUnfilledCount, parameters, Integer.class);
-    }
-
-    public static int getUnfilledCount(int userId) {
-        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
-        MapSqlParameterSource parameters = new MapSqlParameterSource();
-        parameters.addValue("userId", userId);
-        parameters.addValue("isFilled", false);
-        return template.queryForObject(getUserUnfilledCount, parameters, Integer.class);
-    }
-
-    private static HashMap getVersionInfo(Map row) {
-        HashMap<String, String> info = new HashMap<String, String>();
-        info.put("id", String.valueOf(row.get("id")));
-        info.put("fileId", String.valueOf(row.get("fileId")));
-        info.put("userId", String.valueOf(row.get("userId")));
-        info.put("version", String.valueOf(row.get("version")));
-        info.put("fileName", String.valueOf(row.get("fileName")));
-        info.put("hash", String.valueOf(row.get("hash")));
-        info.put("fileSize", String.valueOf(row.get("fileSize")));
-        info.put("date", String.valueOf(row.get("date")));
-        return info;
-    }
+//    private static HashMap getVersionInfo(Map row) {
+//        HashMap<String, String> info = new HashMap<String, String>();
+//        info.put("id", String.valueOf(row.get("id")));
+//        info.put("fileId", String.valueOf(row.get("fileId")));
+//        info.put("userId", String.valueOf(row.get("userId")));
+//        info.put("version", String.valueOf(row.get("version")));
+//        info.put("fileName", String.valueOf(row.get("fileName")));
+//        info.put("hash", String.valueOf(row.get("hash")));
+//        info.put("fileSize", String.valueOf(row.get("fileSize")));
+//        info.put("date", String.valueOf(row.get("date")));
+//        return info;
+//    }
 
     public boolean validate() {
         // hash
