@@ -22,51 +22,51 @@ import javax.servlet.ServletContext;
  */
 @Controller
 public class SettingsController {
-    /**
-     * Страница с настройками
-     */
-    @RequestMapping(value = {"/init-settings" }, method = RequestMethod.GET)
-    public String initSettings(Model model) {
-        ApplicationContext ctx = ContextLoader.getCurrentWebApplicationContext();
-        IsFilled isFilled = (IsFilled) ctx.getBean("isFilled");
-        if (isFilled.isFilled()) {
-            throw new NotFoundException("Страница не найдена");
-        }
-
-        Settings settings = new Settings();
-
-        DatabaseSettings databaseSettings = settings.getDatabaseSettings();
-        model.addAttribute("database", databaseSettings);
-
-        model.addAttribute("isFilled", isFilled);
-
-        model.addAttribute("pageTitle", "Настройки");
-        return "setting/settings";
-    }
-
-    @RequestMapping(value = {"/settings-save"}, method = RequestMethod.POST)
-    public String saveSettings(
-            @RequestParam String dbDriver,
-            @RequestParam String dbUrl,
-            @RequestParam String dbUser,
-            @RequestParam String dbPassword,
-            @RequestParam String ldapUrl,
-            @RequestParam String ldapManagerDn,
-            @RequestParam String ldapManagerPass,
-            @RequestParam String ldapUserSearchFilter,
-            @RequestParam String ldapGroupSearch,
-            @RequestParam String ldapGroupSearchFilter,
-            @RequestParam String ldapRoleAttribute
-
-    ) {
-        Settings settings = new Settings();
-        settings.setDatabaseFile(dbDriver, dbUrl, dbUser, dbPassword);
-        settings.save();
-
-        ApplicationContext ctx = ContextLoader.getCurrentWebApplicationContext();
-        IsFilled isFilled = (IsFilled) ctx.getBean("isFilled");
-        isFilled.setIsNeedRestart(true);
-
-        return "redirect:/init-settings";
-    }
+//    /**
+//     * Страница с настройками
+//     */
+//    @RequestMapping(value = {"/init-settings" }, method = RequestMethod.GET)
+//    public String initSettings(Model model) {
+//        ApplicationContext ctx = ContextLoader.getCurrentWebApplicationContext();
+//        IsFilled isFilled = (IsFilled) ctx.getBean("isFilled");
+//        if (isFilled.isFilled()) {
+//            throw new NotFoundException("Страница не найдена");
+//        }
+//
+//        Settings settings = new Settings();
+//
+//        DatabaseSettings databaseSettings = settings.getDatabaseSettings();
+//        model.addAttribute("database", databaseSettings);
+//
+//        model.addAttribute("isFilled", isFilled);
+//
+//        model.addAttribute("pageTitle", "Настройки");
+//        return "setting/settings";
+//    }
+//
+//    @RequestMapping(value = {"/settings-save"}, method = RequestMethod.POST)
+//    public String saveSettings(
+//            @RequestParam String dbDriver,
+//            @RequestParam String dbUrl,
+//            @RequestParam String dbUser,
+//            @RequestParam String dbPassword,
+//            @RequestParam String ldapUrl,
+//            @RequestParam String ldapManagerDn,
+//            @RequestParam String ldapManagerPass,
+//            @RequestParam String ldapUserSearchFilter,
+//            @RequestParam String ldapGroupSearch,
+//            @RequestParam String ldapGroupSearchFilter,
+//            @RequestParam String ldapRoleAttribute
+//
+//    ) {
+//        Settings settings = new Settings();
+//        settings.setDatabaseFile(dbDriver, dbUrl, dbUser, dbPassword);
+//        settings.save();
+//
+//        ApplicationContext ctx = ContextLoader.getCurrentWebApplicationContext();
+//        IsFilled isFilled = (IsFilled) ctx.getBean("isFilled");
+//        isFilled.setIsNeedRestart(true);
+//
+//        return "redirect:/init-settings";
+//    }
 }

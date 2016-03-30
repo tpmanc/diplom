@@ -9,7 +9,7 @@
 <h2>${pageTitle}</h2>
 
 <ol class="breadcrumb">
-    <li><a href="<spring:url value="/admin" />">Главная</a></li>
+    <li><a href="<spring:url value="/" />">Главная</a></li>
     <li class="active">
         <strong>${pageTitle}</strong>
     </li>
@@ -18,7 +18,7 @@
 <br>
 
 <p>
-    <a href="<spring:url value="/admin/property-add" />" class="btn btn-success">Добавить свойство</a>
+    <a href="<spring:url value="/property-add" />" class="btn btn-success">Добавить свойство</a>
 </p>
 
 <table class="table table-striped models-view">
@@ -35,11 +35,11 @@
             <td>${item.id}</td>
             <td>${item.title}</td>
             <td>
-                <a href="<spring:url value="/admin/property-view?id=" />${item.id}" class="icon">
+                <a href="<spring:url value="/property-view?id=" />${item.id}" class="icon">
                     <i class="fa fa-eye"></i>
                 </a>
                 <c:if test="${item.custom == true}">
-                    <a href="<spring:url value="/admin/property-edit?id=" />${item.id}" class="icon">
+                    <a href="<spring:url value="/property-edit?id=" />${item.id}" class="icon">
                         <i class="fa fa-edit"></i>
                     </a>
                 </c:if>

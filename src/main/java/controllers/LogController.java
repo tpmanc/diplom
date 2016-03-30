@@ -28,8 +28,7 @@ import java.util.HashMap;
  * Контроллер категорий для модератора
  */
 @Controller
-@RequestMapping("/admin")
-public class AdminLogController {
+public class LogController {
 
     /**
      * Вывод логов
@@ -43,7 +42,7 @@ public class AdminLogController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isAdmin(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка просмотра логов без прав администратора");
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка просмотра логов (/logs) без прав администратора");
             throw new AccessDeniedException("Доступ запрещен");
         }
         try {
@@ -77,7 +76,7 @@ public class AdminLogController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isAdmin(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка очистки логов без прав администратора");
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка очистки логов (/logs-clear) без прав администратора");
             throw new ForbiddenException("Доступ запрещен");
         }
         LogModel.clear();

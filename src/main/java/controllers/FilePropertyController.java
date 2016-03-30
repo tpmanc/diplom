@@ -1,7 +1,9 @@
 package controllers;
 
 import auth.CustomUserDetails;
+import exceptions.ForbiddenException;
 import exceptions.NotFoundException;
+import helpers.UserHelper;
 import models.FileModel;
 import models.FilePropertyModel;
 import models.LogModel;
@@ -25,8 +27,7 @@ import java.util.HashMap;
  * Контроллер свойств файла для модератора
  */
 @Controller
-@RequestMapping("/admin")
-public class AdminFilePropertyController {
+public class FilePropertyController {
     /**
      * Добавление свойства к файлу
      * @param id Id файла
@@ -34,7 +35,17 @@ public class AdminFilePropertyController {
      * Путь до представления
      */
     @RequestMapping(value = {"/file-property-add" }, method = RequestMethod.GET)
-    public String fileAddProperty(@RequestParam("id") int id, Model model) {
+    public String fileAddProperty(
+            @RequestParam("id") int id,
+            Model model,
+            Principal principal
+    ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isModerator(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка добавления свойства файла (/file-property-add) без прав модератора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
+
         try {
             FileModel file = FileModel.findById(id);
             model.addAttribute("file", file);
@@ -52,11 +63,19 @@ public class AdminFilePropertyController {
     /**
      * Изменение значения свойства файла
      * @param id Id файла
-     * @param model
      * @return Путь до представления
      */
     @RequestMapping(value = {"/file-property-edit" }, method = RequestMethod.GET)
-    public String fileEditProperty(@RequestParam("id") int id, Model model) {
+    public String fileEditProperty(
+            @RequestParam("id") int id,
+            Model model,
+            Principal principal
+    ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isModerator(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка изменения свойства файла (/file-property-edit) без прав модератора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
         try {
             FilePropertyModel fileProperty = FilePropertyModel.findById(id);
             model.addAttribute("fileProperty", fileProperty);
@@ -75,7 +94,15 @@ public class AdminFilePropertyController {
      */
     @ResponseBody
     @RequestMapping(value = {"/file-property-delete"}, method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
-    public String filePropertyDelete(@RequestParam("propertyLink") int propertyLink) {
+    public String filePropertyDelete(
+            @RequestParam("propertyLink") int propertyLink,
+            Principal principal
+    ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isModerator(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка удаления свойства файла (/file-property-delete) без прав модератора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
         JSONObject result = new JSONObject();
         boolean error = true;
 
@@ -109,6 +136,12 @@ public class AdminFilePropertyController {
             RedirectAttributes attr,
             Principal principal
     ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isModerator(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка добавления/изменения свойства файла (/file-property-handler) без прав модератора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
+
         // проверяем, есть ли такое свойство
         PropertyModel property = PropertyModel.findById(propertyId);
         // проверяем, не заполнено ли уже это свойство
@@ -117,7 +150,6 @@ public class AdminFilePropertyController {
         if (checkProperty != null) {
             id = checkProperty.getId();
         }
-        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         // если это добавление нового свойства
         if (id == 0) {
             FilePropertyModel fileProperty = new FilePropertyModel(fileId, propertyId, value);

@@ -10,7 +10,7 @@
 <h2>${pageTitle}</h2>
 
 <ol class="breadcrumb">
-    <li><a href="<spring:url value="/admin" />">Главная</a></li>
+    <li><a href="<spring:url value="/" />">Главная</a></li>
     <li class="active">
         <strong>${pageTitle}</strong>
     </li>
@@ -20,13 +20,6 @@
 
 <p>
     <a href="<spring:url value="/file-add" />" class="btn btn-success">Добавить файлы</a>
-</p>
-
-<p>
-    <sec:authorize access="hasRole('ROLE_FR-ADMIN')">
-        <a href="<spring:url value="/unfilled-files" />" class="btn btn-success">Мои файлы</a>
-        <a href="<spring:url value="/unfilled-files?all=true" />" class="btn btn-success">Все файлы</a>
-    </sec:authorize>
 </p>
 
 <table class="table table-striped models-view">
@@ -60,16 +53,16 @@
 <c:if test="${pageCount > 1}">
     <div class="btn-group">
         <c:if test="${page > 1}">
-            <a href="<spring:url value="/unfilled-files?page=${page - 1}&${allUrl}" />" type="button" class="btn btn-white"><i class="fa fa-chevron-left"></i></a>
+            <a href="<spring:url value="/unfilled-files?page=${page - 1}" />" type="button" class="btn btn-white"><i class="fa fa-chevron-left"></i></a>
         </c:if>
 
         <c:forEach begin="1" end="${pageCount}" var="number">
-            <a href="<spring:url value="/unfilled-files?page=${number}&${allUrl}" />"
+            <a href="<spring:url value="/unfilled-files?page=${number}" />"
                class="btn btn-white <c:if test="${page == number}">active</c:if>">${number}</a>
         </c:forEach>
 
         <c:if test="${page < pageCount}">
-            <a href="<spring:url value="/unfilled-files?page=${page + 1}&${allUrl}" />" type="button" class="btn btn-white"><i class="fa fa-chevron-right"></i></a>
+            <a href="<spring:url value="/unfilled-files?page=${page + 1}" />" type="button" class="btn btn-white"><i class="fa fa-chevron-right"></i></a>
         </c:if>
     </div>
 </c:if>

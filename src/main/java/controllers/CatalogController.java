@@ -2,10 +2,10 @@ package controllers;
 
 import auth.CustomUserDetails;
 import exceptions.NotFoundException;
-import models.CategoryModel;
-import models.FileModel;
-import models.RequestModel;
+import helpers.UserHelper;
+import models.*;
 import models.helpers.CategoryFile;
+import models.helpers.FileCategory;
 import org.json.simple.JSONObject;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.security.Principal;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 @Controller

@@ -4,7 +4,7 @@
 
 <script src="<spring:url value="/resources/js/pages/file/file-property-form.js" />"></script>
 
-<form action="<spring:url value="/admin/file-property-handler" />" method="post" class="form-horizontal">
+<form action="<spring:url value="/file-property-handler" />" method="post" class="form-horizontal">
     <c:choose>
         <c:when test="${fileProperty != null}">
             <input type="hidden" name="id" value="${fileProperty.id}">

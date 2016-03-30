@@ -91,6 +91,7 @@ public class RequestController {
                     isModerator = true;
                     user = UserModel.findById(requestModel.getUserId());
                 } else {
+                    LogModel.addWarning(activeUser.getEmployeeId(), "Попытка просмотра чужой заявки /request-view без прав модератора");
                     throw new ForbiddenException("Доступ запрещен");
                 }
             }

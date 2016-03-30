@@ -23,13 +23,13 @@
     <div class="alert alert-success">Логи очищены</div>
 </c:if>
 
-<form action="<spring:url value="/admin/logs-clear" />" method="post">
+<form action="<spring:url value="/logs-clear" />" method="post">
     <button class="btn btn-danger" type="submit" id="clearLogsBtn">Очистить логи</button>
 </form>
 
 <hr>
 
-<form action="<spring:url value="/admin/logs" />" method="get" class="form-horizontal">
+<form action="<spring:url value="/logs" />" method="get" class="form-horizontal">
     <div class="form-group">
         <label class="col-sm-2 control-label" for="levelSelect">Выберите уровень</label>
         <div class="col-sm-3">
@@ -72,16 +72,16 @@
 <c:if test="${pageCount > 1}">
     <div class="btn-group">
         <c:if test="${page > 1}">
-            <a href="<spring:url value="/admin/logs?page=" />${page - 1}" type="button" class="btn btn-white"><i class="fa fa-chevron-left"></i></a>
+            <a href="<spring:url value="/logs?page=" />${page - 1}" type="button" class="btn btn-white"><i class="fa fa-chevron-left"></i></a>
         </c:if>
 
         <c:forEach begin="1" end="${pageCount}" var="number">
-            <a href="<spring:url value="/admin/logs?page=" />${number}"
+            <a href="<spring:url value="/logs?page=" />${number}"
                class="btn btn-white <c:if test="${page == number}">active</c:if>">${number}</a>
         </c:forEach>
 
         <c:if test="${page < pageCount}">
-            <a href="<spring:url value="/admin/logs?page=" />${page + 1}" type="button" class="btn btn-white"><i class="fa fa-chevron-right"></i></a>
+            <a href="<spring:url value="/logs?page=" />${page + 1}" type="button" class="btn btn-white"><i class="fa fa-chevron-right"></i></a>
         </c:if>
     </div>
 </c:if>

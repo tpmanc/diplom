@@ -8,10 +8,10 @@
 </jsp:include>
 
 <spring:url value="/resources/js/pages/category/categories.js" var="categoryTreeJs" />
-<spring:url value="/admin/category/ajax-delete" var="categoryTreeDeleteUrl" />
-<spring:url value="/admin/category/ajax-add-category" var="addCategoryToTreeUrl" />
-<spring:url value="/admin/category/ajax-update-position" var="updatePosition" />
-<spring:url value="/admin/category/ajax-rename" var="renameCategoryUrl" />
+<spring:url value="/category/ajax-delete" var="categoryTreeDeleteUrl" />
+<spring:url value="/category/ajax-add-category" var="addCategoryToTreeUrl" />
+<spring:url value="/category/ajax-update-position" var="updatePosition" />
+<spring:url value="/category/ajax-rename" var="renameCategoryUrl" />
 <script src="${categoryTreeJs}"></script>
 <script>
     var deleteTreesUrl = '${categoryTreeDeleteUrl}';

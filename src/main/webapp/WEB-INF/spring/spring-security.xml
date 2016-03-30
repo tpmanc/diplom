@@ -12,7 +12,6 @@
         <intercept-url pattern="/init-settings" access="permitAll" />
         <intercept-url pattern="/settings-save" access="permitAll" />
         <intercept-url pattern="/*" access="isAuthenticated()" />
-        <intercept-url pattern="/admin/*" access="hasRole('ROLE_FR-ADMIN')" />
         <form-login
                 login-page="/login"
                 default-target-url="/"

@@ -38,6 +38,7 @@ public class ExportController {
     public String fileExport(@RequestParam int versionId, Principal principal, Model model, HttpServletRequest request) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isAdmin(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка экспорта файла (/file-export) без прав администратора");
             throw new ForbiddenException("Доступ запрещен");
         }
 
@@ -67,7 +68,7 @@ public class ExportController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isAdmin(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка экспотра файла без прав администратора");
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка экспотра файла (/file-export-handler) без прав администратора");
             throw new ForbiddenException("Доступ запрещен");
         }
         if (names.length != values.length || names.length != types.length) {
@@ -117,6 +118,7 @@ public class ExportController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isAdmin(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка экспотра файла (/file-export-2) без прав администратора");
             throw new ForbiddenException("Доступ запрещен");
         }
 
@@ -146,7 +148,7 @@ public class ExportController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isAdmin(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка экспотра файла без прав администратора");
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка экспотра файла (/file-export-handler-2) без прав администратора");
             throw new ForbiddenException("Доступ запрещен");
         }
         if (names != null && values != null && names.length != values.length) {
@@ -218,6 +220,7 @@ public class ExportController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isAdmin(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка экспотра файла (/file-export-3) без прав администратора");
             throw new ForbiddenException("Доступ запрещен");
         }
 
@@ -247,7 +250,7 @@ public class ExportController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isAdmin(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка экспотра файла без прав администратора");
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка экспотра файла (/file-export-handler-3) без прав администратора");
             throw new ForbiddenException("Доступ запрещен");
         }
 

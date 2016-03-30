@@ -1,6 +1,7 @@
 package controllers;
 
 import auth.CustomUserDetails;
+import exceptions.ForbiddenException;
 import exceptions.InternalException;
 import exceptions.NotFoundException;
 import helpers.FileHelper;
@@ -41,7 +42,16 @@ public class FileController {
      * @return Путь до представления
      */
     @RequestMapping(value = {"/files"}, method = RequestMethod.GET)
-    public String index(@RequestParam(value="page", required=false, defaultValue = "1") int page, Model model) {
+    public String index(
+            @RequestParam(value="page", required=false, defaultValue = "1") int page,
+            Model model,
+            Principal principal
+    ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isModerator(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка доступа на страницу /files без прав модератора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
         int limit = FileModel.PAGE_COUNT;
         int offset = (page - 1) * limit;
         try {
@@ -72,6 +82,7 @@ public class FileController {
                        Principal principal,
                        Model model) {
         try {
+            CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
             FileModel file = FileModel.findById(id);
             model.addAttribute("file", file);
 
@@ -86,13 +97,6 @@ public class FileController {
 
             UserModel user = UserModel.findById(currentVersion.getUserId());
             model.addAttribute("user", user);
-
-            boolean isFileOwner = false;
-            CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
-            if (user.getId() == activeUser.getEmployeeId() || UserHelper.isAdmin(activeUser)) {
-                isFileOwner = true;
-            }
-            model.addAttribute("isFileOwner", isFileOwner);
 
             // список версий файла
             ArrayList<FileVersionModel> versionList = file.getVersionList();
@@ -132,7 +136,15 @@ public class FileController {
      * @return Путь до представления
      */
     @RequestMapping(value = {"/file-add" }, method = RequestMethod.GET)
-    public String fileAdd(Model model) {
+    public String fileAdd(
+            Model model,
+            Principal principal
+    ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isModerator(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка доступа на страницу /file-add без прав модератора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
         model.addAttribute("pageTitle", "Добавить файл");
         return "file/file-add";
     }
@@ -142,7 +154,16 @@ public class FileController {
      * @return Путь до представления
      */
     @RequestMapping(value = {"/file-categories" }, method = RequestMethod.GET)
-    public String fileCategories(@RequestParam("fileId") int fileId, Model model) {
+    public String fileCategories(
+            @RequestParam("fileId") int fileId,
+            Model model,
+            Principal principal
+    ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isModerator(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка доступа на страницу /file-categories без прав модератора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
         try {
             FileModel file = FileModel.findById(fileId);
             model.addAttribute("pageTitle", "Редактировать категории");
@@ -168,7 +189,15 @@ public class FileController {
      */
     @ResponseBody
     @RequestMapping(value = {"/file-title-autocomplete"}, method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
-    public String fileTitleAutocomplete(@RequestParam("query") String query) {
+    public String fileTitleAutocomplete(
+            @RequestParam("query") String query,
+            Principal principal
+    ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isModerator(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка запроса /file-title-autocomplete без прав модератора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
         JSONObject result = new JSONObject();
         JSONArray array = new JSONArray();
         result.put("query", query);
@@ -192,7 +221,16 @@ public class FileController {
      */
     @ResponseBody
     @RequestMapping(value = {"/file-filling"}, method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
-    public String fileFilling(@RequestBody FileFilling[] res) {
+    public String fileFilling(
+            @RequestBody FileFilling[] res,
+            Principal principal
+    ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isModerator(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка запроса /file-filling без прав модератора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
+
         JSONObject result = new JSONObject();
         JSONArray errors = new JSONArray();
         JSONArray success = new JSONArray();
@@ -250,7 +288,17 @@ public class FileController {
      */
     @ResponseBody
     @RequestMapping(value = {"/file-add-handler" }, method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
-    public String fileAddHandler(@RequestParam("file[]") MultipartFile[] files, HttpServletRequest request, Principal principal) {
+    public String fileAddHandler(
+            @RequestParam("file[]") MultipartFile[] files,
+            HttpServletRequest request,
+            Principal principal
+    ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isModerator(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка загрузки файлов (/file-add-handler) без прав модератора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
+
         JSONObject result = new JSONObject();
         JSONArray errors = new JSONArray();
         JSONArray success = new JSONArray();
@@ -354,7 +402,6 @@ public class FileController {
                         fileVersion.setFileName(fileName.toString());
                         fileVersion.setHash(hash);
                         fileVersion.setIsFilled(isFilled);
-                        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
                         fileVersion.setUserId(activeUser.getEmployeeId());
                         long time = new Date().getTime();
                         fileVersion.setDate(time);
@@ -420,25 +467,29 @@ public class FileController {
             @RequestParam("categoriesId[]") int[] categoriesId,
             Principal principal
     ) {
-            try {
-                CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
-                FileModel file = FileModel.findById(fileId);
-                FileCategoryModel.deleteByFile(fileId);
-                for (int categoryId : categoriesId) {
-                    CategoryModel category = CategoryModel.findById(categoryId);
-                    FileCategoryModel fileCategory = new FileCategoryModel();
-                    fileCategory.setFileId(fileId);
-                    fileCategory.setCategoryId(categoryId);
-                    if (fileCategory.add()) {
-                        LogModel.addInfo(activeUser.getEmployeeId(), "Файл "+file.getTitle()+" привязан к категории "+category.getTitle());
-                    } else {
-                        LogModel.addError(activeUser.getEmployeeId(), "Ошибка при привязке файла "+file.getTitle()+" категории "+category.getTitle());
-                    }
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isModerator(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка добавления категорий к файлу (/file-categories-handler) без прав модератора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
+        try {
+            FileModel file = FileModel.findById(fileId);
+            FileCategoryModel.deleteByFile(fileId);
+            for (int categoryId : categoriesId) {
+                CategoryModel category = CategoryModel.findById(categoryId);
+                FileCategoryModel fileCategory = new FileCategoryModel();
+                fileCategory.setFileId(fileId);
+                fileCategory.setCategoryId(categoryId);
+                if (fileCategory.add()) {
+                    LogModel.addInfo(activeUser.getEmployeeId(), "Файл "+file.getTitle()+" привязан к категории "+category.getTitle());
+                } else {
+                    LogModel.addError(activeUser.getEmployeeId(), "Ошибка при привязке файла "+file.getTitle()+" категории "+category.getTitle());
                 }
-                return "redirect:/file-view?id=" + file.getId();
-            } catch (SQLException e) {
-                throw new InternalException("Ошибка при сохранении");
             }
+            return "redirect:/file-view?id=" + file.getId();
+        } catch (SQLException e) {
+            throw new InternalException("Ошибка при сохранении");
+        }
     }
 
     /**

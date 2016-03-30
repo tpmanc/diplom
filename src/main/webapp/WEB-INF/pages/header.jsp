@@ -34,7 +34,7 @@
                                     <a href="<spring:url value="/catalog" />"><i class="fa fa-folder-open"></i> <span class="nav-label">Каталог</span></a>
                                 </li>
                                 <li <c:if test="${param.activePage == 'categoryTree'}"> class="active" </c:if>>
-                                    <a href="<spring:url value="/admin/categories" />"><i class="fa fa-sitemap"></i> <span class="nav-label">Категории</span></a>
+                                    <a href="<spring:url value="/categories" />"><i class="fa fa-sitemap"></i> <span class="nav-label">Категории</span></a>
                                 </li>
                                 <li <c:if test="${param.activePage == 'file'}"> class="active" </c:if>>
                                     <a href="<spring:url value="/files" />"><i class="fa fa-file-text-o"></i> <span class="nav-label">Файлы</span></a>
@@ -43,7 +43,7 @@
                                     <a href="<spring:url value="/unfilled-files" />"><i class="fa fa-file"></i> <span class="nav-label">Незаполненные Файлы</span></a>
                                 </li>
                                 <li <c:if test="${param.activePage == 'property'}"> class="active" </c:if>>
-                                    <a href="<spring:url value="/admin/properties" />"><i class="fa fa-list-ul"></i> <span class="nav-label">Свойства файлов</span></a>
+                                    <a href="<spring:url value="/properties" />"><i class="fa fa-list-ul"></i> <span class="nav-label">Свойства файлов</span></a>
                                 </li>
                                 <li <c:if test="${param.activePage == 'request'}"> class="active" </c:if>>
                                     <a href="<spring:url value="/request-list" />"><i class="fa fa-clipboard"></i> <span class="nav-label">Заявки</span></a>
@@ -53,7 +53,7 @@
                                 </li>
                                 <sec:authorize access="hasRole('ROLE_FR-ADMIN')">
                                     <li <c:if test="${param.activePage == 'log'}"> class="active" </c:if>>
-                                        <a href="<spring:url value="/admin/logs" />"><i class="fa fa-warning"></i> <span class="nav-label">Логи</span></a>
+                                        <a href="<spring:url value="/logs" />"><i class="fa fa-warning"></i> <span class="nav-label">Логи</span></a>
                                     </li>
                                 </sec:authorize>
                             </ul>

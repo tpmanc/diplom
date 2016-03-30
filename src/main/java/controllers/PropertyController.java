@@ -1,7 +1,9 @@
 package controllers;
 
 import auth.CustomUserDetails;
+import exceptions.ForbiddenException;
 import exceptions.NotFoundException;
+import helpers.UserHelper;
 import models.LogModel;
 import models.PropertyModel;
 import org.springframework.security.core.Authentication;
@@ -22,8 +24,7 @@ import java.util.HashMap;
  * Контроллер свойств для администратора
  */
 @Controller
-@RequestMapping("/admin")
-public class AdminPropertyController {
+public class PropertyController {
 
     /**
      * Список всех свойств
@@ -31,7 +32,15 @@ public class AdminPropertyController {
      * @return Путь до представления
      */
     @RequestMapping(value = {"/properties" }, method = RequestMethod.GET)
-    public String index(Model model) {
+    public String index(
+            Model model,
+            Principal principal
+    ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isModerator(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка просмотра списка свойств (/properties) без прав модератора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
         ArrayList<PropertyModel> properties = null;
         try {
             properties = PropertyModel.findAll();
@@ -50,7 +59,15 @@ public class AdminPropertyController {
      * @return Путь до представления
      */
     @RequestMapping(value = {"/property-add" }, method = RequestMethod.GET)
-    public String add(Model model) {
+    public String add(
+            Model model,
+            Principal principal
+    ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isModerator(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка добавления свойства (/property-add) без прав модератора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
         model.addAttribute("pageTitle", "Добавить свойство файла");
         return "property/property-add";
     }
@@ -62,16 +79,24 @@ public class AdminPropertyController {
      * @return Путь до представления
      */
     @RequestMapping(value = {"/property-edit" }, method = RequestMethod.GET)
-    public String update(@RequestParam("id") int id, Model model) {
-        PropertyModel property = null;
+    public String update(
+            @RequestParam("id") int id,
+            Model model,
+            Principal principal
+    ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isModerator(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка изменения свойства (/property-edit) без прав модератора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
         try {
-            property = PropertyModel.findCustomById(id);
+            PropertyModel property = PropertyModel.findCustomById(id);
+            model.addAttribute("property", property);
+            model.addAttribute("pageTitle", "Изменить свойство файла");
+            return "property/property-edit";
         } catch (SQLException e) {
             throw new NotFoundException("Свойство не найдено");
         }
-        model.addAttribute("property", property);
-        model.addAttribute("pageTitle", "Изменить свойство файла");
-        return "property/property-edit";
     }
 
     /**
@@ -81,7 +106,17 @@ public class AdminPropertyController {
      * @return Путь до представления
      */
     @RequestMapping(value = {"/property-view" }, method = RequestMethod.GET)
-    public String view(@RequestParam("id") int id, Model model) {
+    public String view(
+            @RequestParam("id") int id,
+            Model model,
+            Principal principal
+    ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isModerator(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка просмотра свойства (/property-view) без прав модератора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
+
         PropertyModel property = PropertyModel.findById(id);
         model.addAttribute("property", property);
 
@@ -103,9 +138,13 @@ public class AdminPropertyController {
             RedirectAttributes attr,
             Principal principal
     ) {
-        PropertyModel property;
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isModerator(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка добавления/изменения свойства (/property-handler) без прав модератора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
 
+        PropertyModel property;
         // если это изменение свойства
         if (id > 0) {
             try {
@@ -148,8 +187,14 @@ public class AdminPropertyController {
     @RequestMapping(value = {"/property-delete" }, method = RequestMethod.POST)
     public @ResponseBody boolean deleteHandler(
             @RequestParam("id") int id,
-            Model model
+            Model model,
+            Principal principal
     ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isModerator(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка удаления свойства (/property-delete) без прав модератора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
         // TODO: обработка удаления свойства
         return false;
     }

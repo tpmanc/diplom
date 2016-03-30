@@ -10,7 +10,7 @@
 <h2>${pageTitle}</h2>
 
 <ol class="breadcrumb">
-    <li><a href="<spring:url value="/admin" />">Главная</a></li>
+    <li><a href="<spring:url value="/" />">Главная</a></li>
     <li><a href="<spring:url value="/files" />">Файлы</a></li>
     <li><a href="<spring:url value="/file-view?id=${file.id}" />">Просмотр файла</a></li>
     <li class="active">

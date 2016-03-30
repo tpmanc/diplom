@@ -1,22 +1,30 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 
 <jsp:include page="../layouts/layout_top.jsp">
     <jsp:param name="activePage" value="file" />
 </jsp:include>
 
-<script src="<spring:url value="/resources/js/pages/file/file-view.js" />"></script>
-<script>
-    var filePropertyDeleteUrl = "<spring:url value="/admin/file-property-delete" />";
-    var fileVersionPropertyDeleteUrl = "<spring:url value="/admin/file-version-property-delete" />";
-</script>
+<sec:authorize access="hasAnyRole('ROLE_FR-ADMIN', 'ROLE_FR-MODERATOR')">
+    <script src="<spring:url value="/resources/js/pages/file/file-view.js" />"></script>
+    <script>
+        var filePropertyDeleteUrl = "<spring:url value="/file-property-delete" />";
+        var fileVersionPropertyDeleteUrl = "<spring:url value="/file-version-property-delete" />";
+    </script>
+</sec:authorize>
+<sec:authorize access="!hasRole('ROLE_FR-ADMIN') && !hasRole('ROLE_FR-MODERATOR')">
+    <script src="<spring:url value="/resources/js/pages/catalog/file-view.js" />"></script>
+</sec:authorize>
 
 <h2>${pageTitle}</h2>
 
 <ol class="breadcrumb">
-    <li><a href="<spring:url value="/admin" />">Главная</a></li>
-    <li><a href="<spring:url value="/admin/files" />">Файлы</a></li>
+    <li><a href="<spring:url value="/" />">Главная</a></li>
+    <sec:authorize access="hasAnyRole('ROLE_FR-ADMIN', 'ROLE_FR-MODERATOR')">
+        <li><a href="<spring:url value="/files" />">Файлы</a></li>
+    </sec:authorize>
     <li class="active">
         <strong>${pageTitle}</strong>
     </li>
@@ -25,17 +33,22 @@
 <br>
 
 <p>
-    <a href="<spring:url value="/file-categories?fileId=${file.id}" />" class="btn btn-info">Редактировать категории</a>
-    <c:if test="${isFileOwner == true}">
+    <sec:authorize access="hasAnyRole('ROLE_FR-ADMIN', 'ROLE_FR-MODERATOR')">
+        <a href="<spring:url value="/file-categories?fileId=${file.id}" />" class="btn btn-info">Редактировать категории</a>
         <a href="<spring:url value="/file-filling?versionId=${currentVersion.id}" />" class="btn btn-warning">Изменить</a>
-    </c:if>
+    </sec:authorize>
     <a href="<spring:url value="/file-download?id=${currentVersion.id}" />" class="btn btn-primary">Скачать файл</a>
 </p>
+
+<sec:authorize access="hasAnyRole('ROLE_FR-ADMIN', 'ROLE_FR-MODERATOR')">
 <p>
-    <a href="<spring:url value="/admin/file-property-add?id=${file.id}" />" class="btn btn-success">Добавить свойство файла</a>
-    <a href="<spring:url value="/admin/file-version-property-add?id=${currentVersion.id}" />" class="btn btn-success">Добавить свойство версии</a>
-    <a href="<spring:url value="/file-export?versionId=${currentVersion.id}" />" class="btn btn-warning">Экспорт</a>
+    <a href="<spring:url value="/file-property-add?id=${file.id}" />" class="btn btn-success">Добавить свойство файла</a>
+    <a href="<spring:url value="/file-version-property-add?id=${currentVersion.id}" />" class="btn btn-success">Добавить свойство версии</a>
+    <sec:authorize access="hasRole('ROLE_FR-ADMIN')">
+        <a href="<spring:url value="/file-export?versionId=${currentVersion.id}" />" class="btn btn-warning">Экспорт</a>
+    </sec:authorize>
 </p>
+</sec:authorize>
 
 <h3>${file.title}</h3>
 
@@ -49,10 +62,12 @@
             <td>Название</td>
             <td>${file.title}</td>
         </tr>
-        <tr>
-            <td>Загрузил</td>
-            <td><a href="<spring:url value="/user-view?id=${user.id}" />">${user.displayName}</a></td>
-        </tr>
+        <sec:authorize access="hasAnyRole('ROLE_FR-ADMIN', 'ROLE_FR-MODERATOR')">
+            <tr>
+                <td>Загрузил</td>
+                <td><a href="<spring:url value="/user-view?id=${user.id}" />">${user.displayName}</a></td>
+            </tr>
+        </sec:authorize>
         <tr>
             <td>Версия</td>
             <td>
@@ -86,14 +101,16 @@
         <tr class="file-property-holder">
             <td>${item.title}</td>
             <td>${item.value}</td>
-            <td>
-                <a href="<spring:url value="/admin/file-property-edit?id=" />${item.id}" class="icon">
-                    <i class="fa fa-edit"></i>
-                </a>
-                <a data-link="${item.id}" class="icon remove-file-property">
-                    <i class="fa fa-trash"></i>
-                </a>
-            </td>
+            <sec:authorize access="hasAnyRole('ROLE_FR-ADMIN', 'ROLE_FR-MODERATOR')">
+                <td>
+                    <a href="<spring:url value="/file-property-edit?id=" />${item.id}" class="icon">
+                        <i class="fa fa-edit"></i>
+                    </a>
+                    <a data-link="${item.id}" class="icon remove-file-property">
+                        <i class="fa fa-trash"></i>
+                    </a>
+                </td>
+            </sec:authorize>
         </tr>
     </c:forEach>
     </tbody>
@@ -113,14 +130,16 @@
             <tr class="file-version-property">
                 <td>${item.title}</td>
                 <td>${item.value}</td>
-                <td>
-                    <a href="<spring:url value="/admin/file-version-property-edit?id=" />${item.id}" class="icon">
-                        <i class="fa fa-edit"></i>
-                    </a>
-                    <a data-link="${item.id}" class="icon remove-file-version-property">
-                        <i class="fa fa-trash"></i>
-                    </a>
-                </td>
+                <sec:authorize access="hasAnyRole('ROLE_FR-ADMIN', 'ROLE_FR-MODERATOR')">
+                    <td>
+                        <a href="<spring:url value="/file-version-property-edit?id=" />${item.id}" class="icon">
+                            <i class="fa fa-edit"></i>
+                        </a>
+                        <a data-link="${item.id}" class="icon remove-file-version-property">
+                            <i class="fa fa-trash"></i>
+                        </a>
+                    </td>
+                </sec:authorize>
             </tr>
         </c:forEach>
     </tbody>

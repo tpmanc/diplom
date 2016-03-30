@@ -2,7 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 
-<form method="POST" action="<spring:url value="/admin/property-handler" />">
+<form method="POST" action="<spring:url value="/property-handler" />">
     <c:if test="${property.id != null}">
         <input type="hidden" name="id" value="${property.id}">
     </c:if>

@@ -4,7 +4,7 @@
 
 <script src="<spring:url value="/resources/js/pages/file/file-property-form.js" />"></script>
 
-<form action="<spring:url value="/admin/file-version-property-handler" />" method="post" class="form-horizontal">
+<form action="<spring:url value="/file-version-property-handler" />" method="post" class="form-horizontal">
     <c:choose>
         <c:when test="${fileProperty != null}">
             <input type="hidden" name="id" value="${fileProperty.id}">
@@ -26,7 +26,7 @@
                 <c:otherwise>
                     <select id="propertySelector" name="propertyId" required data-placeholder="Выберите свойство">
                         <c:forEach items="${properties}" var="item" varStatus="itemStat">
-                            <option value="${item.get("id")}" <c:if test="${item.get(\"id\") == selectedProperty}"> selected="selected" </c:if>>${item.get("title")}</option>
+                            <option value="${item.id}" <c:if test="${item.id == selectedProperty}"> selected="selected" </c:if>>${item.title}</option>
                         </c:forEach>
                     </select>
                 </c:otherwise>

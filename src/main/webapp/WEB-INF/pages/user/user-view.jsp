@@ -7,7 +7,7 @@
 <h2>${pageTitle}</h2>
 
 <ol class="breadcrumb">
-    <li><a href="<spring:url value="/admin" />">Главная</a></li>
+    <li><a href="<spring:url value="/" />">Главная</a></li>
     <li><a href="<spring:url value="/users" />">Пользователи</a></li>
     <li class="active">
         <strong>${pageTitle}</strong>

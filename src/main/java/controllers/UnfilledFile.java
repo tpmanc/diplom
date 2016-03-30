@@ -28,12 +28,14 @@ public class UnfilledFile {
      * Список незаполненных файлов
      */
     @RequestMapping(value = {"/unfilled-files" }, method = RequestMethod.GET)
-    public String filesUnfilled(@RequestParam(value="page", required=false, defaultValue = "1") int page,
-                                @RequestParam(value="all", required=false, defaultValue = "0") boolean all,
-                                Model model,
-                                Principal principal) {
+    public String filesUnfilled(
+            @RequestParam(value="page", required=false, defaultValue = "1") int page,
+            Model model,
+            Principal principal
+    ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
-        if (!UserHelper.isAdmin(activeUser) && all) {
+        if (!UserHelper.isModerator(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка просмотра незаполненных файлов (/unfilled-files) без прав модератора");
             throw new AccessDeniedException("Доступ запрещен");
         }
 
@@ -41,23 +43,13 @@ public class UnfilledFile {
         int offset = (page - 1) * limit;
 
         ArrayList<HashMap> unfilledFiles;
-        String allUrl;
         int pageCount;
-        if (all) {
-            allUrl = "all=true";
-            unfilledFiles = FileModel.findUnfilled(limit, offset);
-            pageCount = (int) Math.ceil((float)FileModel.getUnfilledCount() / limit);
-        } else {
-            allUrl = "";
-            unfilledFiles = FileModel.findUnfilled(activeUser.getEmployeeId(), limit, offset);
-            pageCount = (int) Math.ceil((float)FileModel.getUnfilledCount(activeUser.getEmployeeId()) / limit);
-        }
+
+        unfilledFiles = FileModel.findUnfilled(limit, offset);
+        pageCount = (int) Math.ceil((float)FileModel.getUnfilledCount() / limit);
         model.addAttribute("files", unfilledFiles);
         model.addAttribute("pageCount", pageCount);
 
-
-        model.addAttribute("allFiles", all);
-        model.addAttribute("allUrl", allUrl);
         model.addAttribute("page", page);
         model.addAttribute("pageTitle", "Незаполненные файлы");
         return "unfilled-file/files";
@@ -67,15 +59,18 @@ public class UnfilledFile {
      * Заполнение файла
      */
     @RequestMapping(value = {"/file-filling" }, method = RequestMethod.GET)
-    public String filesFilling(@RequestParam int versionId,
-                               Principal principal,
-                               Model model) {
+    public String filesFilling(
+            @RequestParam int versionId,
+            Principal principal,
+            Model model
+    ) {
         try {
             FileVersionModel fileVersion = FileVersionModel.findById(versionId);
             model.addAttribute("fileVersion", fileVersion);
 
             CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
-            if (fileVersion.getUserId() != activeUser.getEmployeeId() && !UserHelper.isAdmin(activeUser)) {
+            if (!UserHelper.isModerator(activeUser)) {
+                LogModel.addWarning(activeUser.getEmployeeId(), "Попытка доступа на страницу заполнения файла (/file-filling) без прав модератора");
                 throw new AccessDeniedException("Доступ запрещен");
             }
 
@@ -101,6 +96,12 @@ public class UnfilledFile {
                                       @RequestParam String version,
                                       Principal principal) {
         try {
+            CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+            if (!UserHelper.isModerator(activeUser)) {
+                LogModel.addWarning(activeUser.getEmployeeId(), "Попытка заполнения файла (/file-filling-handler) без прав модератора");
+                throw new AccessDeniedException("Доступ запрещен");
+            }
+
             // todo validation
             FileVersionModel fileVersion = FileVersionModel.findById(versionId);
             FileModel file = FileModel.findByTitle(title);
@@ -108,13 +109,6 @@ public class UnfilledFile {
                 file = new FileModel();
                 file.setTitle(title);
                 file.add();
-            }
-
-            // проверка прав
-            CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
-            if (fileVersion.getUserId() != activeUser.getEmployeeId() && !UserHelper.isAdmin(activeUser)) {
-                LogModel.addWarning(activeUser.getEmployeeId(), "Попытка заполнения чужого файла id=" + versionId);
-                throw new AccessDeniedException("Доступ запрещен");
             }
 
             // если файл уже был заполнен, т.е. файл отредактировали

@@ -1,7 +1,9 @@
 package controllers;
 
 import auth.CustomUserDetails;
+import exceptions.ForbiddenException;
 import exceptions.NotFoundException;
+import helpers.UserHelper;
 import models.*;
 import org.json.simple.JSONObject;
 import org.springframework.security.core.Authentication;
@@ -22,8 +24,7 @@ import java.util.HashMap;
  * Контроллер свойств версии для администратора
  */
 @Controller
-@RequestMapping("/admin")
-public class AdminVersionPropertyController {
+public class VersionPropertyController {
     /**
      * Добавление свойства версии
      * @param id Id версии
@@ -31,7 +32,17 @@ public class AdminVersionPropertyController {
      * @return Путь до представления
      */
     @RequestMapping(value = {"/file-version-property-add" }, method = RequestMethod.GET)
-    public String fileAddProperty(@RequestParam("id") int id, Model model) {
+    public String fileAddProperty(
+            @RequestParam("id") int id,
+            Model model,
+            Principal principal
+    ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isModerator(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка добавления свойства версии файла (/file-version-property-add) без прав модератора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
+
         try {
             FileVersionModel fileVersion = FileVersionModel.findById(id);
             model.addAttribute("fileVersion", fileVersion);
@@ -53,7 +64,16 @@ public class AdminVersionPropertyController {
      * @return Путь до представления
      */
     @RequestMapping(value = {"/file-version-property-edit" }, method = RequestMethod.GET)
-    public String fileEditProperty(@RequestParam("id") int id, Model model) {
+    public String fileEditProperty(
+            @RequestParam("id") int id,
+            Model model,
+            Principal principal
+    ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isModerator(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка изменения свойства версии файла (/file-version-property-edit) без прав модератора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
         try {
             FileVersionPropertyModel fileProperty = FileVersionPropertyModel.findById(id);
             model.addAttribute("fileProperty", fileProperty);
@@ -79,12 +99,15 @@ public class AdminVersionPropertyController {
             @RequestParam("propertyLink") int propertyLink,
             Principal principal
     ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isModerator(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка удаления свойства версии файла (/file-version-property-delete) без прав модератора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
         JSONObject result = new JSONObject();
         boolean error = true;
 
         try {
-            CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
-
             FileVersionPropertyModel fileProperty = FileVersionPropertyModel.findById(propertyLink);
             int versionId = fileProperty.getFileVersionId();
             int propertyId = fileProperty.getPropertyId();
@@ -117,6 +140,11 @@ public class AdminVersionPropertyController {
             RedirectAttributes attr,
             Principal principal
     ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isModerator(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка добавления/изменения свойства версии файла (/file-version-property-handler) без прав модератора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
         // проверяем, есть ли такое свойство
         PropertyModel property = PropertyModel.findById(propertyId);
         // проверяем, не заполнено ли уже это свойство
@@ -124,7 +152,6 @@ public class AdminVersionPropertyController {
         if (checkProperty != null) {
             id = checkProperty.getId();
         }
-        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         // если это добавление нового свойства версии
         if (id == 0) {
             try {

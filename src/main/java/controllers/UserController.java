@@ -1,10 +1,12 @@
 package controllers;
 
 import auth.CustomUserDetails;
+import exceptions.ForbiddenException;
 import exceptions.NotFoundException;
 import helpers.UserHelper;
 import models.FileModel;
 import models.FileVersionModel;
+import models.LogModel;
 import models.UserModel;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -22,12 +24,15 @@ import java.util.HashMap;
 @Controller
 public class UserController {
     @RequestMapping(value = {"/users" }, method = RequestMethod.GET)
-    public String users(@RequestParam(value="page", required=false, defaultValue = "1") int page,
-                                Model model,
-                                Principal principal) {
+    public String users(
+            @RequestParam(value="page", required=false, defaultValue = "1") int page,
+            Model model,
+            Principal principal
+    ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
-        if (!UserHelper.isAdmin(activeUser)) {
-            throw new AccessDeniedException("Доступ запрещен");
+        if (!UserHelper.isModerator(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка просмотра пользователей (/users) без прав модератора");
+            throw new ForbiddenException("Доступ запрещен");
         }
 
         int limit = UserModel.PAGE_COUNT;
@@ -49,9 +54,16 @@ public class UserController {
     }
 
     @RequestMapping(value = {"/user-view" }, method = RequestMethod.GET)
-    public String viewUser(@RequestParam int id,
-                                Model model,
-                                Principal principal) {
+    public String viewUser(
+            @RequestParam int id,
+            Model model,
+            Principal principal
+    ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isModerator(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка просмотра пользователя (/user-view) без прав модератора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
         try {
             UserModel user = UserModel.findById(id);
             model.addAttribute("user", user);
