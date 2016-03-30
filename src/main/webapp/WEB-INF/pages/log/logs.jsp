@@ -6,6 +6,8 @@
     <jsp:param name="activePage" value="log" />
 </jsp:include>
 
+<script src="<spring:url value="/resources/js/pages/log/logs.js" />"></script>
+
 <h2>${pageTitle}</h2>
 
 <ol class="breadcrumb">
@@ -16,6 +18,30 @@
 </ol>
 
 <br>
+
+<c:if test="${status == true}">
+    <div class="alert alert-success">Логи очищены</div>
+</c:if>
+
+<form action="<spring:url value="/admin/logs-clear" />" method="post">
+    <button class="btn btn-danger" type="submit" id="clearLogsBtn">Очистить логи</button>
+</form>
+
+<hr>
+
+<form action="<spring:url value="/admin/logs" />" method="get" class="form-horizontal">
+    <div class="form-group">
+        <label class="col-sm-2 control-label" for="levelSelect">Выберите уровень</label>
+        <div class="col-sm-3">
+            <select id="levelSelect" class="form-control" name="level">
+                <option value=""> - </option>
+                <option <c:if test="${currentLevel.equals(\"info\")}"> selected="selected" </c:if> value="info">info</option>
+                <option <c:if test="${currentLevel.equals(\"warning\")}"> selected="selected" </c:if> value="warning">warning</option>
+                <option <c:if test="${currentLevel.equals(\"error\")}"> selected="selected" </c:if> value="error">error</option>
+            </select>
+        </div>
+    </div>
+</form>
 
 <table class="table table-striped models-view">
     <thead>
@@ -46,16 +72,16 @@
 <c:if test="${pageCount > 1}">
     <div class="btn-group">
         <c:if test="${page > 1}">
-            <a href="<spring:url value="/users?page=" />${page - 1}" type="button" class="btn btn-white"><i class="fa fa-chevron-left"></i></a>
+            <a href="<spring:url value="/admin/logs?page=" />${page - 1}" type="button" class="btn btn-white"><i class="fa fa-chevron-left"></i></a>
         </c:if>
 
         <c:forEach begin="1" end="${pageCount}" var="number">
-            <a href="<spring:url value="/users?page=" />${number}"
+            <a href="<spring:url value="/admin/logs?page=" />${number}"
                class="btn btn-white <c:if test="${page == number}">active</c:if>">${number}</a>
         </c:forEach>
 
         <c:if test="${page < pageCount}">
-            <a href="<spring:url value="/users?page=" />${page + 1}" type="button" class="btn btn-white"><i class="fa fa-chevron-right"></i></a>
+            <a href="<spring:url value="/admin/logs?page=" />${page + 1}" type="button" class="btn btn-white"><i class="fa fa-chevron-right"></i></a>
         </c:if>
     </div>
 </c:if>

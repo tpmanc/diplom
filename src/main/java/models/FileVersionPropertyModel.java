@@ -108,7 +108,7 @@ public class FileVersionPropertyModel extends BaseModel implements ModelInterfac
             KeyHolder keyHolder = new GeneratedKeyHolder();
             template.update(saveNew, parameters, keyHolder);
             id = keyHolder.getKey().intValue();
-            return true;
+            return id > 0;
         }
         return false;
     }

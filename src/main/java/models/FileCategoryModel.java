@@ -76,7 +76,7 @@ public class FileCategoryModel extends BaseModel implements ModelInterface {
             parameters.addValue("categoryId", categoryId);
             template.update(saveNew, parameters, keyHolder);
             this.id = keyHolder.getKey().intValue();
-            return true;
+            return this.id > 0;
         }
         return false;
     }

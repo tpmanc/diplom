@@ -9,7 +9,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -21,12 +20,16 @@ import java.util.Map;
 public class LogModel extends BaseModel implements ModelInterface {
     private static final String saveNew = "INSERT INTO log(userId, date, level, message) VALUES (:userId, :date, :level, :message)";
     private static final String deleteById = "DELETE FROM log WHERE id = :id";
+    private static final String clear = "DELETE FROM log";
     private static final String getAll = "SELECT log.*, user.displayName FROM log LEFT JOIN user ON user.id=log.userId ORDER BY date DESC LIMIT :limit OFFSET :offset";
+    private static final String getAllByLevel = "SELECT log.*, user.displayName FROM log LEFT JOIN user ON user.id=log.userId WHERE level = :level ORDER BY date DESC LIMIT :limit OFFSET :offset";
+    private static final String getCount = "SELECT count(id) FROM log";
+    private static final String getCountByLevel = "SELECT count(id) FROM log WHERE level = :level";
 
     public final static String INFO = "info";
     public final static String WARNING = "warning";
     public final static String ERROR = "error";
-    public final static int PAGE_COUNT = 10;
+    public final static int PAGE_COUNT = 50;
 
     private int id;
     private int userId;
@@ -98,23 +101,45 @@ public class LogModel extends BaseModel implements ModelInterface {
         return rows > 0;
     }
 
-    public static ArrayList<LogOutput> findAll(int limit, int offset) throws SQLException {
+    public static ArrayList<LogOutput> findAll(String level, int limit, int offset) throws SQLException {
         ArrayList<LogOutput> result = new ArrayList<LogOutput>();
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("limit", limit);
         parameters.addValue("offset", offset);
-        List<Map<String, Object>> rows = template.queryForList(getAll, parameters);
+        parameters.addValue("level", level);
+        List<Map<String, Object>> rows;
+        if (level != null && (level.equals("info") || level.equals("warning") || level.equals("error"))) {
+            rows = template.queryForList(getAllByLevel, parameters);
+        } else {
+            rows = template.queryForList(getAll, parameters);
+        }
         for (Map<String, Object> row : rows) {
             Integer logId = (Integer) row.get("id");
             Integer userId = (Integer) row.get("userId");
             Long date = (Long) row.get("date");
-            String level = (String) row.get("level");
+            String logLevel = (String) row.get("level");
             String message = (String) row.get("message");
             String displayName = (String) row.get("displayName");
-            result.add(new LogOutput(logId, userId, date, level, message, displayName));
+            result.add(new LogOutput(logId, userId, date, logLevel, message, displayName));
         }
         return result;
+    }
+
+    public static int getCount() {
+        JdbcTemplate template = new JdbcTemplate(Database2.getInstance().getBds());
+        return template.queryForObject(getCount, Integer.class);
+    }
+    public static int getCount(String level) {
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("level", level);
+        return template.queryForObject(getCountByLevel, parameters, Integer.class);
+    }
+
+    public static void clear() {
+        JdbcTemplate template = new JdbcTemplate(Database2.getInstance().getBds());
+        template.update(clear);
     }
 
     public int getId() {

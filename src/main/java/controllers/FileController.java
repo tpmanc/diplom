@@ -360,7 +360,11 @@ public class FileController {
                             fileVersion.setVersion(versionValue);
                         }
                         fileVersion.setFileSize(file.getSize());
-                        fileVersion.add();
+                        if (fileVersion.add()) {
+                            LogModel.addInfo(activeUser.getEmployeeId(), "Загружена новая версия, id=" + fileVersion.getId());
+                        } else {
+                            LogModel.addError(activeUser.getEmployeeId(), "Ошибка при загрузке новой версии");
+                        }
 
                         // добавление остальных свойств версии в БД
                         if (properties != null) {
@@ -371,7 +375,11 @@ public class FileController {
                                     fileProperty.setFileVersionId(fileVersion.getId());
                                     fileProperty.setPropertyId(propertyId);
                                     fileProperty.setValue(String.valueOf(entry.getValue()));
-                                    fileProperty.add();
+                                    if (fileProperty.add()) {
+                                        LogModel.addInfo(activeUser.getEmployeeId(), "Версии id=" + fileVersion.getId()+" добавлено новое свойство id="+propertyId+", значение - "+fileProperty.getValue());
+                                    } else {
+                                        LogModel.addError(activeUser.getEmployeeId(), "Ошибка при добавлении свойства id"+propertyId+" версии id="+fileVersion.getId());
+                                    }
                                 }
                             }
                         }
@@ -407,9 +415,11 @@ public class FileController {
     @RequestMapping(value = {"/file-categories-handler" }, method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
     public String fileCategoriesHandler(
             @RequestParam int fileId,
-            @RequestParam("categoriesId[]") int[] categoriesId
+            @RequestParam("categoriesId[]") int[] categoriesId,
+            Principal principal
     ) {
             try {
+                CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
                 FileModel file = FileModel.findById(fileId);
                 FileCategoryModel.deleteByFile(fileId);
                 for (int categoryId : categoriesId) {
@@ -417,7 +427,11 @@ public class FileController {
                     FileCategoryModel fileCategory = new FileCategoryModel();
                     fileCategory.setFileId(fileId);
                     fileCategory.setCategoryId(categoryId);
-                    fileCategory.add();
+                    if (fileCategory.add()) {
+                        LogModel.addInfo(activeUser.getEmployeeId(), "Файл "+file.getTitle()+" привязан к категории "+category.getTitle());
+                    } else {
+                        LogModel.addError(activeUser.getEmployeeId(), "Ошибка при привязке файла "+file.getTitle()+" категории "+category.getTitle());
+                    }
                 }
                 return "redirect:/file-view?id=" + file.getId();
             } catch (SQLException e) {

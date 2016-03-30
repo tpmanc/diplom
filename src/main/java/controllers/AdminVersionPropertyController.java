@@ -148,7 +148,7 @@ public class AdminVersionPropertyController {
                 FileVersionPropertyModel fileProperty = FileVersionPropertyModel.findById(id);
                 fileProperty.setValue(value);
                 if (fileProperty.update()) {
-                    LogModel.addInfo(activeUser.getEmployeeId(), "У версии файла id="+fileProperty.getFileVersionId()+" изменено свойство id="+fileProperty.getPropertyId());
+                    LogModel.addInfo(activeUser.getEmployeeId(), "У версии файла id="+fileProperty.getFileVersionId()+" изменено свойство id="+fileProperty.getPropertyId()+", значение - "+value);
                     return "redirect:/file-view?id="+fileVersion.getFileId()+"&versionId="+fileVersion.getId();
                 } else {
                     attr.addFlashAttribute("errors", fileProperty.errors);
