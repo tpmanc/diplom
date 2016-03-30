@@ -7,6 +7,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Панель администратора - Войти</title>
+    <link rel="shortcut icon" href="<spring:url value="/resources/favicon.png" />" type="image/png">
     <link href="<spring:url value="/resources/css/bootstrap.min.css" />" rel="stylesheet">
     <link href="<spring:url value="/resources/css/style.css" />" rel="stylesheet">
 </head>

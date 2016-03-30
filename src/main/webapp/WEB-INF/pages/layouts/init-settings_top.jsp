@@ -3,6 +3,7 @@
 <html>
 <head>
     <title>Настройки</title>
+    <link rel="shortcut icon" href="<spring:url value="/resources/favicon.png" />" type="image/png">
     <link href="<spring:url value="/resources/css/bootstrap.min.css" />" rel="stylesheet" />
     <link href="<spring:url value="/resources/css/kforms.css" />" rel="stylesheet" />
     <link href="<spring:url value="/resources/css/style.css" />" rel="stylesheet" />

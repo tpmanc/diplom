@@ -6,6 +6,7 @@
         <title>Repository - ${pageTitle}</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta charset="UTF-8">
+        <link rel="shortcut icon" href="<spring:url value="/resources/favicon.png" />" type="image/png">
 
         <link href="<spring:url value="/resources/css/bootstrap.min.css" />" rel="stylesheet" />
         <link href="<spring:url value="/resources/fonts/font-awesome/css/font-awesome.css" />" rel="stylesheet" />
