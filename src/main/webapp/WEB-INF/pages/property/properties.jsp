@@ -49,4 +49,9 @@
     </tbody>
 </table>
 
+<c:if test="${pageCount > 1}">
+    <c:set var="pageUrl" value="properties" scope="request" />
+    <jsp:include page="../widgets/paginator.jsp" />
+</c:if>
+
 <jsp:include page="../layouts/layout_bottom.jsp" />

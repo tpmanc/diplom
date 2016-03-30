@@ -163,7 +163,7 @@ public class VersionPropertyController {
                 } else {
                     attr.addFlashAttribute("errors", fileProperty.errors);
                     attr.addFlashAttribute("selectedProperty", propertyId);
-                    return "redirect:/admin/file-version-property-add?id="+fileVersionId;
+                    return "redirect:/file-version-property-add?id="+fileVersionId;
                 }
             } catch (SQLException e) {
                 throw new NotFoundException("Ошибка сервера");
@@ -179,7 +179,7 @@ public class VersionPropertyController {
                     return "redirect:/file-view?id="+fileVersion.getFileId()+"&versionId="+fileVersion.getId();
                 } else {
                     attr.addFlashAttribute("errors", fileProperty.errors);
-                    return "redirect:/admin/file-version-property-edit?id="+id;
+                    return "redirect:/file-version-property-edit?id="+id;
                 }
             } catch (SQLException e) {
                 throw new NotFoundException("Ошибка сервера");

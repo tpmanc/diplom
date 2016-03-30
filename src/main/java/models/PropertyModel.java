@@ -33,6 +33,8 @@ public class PropertyModel implements ModelInterface {
     private static final String saveNew = "INSERT INTO property(title) VALUES(:title)";
     private static final String getAll = "SELECT * FROM property";
     private static final String getAllCustom = "SELECT * FROM property WHERE id > 10";
+    private static final String getAllCustomByPage = "SELECT * FROM property WHERE id > 10 LIMIT :limit OFFSET :offset";
+    private static final String getCount = "SELECT count(id) FROM property WHERE id > 10";
     private static final String getById = "SELECT * FROM property WHERE id = :id";
     private static final String deleteById = "DELETE FROM property WHERE id = :id";
     private static final String updateById = "UPDATE property SET title = :title WHERE id = :id";
@@ -43,6 +45,8 @@ public class PropertyModel implements ModelInterface {
     private int id;
     private String title;
     private boolean isCustom = false;
+
+    public final static int PAGE_COUNT = 10;
 
     public PropertyModel(int id, String title, boolean isCustom) {
         this.id = id;
@@ -76,6 +80,21 @@ public class PropertyModel implements ModelInterface {
         this.title = title;
     }
 
+    public static ArrayList<PropertyModel> findAll(int limit, int offset) throws SQLException {
+        ArrayList<PropertyModel> result = new ArrayList<PropertyModel>();
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("limit", limit);
+        parameters.addValue("offset", offset);
+        List<Map<String, Object>> rows = template.queryForList(getAllCustomByPage, parameters);
+        for (Map row : rows) {
+            Integer modelId = (Integer) row.get("id");
+            String title = (String) row.get("title");
+            boolean isCustom =!isRequired(modelId);
+            result.add(new PropertyModel(modelId, title, isCustom));
+        }
+        return result;
+    }
     public static ArrayList<PropertyModel> findAll() throws SQLException {
         ArrayList<PropertyModel> result = new ArrayList<PropertyModel>();
         JdbcTemplate template = new JdbcTemplate(Database2.getInstance().getBds());
@@ -87,6 +106,11 @@ public class PropertyModel implements ModelInterface {
             result.add(new PropertyModel(modelId, title, isCustom));
         }
         return result;
+    }
+
+    public static int getCount() {
+        JdbcTemplate template = new JdbcTemplate(Database2.getInstance().getBds());
+        return template.queryForObject(getCount, Integer.class);
     }
 
     public static ArrayList<PropertyModel> findAllCustom() throws SQLException {

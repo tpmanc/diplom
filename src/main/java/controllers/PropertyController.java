@@ -6,6 +6,7 @@ import exceptions.NotFoundException;
 import helpers.UserHelper;
 import models.LogModel;
 import models.PropertyModel;
+import models.UserModel;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,6 +34,7 @@ public class PropertyController {
      */
     @RequestMapping(value = {"/properties" }, method = RequestMethod.GET)
     public String index(
+            @RequestParam(value="page", required=false, defaultValue = "1") int page,
             Model model,
             Principal principal
     ) {
@@ -41,16 +43,23 @@ public class PropertyController {
             LogModel.addWarning(activeUser.getEmployeeId(), "Попытка просмотра списка свойств (/properties) без прав модератора");
             throw new ForbiddenException("Доступ запрещен");
         }
-        ArrayList<PropertyModel> properties = null;
-        try {
-            properties = PropertyModel.findAll();
-            model.addAttribute("properties", properties);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
 
-        model.addAttribute("pageTitle", "Свойства файлов");
-        return "property/properties";
+        int limit = PropertyModel.PAGE_COUNT;
+        int offset = (page - 1) * limit;
+
+        try {
+            ArrayList<PropertyModel> properties = PropertyModel.findAll(limit, offset);
+            model.addAttribute("properties", properties);
+
+            int pageCount = (int) Math.ceil((float)PropertyModel.getCount() / limit);
+            model.addAttribute("pageCount", pageCount);
+
+            model.addAttribute("page", page);
+            model.addAttribute("pageTitle", "Свойства файлов");
+            return "property/properties";
+        } catch (SQLException e) {
+            throw new NotFoundException("Страница не найдена");
+        }
     }
 
     /**
@@ -153,10 +162,10 @@ public class PropertyController {
                 property.setTitle(title);
                 if (property.update()) {
                     LogModel.addInfo(activeUser.getEmployeeId(), "Название свойства было изменено с "+oldTitle+"на "+property.getTitle()+", id=" + property.getId());
-                    return "redirect:/admin/properties";
+                    return "redirect:/properties";
                 } else {
                     attr.addFlashAttribute("errors", property.errors);
-                    return "redirect:/admin/property-edit?id="+id;
+                    return "redirect:/property-edit?id="+id;
                 }
             } catch (SQLException e) {
                 throw new NotFoundException("Свойство не найдено", "404");
@@ -167,10 +176,10 @@ public class PropertyController {
             try {
                 if (property.add()) {
                     LogModel.addInfo(activeUser.getEmployeeId(), "Добавлено новое свойство "+property.getTitle()+", id=" + property.getId());
-                    return "redirect:/admin/properties";
+                    return "redirect:/properties";
                 } else {
                     attr.addFlashAttribute("errors", property.errors);
-                    return "redirect:/admin/property-add";
+                    return "redirect:/property-add";
                 }
             } catch (SQLException e) {
                 throw new NotFoundException("Ошибка при добавлении свойства", "500");

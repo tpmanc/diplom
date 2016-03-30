@@ -50,6 +50,12 @@
 </p>
 </sec:authorize>
 
+<c:if test="${fileCategories.size() == 0}">
+    <div class="alert alert-danger">
+        Файл не привязан ни к одной категории! <a class="alert-link" href="<spring:url value="/file-categories?fileId=${file.id}" />">Исправить</a>
+    </div>
+</c:if>
+
 <h3>${file.title}</h3>
 
 <table class="table table-striped models-view">

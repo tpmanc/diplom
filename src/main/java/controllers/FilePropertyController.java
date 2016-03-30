@@ -160,7 +160,7 @@ public class FilePropertyController {
                 } else {
                     attr.addFlashAttribute("errors", fileProperty.errors);
                     attr.addFlashAttribute("selectedProperty", propertyId);
-                    return "redirect:/admin/file-property-add?id="+fileId;
+                    return "redirect:/file-property-add?id="+fileId;
                 }
             } catch (SQLException e) {
                 throw new NotFoundException("Ошибка сервера");
@@ -175,7 +175,7 @@ public class FilePropertyController {
                     return "redirect:/file-view?id="+fileId;
                 } else {
                     attr.addFlashAttribute("errors", fileProperty.errors);
-                    return "redirect:/admin/file-property-edit?id="+id;
+                    return "redirect:/file-property-edit?id="+id;
                 }
             } catch (SQLException e) {
                 throw new NotFoundException("Ошибка сервера");

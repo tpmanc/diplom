@@ -82,6 +82,6 @@ public class LogController {
         LogModel.clear();
         LogModel.addInfo(activeUser.getEmployeeId(), "Очистка логов");
         attr.addFlashAttribute("status", true);
-        return "redirect:/admin/logs";
+        return "redirect:/logs";
     }
 }
