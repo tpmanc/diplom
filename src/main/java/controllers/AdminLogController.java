@@ -6,6 +6,7 @@ import helpers.UserHelper;
 import models.CategoryModel;
 import models.LogModel;
 import models.UserModel;
+import models.helpers.LogOutput;
 import org.json.simple.JSONObject;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -46,7 +47,7 @@ public class AdminLogController {
             int limit = LogModel.PAGE_COUNT;
             int offset = (page - 1) * limit;
 
-            ArrayList<LogModel> logs = LogModel.findAll(limit, offset);
+            ArrayList<LogOutput> logs = LogModel.findAll(limit, offset);
             model.addAttribute("logs", logs);
             model.addAttribute("pageTitle", "Логи");
             return "log/logs";

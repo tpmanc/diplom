@@ -56,7 +56,7 @@
                                 </li>
                                 <sec:authorize access="hasRole('ROLE_FR-ADMIN')">
                                     <li <c:if test="${param.activePage == 'log'}"> class="active" </c:if>>
-                                        <a href="<spring:url value="/logs" />"><i class="fa fa-warning"></i> <span class="nav-label">Логи</span></a>
+                                        <a href="<spring:url value="/admin/logs" />"><i class="fa fa-warning"></i> <span class="nav-label">Логи</span></a>
                                     </li>
                                 </sec:authorize>
                             </ul>

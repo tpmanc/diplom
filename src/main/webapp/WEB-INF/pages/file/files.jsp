@@ -24,9 +24,9 @@
 <table class="table table-striped models-view">
     <thead>
     <tr>
-        <td>id</td>
-        <td>title</td>
-        <td></td>
+        <th>id</th>
+        <th>title</th>
+        <th></th>
     </tr>
     </thead>
     <tbody>

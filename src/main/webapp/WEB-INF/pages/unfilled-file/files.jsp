@@ -32,9 +32,9 @@
 <table class="table table-striped models-view">
     <thead>
     <tr>
-        <td>Id</td>
-        <td>Имя файла</td>
-        <td></td>
+        <th>Id</th>
+        <th>Имя файла</th>
+        <th></th>
     </tr>
     </thead>
     <tbody>

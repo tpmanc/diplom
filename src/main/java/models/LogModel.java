@@ -1,6 +1,7 @@
 package models;
 
 import db.Database2;
+import models.helpers.LogOutput;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -20,7 +21,7 @@ import java.util.Map;
 public class LogModel extends BaseModel implements ModelInterface {
     private static final String saveNew = "INSERT INTO log(userId, date, level, message) VALUES (:userId, :date, :level, :message)";
     private static final String deleteById = "DELETE FROM log WHERE id = :id";
-    private static final String getAll = "SELECT * FROM log LIMIT :limit OFFSET :offset";
+    private static final String getAll = "SELECT log.*, user.displayName FROM log LEFT JOIN user ON user.id=log.userId ORDER BY date DESC LIMIT :limit OFFSET :offset";
 
     public final static String INFO = "info";
     public final static String WARNING = "warning";
@@ -97,8 +98,8 @@ public class LogModel extends BaseModel implements ModelInterface {
         return rows > 0;
     }
 
-    public static ArrayList<LogModel> findAll(int limit, int offset) throws SQLException {
-        ArrayList<LogModel> result = new ArrayList<LogModel>();
+    public static ArrayList<LogOutput> findAll(int limit, int offset) throws SQLException {
+        ArrayList<LogOutput> result = new ArrayList<LogOutput>();
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("limit", limit);
@@ -110,7 +111,8 @@ public class LogModel extends BaseModel implements ModelInterface {
             Long date = (Long) row.get("date");
             String level = (String) row.get("level");
             String message = (String) row.get("message");
-            result.add(new LogModel(logId, userId, date, level, message));
+            String displayName = (String) row.get("displayName");
+            result.add(new LogOutput(logId, userId, date, level, message, displayName));
         }
         return result;
     }
@@ -155,9 +157,4 @@ public class LogModel extends BaseModel implements ModelInterface {
         this.message = message;
     }
 
-    public String getStringDate() {
-        Date d = new Date(date);
-        SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy");
-        return df.format(d);
-    }
 }

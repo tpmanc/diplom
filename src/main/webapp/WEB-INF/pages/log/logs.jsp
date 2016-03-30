@@ -20,19 +20,24 @@
 <table class="table table-striped models-view">
     <thead>
     <tr>
-        <td>Id</td>
-        <td>Дата</td>
-        <td>Пользователь</td>
-        <td>Действие</td>
+        <th>Id</th>
+        <th>Дата</th>
+        <th>Пользователь</th>
+        <th>Действие</th>
     </tr>
     </thead>
     <tbody>
     <c:forEach items="${logs}" var="log" varStatus="itemStat">
-        <tr>
+        <tr class="
+                <c:choose>
+                    <c:when test="${log.level.equals(\"info\")}">info</c:when>
+                    <c:when test="${log.level.equals(\"warning\")}">warning</c:when>
+                    <c:when test="${log.level.equals(\"error\")}">danger</c:when>
+                </c:choose>">
             <td>${log.id}</td>
             <td>${log.stringDate}</td>
-            <td>${log.userId}</td>
-            <td>${log.message}}</td>
+            <td>${log.username}</td>
+            <td>${log.message}</td>
         </tr>
     </c:forEach>
     </tbody>

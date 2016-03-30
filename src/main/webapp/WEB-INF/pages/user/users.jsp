@@ -20,9 +20,9 @@
 <table class="table table-striped models-view">
     <thead>
     <tr>
-        <td>employeeId</td>
-        <td>displayName</td>
-        <td></td>
+        <th>employeeId</th>
+        <th>displayName</th>
+        <th></th>
     </tr>
     </thead>
     <tbody>
