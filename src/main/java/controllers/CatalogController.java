@@ -33,7 +33,7 @@ public class CatalogController {
         int offset = (page - 1) * limit;
 
         try {
-            ArrayList<HashMap> trees = CategoryModel.findAll();
+            ArrayList<CategoryModel> trees = CategoryModel.findAll();
             model.addAttribute("trees", trees);
 
             if (categoryId > 0) {

@@ -28,10 +28,10 @@
     <tbody>
     <c:forEach items="${users}" var="item" varStatus="itemStat">
         <tr>
-            <td>${item.get("id")}</td>
-            <td>${item.get("displayName")}</td>
+            <td>${item.id}</td>
+            <td>${item.displayName}</td>
             <td>
-                <a href="<spring:url value="/user-view?id=" />${item.get("id")}" class="icon">
+                <a href="<spring:url value="/user-view?id=" />${item.id}" class="icon">
                     <i class="fa fa-eye"></i>
                 </a>
             </td>

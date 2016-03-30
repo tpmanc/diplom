@@ -28,7 +28,7 @@ public class AdminCategoryController {
     @RequestMapping(value = {"/categories" }, method = RequestMethod.GET)
     public String index(Model model) {
         try {
-            ArrayList<HashMap> trees = CategoryModel.findAll();
+            ArrayList<CategoryModel> trees = CategoryModel.findAll();
             model.addAttribute("trees", trees);
 
             model.addAttribute("pageTitle", "Деревья категорий");

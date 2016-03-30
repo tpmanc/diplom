@@ -8,12 +8,13 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import sun.plugin.cache.FileVersion;
 
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class FileModel extends BaseModel implements ModelInterface {
+public class FileModel implements ModelInterface {
     private static final String getById = "SELECT * FROM file WHERE id = :id";
     private static final String getByTitle = "SELECT * FROM file WHERE title = :title";
     private static final String saveNew = "INSERT INTO file(title) VALUES(:title)";
@@ -22,7 +23,7 @@ public class FileModel extends BaseModel implements ModelInterface {
     private static final String isFileExist = "SELECT count(id) FROM fileVersion WHERE hash = :hash AND fileSize = :fileSize";
     private static final String getCount = "SELECT count(id) FROM file";
     private static final String getTitles = "SELECT id, title FROM file WHERE title LIKE :str";
-    private static final String getVersions = "SELECT id, version FROM fileVersion WHERE fileId = :fileId ORDER BY CONVERT(version, decimal) DESC";
+    private static final String getVersions = "SELECT * FROM fileVersion WHERE fileId = :fileId ORDER BY CONVERT(version, decimal) DESC";
     private static final String deleteById = "DELETE FROM file WHERE id = :id";
     private static final String getAllUnfilled = "SELECT id,fileName as title, 0 as isNoCategory FROM fileVersion WHERE isFilled = :isFilled " +
                                                 " UNION " +
@@ -87,12 +88,31 @@ public class FileModel extends BaseModel implements ModelInterface {
         return null;
     }
 
-    public static ArrayList<HashMap> findAll() throws SQLException {
-        return queryAll(getAll);
+    public static ArrayList<FileModel> findAll() throws SQLException {
+        ArrayList<FileModel> result = new ArrayList<FileModel>();
+        JdbcTemplate template = new JdbcTemplate(Database2.getInstance().getBds());
+        List<Map<String, Object>> rows = template.queryForList(getAll);
+        for (Map row : rows) {
+            Integer modelId = (Integer) row.get("id");
+            String title = (String) row.get("title");
+            result.add(new FileModel(modelId, title));
+        }
+        return result;
     }
 
-    public static ArrayList<HashMap> findAll(int limit, int offset) throws SQLException {
-        return queryAll(getAllLimit, limit, offset);
+    public static ArrayList<FileModel> findAll(int limit, int offset) throws SQLException {
+        ArrayList<FileModel> result = new ArrayList<FileModel>();
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("limit", limit);
+        parameters.addValue("offset", offset);
+        List<Map<String, Object>> rows = template.queryForList(getAllLimit, parameters);
+        for (Map row : rows) {
+            Integer modelId = (Integer) row.get("id");
+            String title = (String) row.get("title");
+            result.add(new FileModel(modelId, title));
+        }
+        return result;
     }
 
     public static int getCount() {
@@ -122,20 +142,22 @@ public class FileModel extends BaseModel implements ModelInterface {
             KeyHolder keyHolder = new GeneratedKeyHolder();
             template.update(saveNew, parameters, keyHolder);
             id = keyHolder.getKey().intValue();
-            return true;
+            return id > 0;
         } else {
             return false;
         }
     }
 
-    public static ArrayList<HashMap> findTitles(String query){
-        ArrayList<HashMap> result = new ArrayList<HashMap>();
+    public static ArrayList<FileModel> findTitles(String query){
+        ArrayList<FileModel> result = new ArrayList<FileModel>();
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("str", "%" + query + "%");
         List<Map<String, Object>> rows = template.queryForList(getTitles, parameters);
         for (Map row : rows) {
-            result.add(getFileInfo(row));
+            Integer modelId = (Integer) row.get("id");
+            String title = (String) row.get("title");
+            result.add(new FileModel(modelId, title));
         }
         return result;
     }
@@ -260,19 +282,23 @@ public class FileModel extends BaseModel implements ModelInterface {
         throw new NotFoundException("Версия не найдена");
     }
 
-    public ArrayList getVersionList() {
-        ArrayList<HashMap> result = new ArrayList<HashMap>();
+    public ArrayList<FileVersionModel> getVersionList() {
+        ArrayList<FileVersionModel> result = new ArrayList<FileVersionModel>();
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("fileId", id);
         List<Map<String, Object>> rows = template.queryForList(getVersions, parameters);
         for (Map row : rows) {
-            HashMap<String, String> info = new HashMap<String, String>();
-            Integer id = (Integer) row.get("id");
+            Integer modelId = (Integer) row.get("id");
+            Integer fileId = (Integer) row.get("fileId");
+            Integer userId = (Integer) row.get("userId");
             String version = (String) row.get("version");
-            info.put("id", String.valueOf(id));
-            info.put("version", version);
-            result.add(info);
+            String hash = (String) row.get("hash");
+            String fileName = (String) row.get("fileName");
+            Long fileSize = (Long) row.get("fileSize");
+            Long date = (Long) row.get("date");
+            Boolean isFilled = (Integer) row.get("isFilled") == 1;
+            result.add(new FileVersionModel(modelId, fileId, userId, version, hash, fileSize, date, isFilled, fileName));
         }
         return result;
     }

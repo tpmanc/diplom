@@ -9,7 +9,7 @@ import org.springframework.security.acls.model.NotFoundException;
 import java.sql.SQLException;
 import java.util.*;
 
-public class UserModel extends BaseModel implements ModelInterface {
+public class UserModel implements ModelInterface {
     private static final String saveNew = "INSERT INTO user(id, phone, email, displayName, department, departmentNumber, fax, address) VALUES(:id, :phone, :email, :displayName, :department, :departmentNumber, :fax, :address)";
     private static final String updateById = "UPDATE user SET phone = :phone, email = :email, displayName = :displayName, department = :department, departmentNumber = :departmentNumber, fax = :fax, address = :address WHERE id = :id";
     private static final String getById = "SELECT * FROM user WHERE id = :id";
@@ -83,17 +83,22 @@ public class UserModel extends BaseModel implements ModelInterface {
         return template.queryForObject(getCount, Integer.class);
     }
 
-    public static ArrayList<HashMap> findAll(int limit, int offset) throws SQLException {
-        ArrayList<HashMap> result = new ArrayList<HashMap>();
+    public static ArrayList<UserModel> findAll(int limit, int offset) throws SQLException {
+        ArrayList<UserModel> result = new ArrayList<UserModel>();
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("limit", limit);
         parameters.addValue("offset", offset);
         List<Map<String, Object>> rows = template.queryForList(getAllOnPage, parameters);
         for (Map row : rows) {
-            HashMap<String, String> info = new HashMap<String, String>();
-            info.put("id", String.valueOf(row.get("id")));
-            info.put("displayName", String.valueOf(row.get("displayName")));
-            result.add(info);
+            Integer modelId = (Integer) row.get("id");
+            String phone = (String) row.get("phone");
+            String email = (String) row.get("email");
+            String displayName = (String) row.get("displayName");
+            String department = (String) row.get("department");
+            String departmentNumber = (String) row.get("departmentNumber");
+            String fax = (String) row.get("fax");
+            String address = (String) row.get("address");
+            result.add(new UserModel(modelId, phone, email, displayName, department, departmentNumber, fax, address));
         }
         return result;
     }

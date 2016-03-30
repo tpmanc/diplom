@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class RequestFileModel extends BaseModel implements ModelInterface {
+public class RequestFileModel implements ModelInterface {
     private static final String saveNew = "INSERT INTO requestFile(requestId, hash, fileName, fileSize, extension) VALUES(:requestId, :hash, :fileName, :fileSize, :extension)";
     private static final String isFileExist = "SELECT count(id) FROM requestFile WHERE hash = :hash AND fileSize = :fileSize";
     private static final String getAll = "SELECT * FROM request";

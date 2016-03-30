@@ -7,6 +7,7 @@ import helpers.FileHelper;
 import helpers.PEProperties;
 import helpers.UserHelper;
 import models.*;
+import models.helpers.FileCategory;
 import models.helpers.FileFilling;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -18,6 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import sun.plugin.cache.FileVersion;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,7 +46,7 @@ public class FileController {
         int offset = (page - 1) * limit;
         try {
             // массив файлов для нужной страницы
-            ArrayList<HashMap> files = FileModel.findAll(limit, offset);
+            ArrayList<FileModel> files = FileModel.findAll(limit, offset);
             model.addAttribute("files", files);
 
             int pageCount = (int) Math.ceil((float)FileModel.getCount() / limit);
@@ -93,19 +95,19 @@ public class FileController {
             model.addAttribute("isFileOwner", isFileOwner);
 
             // список версий файла
-            ArrayList versionList = file.getVersionList();
+            ArrayList<FileVersionModel> versionList = file.getVersionList();
             model.addAttribute("versionList", versionList);
 
             // свойства файла
-            ArrayList fileVersionProperties = FileVersionPropertyModel.getProperties(currentVersion.getId());
+            ArrayList<FileVersionPropertyModel> fileVersionProperties = FileVersionPropertyModel.getProperties(currentVersion.getId());
             model.addAttribute("fileVersionProperties", fileVersionProperties);
 
             // свойства версии
-            ArrayList fileProperties = FilePropertyModel.getProperties(file.getId());
+            ArrayList<FilePropertyModel> fileProperties = FilePropertyModel.getProperties(file.getId());
             model.addAttribute("fileProperties", fileProperties);
 
             // категории файла
-            ArrayList<HashMap> fileCategories = FileCategoryModel.findByFile(file.getId());
+            ArrayList<FileCategory> fileCategories = FileCategoryModel.findByFile(file.getId());
             model.addAttribute("fileCategories", fileCategories);
 
             int requestCount = RequestModel.getNewCountForUser(activeUser.getEmployeeId());
@@ -145,10 +147,10 @@ public class FileController {
             FileModel file = FileModel.findById(fileId);
             model.addAttribute("pageTitle", "Редактировать категории");
 
-            ArrayList<HashMap> categories = CategoryModel.findAll();
+            ArrayList<CategoryModel> categories = CategoryModel.findAll();
             model.addAttribute("categories", categories);
 
-            ArrayList<HashMap> fileCategories = FileCategoryModel.findByFile(file.getId());
+            ArrayList<FileCategory> fileCategories = FileCategoryModel.findByFile(file.getId());
             model.addAttribute("fileCategories", fileCategories);
 
             model.addAttribute("fileId", fileId);
@@ -171,11 +173,11 @@ public class FileController {
         JSONArray array = new JSONArray();
         result.put("query", query);
 
-        ArrayList<HashMap> res = FileModel.findTitles(query);
-        for (HashMap row : res) {
+        ArrayList<FileModel> res = FileModel.findTitles(query);
+        for (FileModel row : res) {
             JSONObject obj = new JSONObject();
-            obj.put("value", row.get("title"));
-            obj.put("data", row.get("id"));
+            obj.put("value", row.getTitle());
+            obj.put("data", row.getId());
             array.add(obj);
         }
         result.put("suggestions", array);

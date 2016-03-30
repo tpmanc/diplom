@@ -14,7 +14,7 @@ import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class CategoryModel extends BaseModel implements ModelInterface {
+public class CategoryModel implements ModelInterface {
     private static String getById = "SELECT * FROM category where id = :id";
     private static String getAll = "SELECT * FROM category";
     private static String updateElem = "UPDATE category SET parent = :parent, title = :title WHERE id = :id";
@@ -97,17 +97,16 @@ public class CategoryModel extends BaseModel implements ModelInterface {
         throw new NotFoundException("Категория не найдена");
     }
 
-    public static ArrayList<HashMap> findAll() throws SQLException {
-        ArrayList<HashMap> result = new ArrayList<HashMap>();
+    public static ArrayList<CategoryModel> findAll() throws SQLException {
+        ArrayList<CategoryModel> result = new ArrayList<CategoryModel>();
         JdbcTemplate template = new JdbcTemplate(Database2.getInstance().getBds());
         List<Map<String, Object>> rows = template.queryForList(getTreeElements);
         for (Map row : rows) {
-            HashMap<String, String> info = new HashMap<String, String>();
-            info.put("id", String.valueOf(row.get("id")));
-            String parent = String.valueOf(row.get("parent"));
-            info.put("parent", parent);
-            info.put("title", String.valueOf(row.get("title")));
-            result.add(info);
+            Integer modelId =  (Integer) row.get("id");
+            Integer parent =  (Integer) row.get("parent");
+            String title = (String) row.get("title");
+            Integer position = (Integer) row.get("position");
+            result.add(new CategoryModel(modelId, parent, position, title));
         }
         return result;
     }

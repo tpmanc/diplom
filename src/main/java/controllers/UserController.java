@@ -37,7 +37,7 @@ public class UserController {
         model.addAttribute("pageCount", pageCount);
 
         try {
-            ArrayList<HashMap> users = UserModel.findAll(limit, offset);
+            ArrayList<UserModel> users = UserModel.findAll(limit, offset);
             model.addAttribute("users", users);
         } catch (SQLException e) {
             e.printStackTrace();

@@ -39,7 +39,7 @@ public class AdminFilePropertyController {
             FileModel file = FileModel.findById(id);
             model.addAttribute("file", file);
 
-            ArrayList<HashMap> properties = PropertyModel.findAllNotUsedCustom(file.getId(), false);
+            ArrayList<PropertyModel> properties = PropertyModel.findAllNotUsedCustom(file.getId(), false);
             model.addAttribute("properties", properties);
         } catch (SQLException e) {
             throw new NotFoundException("Файл не существует");

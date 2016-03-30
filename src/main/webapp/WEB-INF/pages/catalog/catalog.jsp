@@ -15,10 +15,10 @@
     var trees = [
         <c:forEach items="${trees}" var="item" varStatus="itemStat">
             {
-                id: "jst_${item.get("id")}",
-                parent: "<c:choose><c:when test="${item.get(\"parent\") == \"0\"}">#</c:when><c:otherwise>jst_${item.get("parent")}</c:otherwise></c:choose>",
-                text: "${item.get("title")}"
-                <c:if test="${item.get(\"id\") == categoryId}">,
+                id: "jst_${item.id}",
+                parent: "<c:choose><c:when test="${item.parent == \"0\"}">#</c:when><c:otherwise>jst_${item.parent}</c:otherwise></c:choose>",
+                text: "${item.title}"
+                <c:if test="${item.id == categoryId}">,
                     state: {
                         opened: true,
                         selected: true

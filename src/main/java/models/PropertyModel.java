@@ -4,6 +4,7 @@ import db.Database2;
 import exceptions.NotFoundException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -12,7 +13,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import java.sql.*;
 import java.util.*;
 
-public class PropertyModel extends BaseModel implements ModelInterface {
+public class PropertyModel implements ModelInterface {
     private static HashMap<String, Integer> defaultProperties = new HashMap<String, Integer>();
     public static final int PRODUCT_NAME = 9;
     public static final int FILE_VERSION = 3;
@@ -41,10 +42,12 @@ public class PropertyModel extends BaseModel implements ModelInterface {
 
     private int id;
     private String title;
+    private boolean isCustom = false;
 
-    public PropertyModel(int id, String title) {
+    public PropertyModel(int id, String title, boolean isCustom) {
         this.id = id;
         this.title = title;
+        this.isCustom = isCustom;
     }
 
     public PropertyModel(String title) {
@@ -73,59 +76,64 @@ public class PropertyModel extends BaseModel implements ModelInterface {
         this.title = title;
     }
 
-    public static ArrayList<HashMap> findAll() throws SQLException {
-        ArrayList<HashMap> result = new ArrayList<HashMap>();
-        ArrayList<HashMap> rows = queryAll(getAll);
-        for (HashMap row : rows) {
-            HashMap<String, String> info = new HashMap<String, String>();
-            int propertyId = Integer.valueOf((String) row.get("id"));
-            info.put("id", String.valueOf(propertyId));
-            info.put("title", (String) row.get("title"));
-            info.put("isCustom", String.valueOf(!isRequired(propertyId)));
-            result.add(info);
+    public static ArrayList<PropertyModel> findAll() throws SQLException {
+        ArrayList<PropertyModel> result = new ArrayList<PropertyModel>();
+        JdbcTemplate template = new JdbcTemplate(Database2.getInstance().getBds());
+        List<Map<String, Object>> rows = template.queryForList(getAllCustom);
+        for (Map row : rows) {
+            Integer modelId = (Integer) row.get("id");
+            String title = (String) row.get("title");
+            boolean isCustom =!isRequired(modelId);
+            result.add(new PropertyModel(modelId, title, isCustom));
         }
         return result;
     }
 
-    public static ArrayList<HashMap> findAllCustom() throws SQLException {
-        return queryAll(getAllCustom);
+    public static ArrayList<PropertyModel> findAllCustom() throws SQLException {
+        ArrayList<PropertyModel> result = new ArrayList<PropertyModel>();
+        JdbcTemplate template = new JdbcTemplate(Database2.getInstance().getBds());
+        List<Map<String, Object>> rows = template.queryForList(getAllCustom);
+        for (Map row : rows) {
+            Integer modelId = (Integer) row.get("id");
+            String title = (String) row.get("title");
+            boolean isCustom =!isRequired(modelId);
+            result.add(new PropertyModel(modelId, title, isCustom));
+        }
+        return result;
     }
 
     /**
      * Получить список свойств, за исключением названия и версии, которые еще не назначены
      * @throws SQLException
      */
-    public static ArrayList<HashMap> findAllNotUsedCustom(int fileId, boolean isVersion) throws SQLException {
+    public static ArrayList<PropertyModel> findAllNotUsedCustom(int fileId, boolean isVersion) throws SQLException {
         String query;
         if (isVersion) {
             query = getVersionNotUsed;
         } else {
             query = getFileNotUsed;
         }
-        ArrayList<HashMap> result = new ArrayList<HashMap>();
+        ArrayList<PropertyModel> result = new ArrayList<PropertyModel>();
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("fileId", fileId);
         List<Map<String, Object>> rows = template.queryForList(query, parameters);
         for (Map row : rows) {
-            HashMap<String, String> info = new HashMap<String, String>();
-            Iterator it = row.keySet().iterator();
-            while (it.hasNext()) {
-                String key = (String) it.next();
-                info.put(key, String.valueOf(row.get(key)));
-            }
-            result.add(info);
+            Integer modelId = (Integer) row.get("id");
+            String title = (String) row.get("title");
+            boolean isCustom = !isRequired(modelId);
+            result.add(new PropertyModel(modelId, title, isCustom));
         }
         return result;
     }
 
     public static String getAllJson() throws SQLException {
-        ArrayList<HashMap> arr = findAll();
+        ArrayList<PropertyModel> arr = findAll();
         JSONArray res = new JSONArray();
-        for (HashMap row : arr) {
+        for (PropertyModel row : arr) {
             JSONObject one = new JSONObject();
-            one.put("propertyId", row.get("id"));
-            one.put("title", row.get("title"));
+            one.put("propertyId", row.getId());
+            one.put("title", row.getTitle());
             res.add(one);
         }
         return res.toJSONString();
@@ -139,9 +147,10 @@ public class PropertyModel extends BaseModel implements ModelInterface {
 
         if (rows.size() > 0) {
             Map<String, Object> result = rows.get(0);
-            int propertyId = (Integer) result.get("id");
+            int modelId = (Integer) result.get("id");
             String title = (String) result.get("title");
-            return new PropertyModel(propertyId, title);
+            boolean isCustom =!isRequired(modelId);
+            return new PropertyModel(modelId, title, isCustom);
         } else {
             throw new NotFoundException("Свойство не найдено");
         }
@@ -158,7 +167,7 @@ public class PropertyModel extends BaseModel implements ModelInterface {
             int propertyId = (Integer) result.get("id");
             String title = (String) result.get("title");
             if (!isRequired(propertyId)) {
-                return new PropertyModel(propertyId, title);
+                return new PropertyModel(propertyId, title, true);
             }
         }
         throw new NotFoundException("Свойство не найдено", "404");
@@ -243,5 +252,13 @@ public class PropertyModel extends BaseModel implements ModelInterface {
         parameters.addValue("id", id);
         int rows = template.update(deleteById, parameters);
         return rows > 0;
+    }
+
+    public boolean isCustom() {
+        return isCustom;
+    }
+
+    public void setIsCustom(boolean isCustom) {
+        this.isCustom = isCustom;
     }
 }

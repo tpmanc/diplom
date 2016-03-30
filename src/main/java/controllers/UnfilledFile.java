@@ -121,10 +121,10 @@ public class UnfilledFile {
             if (fileVersion.isFilled()) {
                 FileModel prevFileModel = FileModel.findById(fileVersion.getFileId());
                 if (prevFileModel.getId() != file.getId()) {
-                    ArrayList<HashMap> versionList = prevFileModel.getVersionList();
+                    ArrayList<FileVersionModel> versionList = prevFileModel.getVersionList();
                     boolean haveMoreVersions = false;
-                    for (HashMap line : versionList) {
-                        if (versionId != Integer.parseInt((String) line.get("id"))) {
+                    for (FileVersionModel line : versionList) {
+                        if (versionId != line.getId()) {
                             haveMoreVersions = true;
                         }
                     }

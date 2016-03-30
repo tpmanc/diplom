@@ -26,7 +26,7 @@
                 <c:otherwise>
                     <select id="propertySelector" name="propertyId" required data-placeholder="Выберите свойство">
                         <c:forEach items="${properties}" var="item" varStatus="itemStat">
-                            <option value="${item.get("id")}" <c:if test="${item.get(\"id\") == selectedProperty}"> selected="selected" </c:if>>${item.get("title")}</option>
+                            <option value="${item.id}" <c:if test="${item.id == selectedProperty}"> selected="selected" </c:if>>${item.title}</option>
                         </c:forEach>
                     </select>
                 </c:otherwise>

@@ -32,10 +32,10 @@
     <tbody>
     <c:forEach items="${files}" var="item" varStatus="itemStat">
         <tr>
-            <td>${item.get("id")}</td>
-            <td>${item.get("title")}</td>
+            <td>${item.id}</td>
+            <td>${item.title}</td>
             <td>
-                <a href="<spring:url value="/file-view?id=" />${item.get("id")}" class="icon">
+                <a href="<spring:url value="/file-view?id=" />${item.id}" class="icon">
                     <i class="fa fa-eye"></i>
                 </a>
             </td>

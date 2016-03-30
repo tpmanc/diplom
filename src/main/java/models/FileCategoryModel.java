@@ -2,6 +2,7 @@ package models;
 
 import db.Database2;
 import models.helpers.CategoryFile;
+import models.helpers.FileCategory;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -10,7 +11,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import java.sql.SQLException;
 import java.util.*;
 
-public class FileCategoryModel extends BaseModel implements ModelInterface {
+public class FileCategoryModel implements ModelInterface {
     private int id;
     private int fileId;
     private int categoryId;
@@ -50,19 +51,16 @@ public class FileCategoryModel extends BaseModel implements ModelInterface {
         return false;
     }
 
-    public static ArrayList<HashMap> findByFile(int fileId) {
-        ArrayList<HashMap> result = new ArrayList<HashMap>();
+    public static ArrayList<FileCategory> findByFile(int fileId) {
+        ArrayList<FileCategory> result = new ArrayList<FileCategory>();
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("fileId", fileId);
         List<Map<String, Object>> rows = template.queryForList(getByFile, parameters);
         for (Map row : rows) {
-            HashMap<String, String> info = new HashMap<String, String>();
-            String categoryId = String.valueOf(row.get("id"));
-            String title = String.valueOf(row.get("title"));
-            info.put("id", categoryId);
-            info.put("title", title);
-            result.add(info);
+            Integer categoryId = (Integer) row.get("id");
+            String title = (String) row.get("title");
+            result.add(new FileCategory(categoryId, title));
         }
         return result;
     }

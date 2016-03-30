@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * Модель лога
  */
-public class LogModel extends BaseModel implements ModelInterface {
+public class LogModel implements ModelInterface {
     private static final String saveNew = "INSERT INTO log(userId, date, level, message) VALUES (:userId, :date, :level, :message)";
     private static final String deleteById = "DELETE FROM log WHERE id = :id";
     private static final String clear = "DELETE FROM log";

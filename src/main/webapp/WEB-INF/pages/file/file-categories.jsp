@@ -29,13 +29,13 @@
             <select data-placeholder="Выберите категории" name="categoriesId[]" class="chosen-select" multiple id="categories">
                 <c:forEach items="${categories}" var="category" varStatus="itemStat">
                     <option
-                            value="${category.get("id")}"
+                            value="${category.id}"
                             <c:forEach items="${fileCategories}" var="selected" varStatus="itemStat">
-                                <c:if test="${selected.get(\"id\") == category.get(\"id\")}">
+                                <c:if test="${selected.id == category.id}">
                                     selected="selected"
                                 </c:if>
                             </c:forEach>
-                            >${category.get("title")}
+                            >${category.title}
                     </option>
                 </c:forEach>
             </select>

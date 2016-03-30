@@ -60,7 +60,7 @@
                     <input type="hidden" name="id" value="${file.id}">
                     <select id="versionSelect" name="versionId">
                         <c:forEach items="${versionList}" var="item" varStatus="itemStat">
-                            <option <c:if test="${currentVersion.id == item.get(\"id\")}"> selected="selected" </c:if> value="${item.get("id")}">${item.get("version")}</option>
+                            <option <c:if test="${currentVersion.id == item.id}"> selected="selected" </c:if> value="${item.id}">${item.version}</option>
                         </c:forEach>
                     </select>
                 </form>
@@ -70,7 +70,7 @@
             <td>Категории</td>
             <td>
                 <c:forEach items="${fileCategories}" var="category" varStatus="itemStat">
-                    <span class="label">${category.get("title")}</span>
+                    <span class="label">${category.title}</span>
                 </c:forEach>
             </td>
         </tr>
@@ -87,10 +87,10 @@
             <td>${item.title}</td>
             <td>${item.value}</td>
             <td>
-                <a href="<spring:url value="/admin/file-property-edit?id=" />${item.get("id")}" class="icon">
+                <a href="<spring:url value="/admin/file-property-edit?id=" />${item.id}" class="icon">
                     <i class="fa fa-edit"></i>
                 </a>
-                <a data-link="${item.get("id")}" class="icon remove-file-property">
+                <a data-link="${item.id}" class="icon remove-file-property">
                     <i class="fa fa-trash"></i>
                 </a>
             </td>
@@ -114,10 +114,10 @@
                 <td>${item.title}</td>
                 <td>${item.value}</td>
                 <td>
-                    <a href="<spring:url value="/admin/file-version-property-edit?id=" />${item.get("id")}" class="icon">
+                    <a href="<spring:url value="/admin/file-version-property-edit?id=" />${item.id}" class="icon">
                         <i class="fa fa-edit"></i>
                     </a>
-                    <a data-link="${item.get("id")}" class="icon remove-file-version-property">
+                    <a data-link="${item.id}" class="icon remove-file-version-property">
                         <i class="fa fa-trash"></i>
                     </a>
                 </td>

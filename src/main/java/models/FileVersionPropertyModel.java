@@ -13,11 +13,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FileVersionPropertyModel extends BaseModel implements ModelInterface {
+public class FileVersionPropertyModel implements ModelInterface {
     private static final String updateById = "UPDATE fileVersionProperty SET value = :value WHERE id = :id";
     private static final String getById = "SELECT fileVersionProperty.id, fileVersionProperty.fileVersionId, property.title, fileVersionProperty.propertyId, fileVersionProperty.value FROM fileVersionProperty LEFT JOIN property ON property.id = fileVersionProperty.propertyId WHERE fileVersionProperty.id = :id";
     private static final String saveNew = "INSERT INTO fileVersionProperty(fileVersionId, propertyId, value) VALUES(:fileVersionId, :propertyId, :value)";
-    private static final String getByFileVersion = "SELECT fileVersionProperty.id, property.title, fileVersionProperty.value FROM fileVersionProperty LEFT JOIN property ON fileVersionProperty.propertyId = property.id WHERE fileVersionId = :fileVersionId";
+    private static final String getByFileVersion = "SELECT fileVersionProperty.*, property.title FROM fileVersionProperty LEFT JOIN property ON fileVersionProperty.propertyId = property.id WHERE fileVersionId = :fileVersionId";
     private static final String deleteById = "DELETE FROM fileVersionProperty WHERE id = :id";
     private static final String checkIsExist = "SELECT * FROM fileVersionProperty WHERE fileVersionId = :fileVersionId AND propertyId = :propertyId";
 
@@ -81,19 +81,20 @@ public class FileVersionPropertyModel extends BaseModel implements ModelInterfac
         return null;
     }
 
-    public static ArrayList getProperties(int fileVersionId) throws SQLException {
-        ArrayList<HashMap> result = new ArrayList<HashMap>();
+    public static ArrayList<FileVersionPropertyModel> getProperties(int fileVersionId) throws SQLException {
+        ArrayList<FileVersionPropertyModel> result = new ArrayList<FileVersionPropertyModel>();
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("fileVersionId", fileVersionId);
         List<Map<String, Object>> rows = template.queryForList(getByFileVersion, parameters);
 
         for (Map row : rows) {
-            HashMap<String, String> info = new HashMap<String, String>();
-            info.put("id", String.valueOf(row.get("id")));
-            info.put("title", (String) row.get("title"));
-            info.put("value", (String) row.get("value"));
-            result.add(info);
+            Integer modelId = (Integer) row.get("id");
+            Integer versionId = (Integer) row.get("fileVersionId");
+            Integer propertyId = (Integer) row.get("propertyId");
+            String title = (String) row.get("title");
+            String value = (String) row.get("value");
+            result.add(new FileVersionPropertyModel(modelId, versionId, propertyId, value, title));
         }
         return result;
     }

@@ -32,7 +32,7 @@ public class AdminPropertyController {
      */
     @RequestMapping(value = {"/properties" }, method = RequestMethod.GET)
     public String index(Model model) {
-        ArrayList<HashMap> properties = null;
+        ArrayList<PropertyModel> properties = null;
         try {
             properties = PropertyModel.findAll();
             model.addAttribute("properties", properties);

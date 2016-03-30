@@ -13,11 +13,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FilePropertyModel extends BaseModel implements ModelInterface {
+public class FilePropertyModel implements ModelInterface {
     private static final String updateById = "UPDATE fileProperty SET value = :value WHERE id = :id";
     private static final String saveNew = "INSERT INTO fileProperty(fileId, propertyId, value) VALUES(:fileId, :propertyId, :value)";
     private static final String getById = "SELECT fileProperty.id, fileProperty.fileId, property.title, fileProperty.propertyId, fileProperty.value FROM fileProperty LEFT JOIN property ON property.id = fileProperty.propertyId WHERE fileProperty.id = :id";
-    private static final String getByFile = "SELECT fileProperty.id, property.title, fileProperty.value FROM fileProperty LEFT JOIN property ON fileProperty.propertyId = property.id WHERE fileId = :fileId AND propertyId <> :fileName AND propertyId <> :version";
+    private static final String getByFile = "SELECT fileProperty.*, property.title FROM fileProperty LEFT JOIN property ON fileProperty.propertyId = property.id WHERE fileId = :fileId AND propertyId <> :fileName AND propertyId <> :version";
     private static final String deleteById = "DELETE FROM fileProperty WHERE id = :id";
     private static final String checkIsExist = "SELECT * FROM fileProperty WHERE fileId = :fileId AND propertyId = :propertyId";
 
@@ -62,8 +62,8 @@ public class FilePropertyModel extends BaseModel implements ModelInterface {
         this.title = title;
     }
 
-    public static ArrayList getProperties(int fileId) throws SQLException {
-        ArrayList<HashMap> result = new ArrayList<HashMap>();
+    public static ArrayList<FilePropertyModel> getProperties(int fileId) throws SQLException {
+        ArrayList<FilePropertyModel> result = new ArrayList<FilePropertyModel>();
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("fileId", fileId);
@@ -72,11 +72,12 @@ public class FilePropertyModel extends BaseModel implements ModelInterface {
         List<Map<String, Object>> rows = template.queryForList(getByFile, parameters);
 
         for (Map row : rows) {
-            HashMap<String, String> info = new HashMap<String, String>();
-            info.put("id", String.valueOf(row.get("id")));
-            info.put("title", (String) row.get("title"));
-            info.put("value", (String) row.get("value"));
-            result.add(info);
+            Integer modelId = (Integer) row.get("id");
+            Integer modelFileId = (Integer) row.get("fileId");
+            Integer propertyId = (Integer) row.get("propertyId");
+            String title = (String) row.get("title");
+            String value = (String) row.get("value");
+            result.add(new FilePropertyModel(modelId, modelFileId, propertyId, value, title));
         }
         return result;
     }

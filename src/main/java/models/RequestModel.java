@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class RequestModel extends BaseModel implements ModelInterface {
+public class RequestModel implements ModelInterface {
     private static final String saveNew = "INSERT INTO request(userId, text, status, date) VALUES(:userId, :text, :status, :date)";
     private static final String getAll = "SELECT * FROM request ORDER BY date DESC LIMIT :limit OFFSET :offset";
     private static final String getAllByUser = "SELECT * FROM request WHERE userId = :userId LIMIT :limit OFFSET :offset";

@@ -32,14 +32,14 @@
     <tbody>
     <c:forEach items="${properties}" var="item" varStatus="itemStat">
         <tr>
-            <td>${item.get("id")}</td>
-            <td>${item.get("title")}</td>
+            <td>${item.id}</td>
+            <td>${item.title}</td>
             <td>
-                <a href="<spring:url value="/admin/property-view?id=" />${item.get("id")}" class="icon">
+                <a href="<spring:url value="/admin/property-view?id=" />${item.id}" class="icon">
                     <i class="fa fa-eye"></i>
                 </a>
-                <c:if test="${item.get('isCustom') != null && item.get('isCustom') == true}">
-                    <a href="<spring:url value="/admin/property-edit?id=" />${item.get("id")}" class="icon">
+                <c:if test="${item.custom == true}">
+                    <a href="<spring:url value="/admin/property-edit?id=" />${item.id}" class="icon">
                         <i class="fa fa-edit"></i>
                     </a>
                 </c:if>
