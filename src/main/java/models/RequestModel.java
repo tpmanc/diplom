@@ -15,7 +15,7 @@ import java.util.Map;
 public class RequestModel implements ModelInterface {
     private static final String saveNew = "INSERT INTO request(userId, text, status, date) VALUES(:userId, :text, :status, :date)";
     private static final String getAll = "SELECT * FROM request ORDER BY date DESC LIMIT :limit OFFSET :offset";
-    private static final String getAllByUser = "SELECT * FROM request WHERE userId = :userId LIMIT :limit OFFSET :offset";
+    private static final String getAllByUser = "SELECT * FROM request WHERE userId = :userId ORDER BY date DESC LIMIT :limit OFFSET :offset";
     private static final String getCountByUser = "SELECT count(id) FROM request WHERE userId = :userId";
     private static final String getCount = "SELECT count(id) FROM request";
     private static final String getById = "SELECT * FROM request WHERE id = :id ORDER BY date DESC";

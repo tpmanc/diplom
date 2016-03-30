@@ -303,7 +303,8 @@ body.mini-navbar .navbar-default .nav > li > .nav-second-level li a {
     margin-top:0
 }
 body.fixed-nav #wrapper .navbar-static-side,body.fixed-nav #wrapper #page-wrapper {
-    margin-top:60px
+    margin-top:60px;
+    margin-left: 220px;
 }
 .fixed-nav .minimalize-styl-2 {
     margin:14px 5px 5px 15px
@@ -360,9 +361,6 @@ body.fixed-sidebar .navbar-static-side,body.canvas-menu .navbar-static-side {
 body.fixed-sidebar.mini-navbar .navbar-static-side {
     width:0
 }
-body.fixed-sidebar.mini-navbar #page-wrapper {
-    margin:0
-}
 body.body-small.fixed-sidebar.mini-navbar #page-wrapper {
     margin:0 0 0 220px
 }
@@ -418,7 +416,7 @@ body.canvas-menu.mini-navbar nav.navbar-static-side {
     width:220px
 }
 .top-navigation #page-wrapper {
-    margin-left:0
+
 }
 .top-navigation .navbar-nav .dropdown-menu > .active > a {
     background:#fff;
@@ -4015,6 +4013,7 @@ ul.notes li div {
 }
 .file .file-name {
     padding:10px;
+    height: 120px;
     background-color:#f8f8f8;
     border-top:1px solid #e7eaec
 }
@@ -5435,10 +5434,9 @@ body.rtls .top-navigation .footer.fixed,body.rtls.top-navigation .footer.fixed {
         min-height:1000px
     }
     .body-small .navbar-static-side {
-        display:none;
         z-index:2001;
         position:absolute;
-        width:70px
+        width:220px
     }
     .body-small.mini-navbar .navbar-static-side {
         display:block
@@ -5461,7 +5459,6 @@ body.rtls .top-navigation .footer.fixed,body.rtls.top-navigation .footer.fixed {
         z-index:1
     }
     .fixed-sidebar.body-small .navbar-static-side {
-        display:none;
         z-index:2001;
         position:fixed;
         width:220px
@@ -5668,13 +5665,14 @@ body.rtls .top-navigation .footer.fixed,body.rtls.top-navigation .footer.fixed {
     color:#fff
 }
 .sidebar-collapse .logopanel {
-    height:62px;
+    height:100px;
     padding:18px 15px;
     background-color:#20242d;
     box-shadow:0 0 3px rgba(0,0,0,.14),0 3px 6px rgba(0,0,0,.28)
 }
 .sidebar-collapse .logopanel h2 {
     margin:0;
+    font-size: 20px;
     font-weight:500
 }
 .sidebar-collapse .logopanel h2 > a {

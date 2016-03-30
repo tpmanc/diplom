@@ -11,16 +11,16 @@
                 <li>
                     <div class="logopanel">
                         <div class="profile-element">
-                            <h2><a href="<spring:url value="/admin/" />">Repository</a></h2>
+                            <h2><a href="<spring:url value="/" />">Репозиторий Инсталляционных Пакетов</a></h2>
                         </div>
-                        <div class="logo-element">Rep</div>
+                        <div class="logo-element">РИП</div>
                     </div>
                 </li>
                 <li>
                     <div class="leftpanel-profile">
                         <div class="media-body profile-name">
-                            <h4 class="media-heading"><sec:authentication property="principal.username" /></h4>
-                            dn: <sec:authentication property="principal.fullname" />
+                            <h4 class="media-heading"><sec:authentication property="principal.fullname" /></h4>
+                            Служебный номер: <sec:authentication property="principal.employeeId" /> <br>
                             <span><sec:authentication property="principal.authorities"/></span>
                             <div><a href="<c:url value="/j_spring_security_logout" />" class="logout-btn"><i class="fa fa-sign-out"></i> Выйти</a></div>
                         </div>
