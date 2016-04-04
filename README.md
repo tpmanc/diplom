@@ -54,3 +54,6 @@
  51. Сделать проверку при логине: если properties не заполнены, то перенаправлять на страницу заполнения
  52. Добавить в БД для заявки поле комментарий и заполнять его при отконении или принятии
  53. Добавить настроку пути для сохранения файлов и файлов заявок
+ 54. Удалить fax, isDisable из категории
+ 55. В logModel,RequestModel,FileVersionModel добавить getUser; fileCategory - getFile getCategory; FilePropertyModel & FileVersionPropertyModel - getProperty()
+; FileVersionModel - getFile()
