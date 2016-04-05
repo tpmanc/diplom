@@ -18,7 +18,7 @@ public class UserService implements ApplicationListener<AuthenticationSuccessEve
         UserModel user;
         try {
             // при входе на сайте сохраняем информацию из AD в БД для текущего пользователя
-            user = UserModel.isExist(details.getEmployeeId());
+            user = UserModel.findById(details.getEmployeeId());
             if (user == null) {
                 user = new UserModel(
                         details.getEmployeeId(),

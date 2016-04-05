@@ -64,13 +64,12 @@ public class UserController {
             LogModel.addWarning(activeUser.getEmployeeId(), "Попытка просмотра пользователя (/user-view) без прав модератора");
             throw new ForbiddenException("Доступ запрещен");
         }
-        try {
-            UserModel user = UserModel.findById(id);
-            model.addAttribute("user", user);
-            model.addAttribute("pageTitle", "Пользователи");
-            return "user/user-view";
-        } catch (SQLException e) {
+        UserModel user = UserModel.findById(id);
+        if (user == null) {
             throw new NotFoundException("Пользователь не найден");
         }
+        model.addAttribute("user", user);
+        model.addAttribute("pageTitle", "Пользователи");
+        return "user/user-view";
     }
 }

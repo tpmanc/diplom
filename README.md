@@ -57,3 +57,5 @@
  54. Удалить fax, isDisable из категории
  55. В logModel,RequestModel,FileVersionModel добавить getUser; fileCategory - getFile getCategory; FilePropertyModel & FileVersionPropertyModel - getProperty()
 ; FileVersionModel - getFile()
+ 56. Переделать логи на syslog
+ 57. Сохранени и загрузка шаблонов экспорта

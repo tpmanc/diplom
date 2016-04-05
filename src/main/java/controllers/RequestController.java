@@ -39,37 +39,36 @@ public class RequestController {
             Principal principal,
             Model model
     ) {
-        try {
-            int limit = RequestModel.PAGE_COUNT;
-            int offset = (page - 1) * limit;
+        int limit = RequestModel.PAGE_COUNT;
+        int offset = (page - 1) * limit;
 
-            CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
-            UserModel user = UserModel.findById(activeUser.getEmployeeId());
-
-            int pageCount = 0;
-            ArrayList<RequestModel> requests = null;
-            if (UserHelper.isModerator(activeUser)) {
-                // для модератора выбираем все заявки
-                requests = RequestModel.findAll(limit, offset);
-                pageCount = (int) Math.ceil((float)RequestModel.getCount() / limit);
-            } else {
-                // для пользователя выбираем только его заявки
-                requests = RequestModel.findAllByUser(user.getId(), limit, offset);
-                pageCount = (int) Math.ceil((float)RequestModel.getCountForUser(user.getId()) / limit);
-            }
-            model.addAttribute("pageCount", pageCount);
-            model.addAttribute("requests", requests);
-
-            // количество необработанных заявок текущего пользователя
-            int requestCount = RequestModel.getNewCountForUser(activeUser.getEmployeeId());
-            model.addAttribute("requestCount", requestCount);
-
-            model.addAttribute("page", page);
-            model.addAttribute("pageTitle", "Мои заявки");
-            return "request/requests";
-        } catch (SQLException e) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        UserModel user = UserModel.findById(activeUser.getEmployeeId());
+        if (user == null) {
             throw new NotFoundException("Пользователь не найден");
         }
+
+        int pageCount = 0;
+        ArrayList<RequestModel> requests = null;
+        if (UserHelper.isModerator(activeUser)) {
+            // для модератора выбираем все заявки
+            requests = RequestModel.findAll(limit, offset);
+            pageCount = (int) Math.ceil((float)RequestModel.getCount() / limit);
+        } else {
+            // для пользователя выбираем только его заявки
+            requests = RequestModel.findAllByUser(user.getId(), limit, offset);
+            pageCount = (int) Math.ceil((float)RequestModel.getCountForUser(user.getId()) / limit);
+        }
+        model.addAttribute("pageCount", pageCount);
+        model.addAttribute("requests", requests);
+
+        // количество необработанных заявок текущего пользователя
+        int requestCount = RequestModel.getNewCountForUser(activeUser.getEmployeeId());
+        model.addAttribute("requestCount", requestCount);
+
+        model.addAttribute("page", page);
+        model.addAttribute("pageTitle", "Мои заявки");
+        return "request/requests";
     }
 
     /**
@@ -81,40 +80,39 @@ public class RequestController {
             Principal principal,
             Model model
     ) {
-        try {
-            CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
-            RequestModel requestModel = RequestModel.findById(requestId);
-            UserModel user = null;
-            boolean isModerator = false;
-            if (requestModel.getUserId() != activeUser.getEmployeeId()) {
-                if (UserHelper.isModerator(activeUser)) {
-                    isModerator = true;
-                    user = UserModel.findById(requestModel.getUserId());
-                } else {
-                    LogModel.addWarning(activeUser.getEmployeeId(), "Попытка просмотра чужой заявки /request-view без прав модератора");
-                    throw new ForbiddenException("Доступ запрещен");
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        RequestModel requestModel = RequestModel.findById(requestId);
+        UserModel user = null;
+        boolean isModerator = false;
+        if (requestModel.getUserId() != activeUser.getEmployeeId()) {
+            if (UserHelper.isModerator(activeUser)) {
+                isModerator = true;
+                user = UserModel.findById(requestModel.getUserId());
+                if (user == null) {
+                    throw new NotFoundException("Пользователь не найден");
                 }
+            } else {
+                LogModel.addWarning(activeUser.getEmployeeId(), "Попытка просмотра чужой заявки /request-view без прав модератора");
+                throw new ForbiddenException("Доступ запрещен");
             }
-            model.addAttribute("user", user);
-            model.addAttribute("requestModel", requestModel);
-
-            ArrayList<RequestFileModel> files = requestModel.getFiles();
-            model.addAttribute("files", files);
-
-            Date date = new Date(requestModel.getDate());
-            SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy");
-            String requestDate = df.format(date);
-            model.addAttribute("requestDate", requestDate);
-
-            int requestCount = RequestModel.getNewCountForUser(activeUser.getEmployeeId());
-            model.addAttribute("requestCount", requestCount);
-
-            model.addAttribute("isModerator", isModerator);
-            model.addAttribute("pageTitle", "Просмотр заявки");
-            return "request/request-view";
-        } catch (SQLException e) {
-            throw new NotFoundException("Пользователь не найден");
         }
+        model.addAttribute("user", user);
+        model.addAttribute("requestModel", requestModel);
+
+        ArrayList<RequestFileModel> files = requestModel.getFiles();
+        model.addAttribute("files", files);
+
+        Date date = new Date(requestModel.getDate());
+        SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+        String requestDate = df.format(date);
+        model.addAttribute("requestDate", requestDate);
+
+        int requestCount = RequestModel.getNewCountForUser(activeUser.getEmployeeId());
+        model.addAttribute("requestCount", requestCount);
+
+        model.addAttribute("isModerator", isModerator);
+        model.addAttribute("pageTitle", "Просмотр заявки");
+        return "request/request-view";
     }
 
     /**
@@ -125,21 +123,20 @@ public class RequestController {
             Principal principal,
             Model model
     ) {
-        try {
-            CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
-            UserModel user = UserModel.findById(activeUser.getEmployeeId());
-
-            int pageCount = RequestModel.getCountForUser(user.getId());
-            model.addAttribute("pageCount", pageCount);
-
-            int requestCount = RequestModel.getNewCountForUser(activeUser.getEmployeeId());
-            model.addAttribute("requestCount", requestCount);
-
-            model.addAttribute("pageTitle", "Добавить заявку");
-            return "request/request-add";
-        } catch (SQLException e) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        UserModel user = UserModel.findById(activeUser.getEmployeeId());
+        if (user == null) {
             throw new NotFoundException("Пользователь не найден");
         }
+
+        int pageCount = RequestModel.getCountForUser(user.getId());
+        model.addAttribute("pageCount", pageCount);
+
+        int requestCount = RequestModel.getNewCountForUser(activeUser.getEmployeeId());
+        model.addAttribute("requestCount", requestCount);
+
+        model.addAttribute("pageTitle", "Добавить заявку");
+        return "request/request-add";
     }
 
     @RequestMapping(value = {"/request-add-handler" }, method = RequestMethod.POST)
@@ -190,7 +187,7 @@ public class RequestController {
                     hashes.add(hash);
 
                     // проверяем дублирование файла
-                    if (FileModel.isExist(hash, file.getSize())) {
+                    if (FileVersionModel.isExist(hash, file.getSize())) {
                         errors.put("file", "Файл "+uploadedFileName+" уже существует");
                     } else if (RequestFileModel.isExist(hash, file.getSize())) {
                         errors.put("file", "Заявка с файлом "+uploadedFileName+" уже существует");

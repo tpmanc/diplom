@@ -51,33 +51,6 @@ public class UserModel implements ModelInterface {
         return id;
     }
 
-    /**
-     * Проверка, существует ли в БД уже такой пользователь
-     * @param id employeeId пользователя
-     * @return boolean
-     */
-    public static UserModel isExist(int id) {
-        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
-        MapSqlParameterSource parameters = new MapSqlParameterSource();
-        parameters.addValue("id", id);
-        List<Map<String, Object>> rows = template.queryForList(getById, parameters);
-
-        if (rows.size() > 0) {
-            Map<String, Object> result = rows.get(0);
-            int userId = (Integer) result.get("id");
-            String phone = (String) result.get("phone");
-            String email = (String) result.get("email");
-            String displayName = (String) result.get("displayName");
-            String department = (String) result.get("department");
-            String departmentNumber = (String) result.get("departmentNumber");
-            String fax = (String) result.get("fax");
-            String address = (String) result.get("address");
-            return new UserModel(userId, phone, email, displayName, department, departmentNumber, fax, address);
-        } else {
-            return null;
-        }
-    }
-
     public static int getCount() {
         JdbcTemplate template = new JdbcTemplate(Database2.getInstance().getBds());
         return template.queryForObject(getCount, Integer.class);
@@ -103,7 +76,7 @@ public class UserModel implements ModelInterface {
         return result;
     }
 
-    public static UserModel findById(int id) throws SQLException {
+    public static UserModel findById(int id) {
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("id", id);
@@ -121,7 +94,7 @@ public class UserModel implements ModelInterface {
             String address = (String) result.get("address");
             return new UserModel(userId, phone, email, displayName, department, departmentNumber, fax, address);
         } else {
-            throw new NotFoundException("Пользователь не найден");
+            return null;
         }
     }
 

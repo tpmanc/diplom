@@ -22,6 +22,7 @@ public class FileVersionModel implements ModelInterface {
     private static final String getAllUnfilled = "SELECT * FROM fileVersion WHERE isFilled = :isFilled LIMIT :limit OFFSET :offset";
     private static final String getAllUnfilledCount = "SELECT count(id) FROM fileVersion WHERE isFilled = :isFilled";
     private static final String getUserUnfilledCount = "SELECT count(id) FROM fileVersion WHERE userId = :userId AND isFilled = :isFilled";
+    private static final String isFileExist = "SELECT count(id) FROM fileVersion WHERE hash = :hash AND fileSize = :fileSize";
 
     private int id;
     private int fileId;
@@ -91,6 +92,20 @@ public class FileVersionModel implements ModelInterface {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Проверка на дублирование файла
+     * Проверка осуществляется по хэшу и размеру файла
+     * @return True если такой файл уже есть, иначе false
+     */
+    public static boolean isExist(String hash, long fileSize) {
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("hash", hash);
+        parameters.addValue("fileSize", fileSize);
+        Integer count = template.queryForObject(isFileExist, parameters, Integer.class);
+        return count > 0;
     }
 
     public static FileVersionModel findById(int id) throws SQLException {

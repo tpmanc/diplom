@@ -20,7 +20,6 @@ public class FileModel implements ModelInterface {
     private static final String saveNew = "INSERT INTO file(title) VALUES(:title)";
     private static final String getAll = "SELECT * FROM file";
     private static final String getAllLimit = "SELECT * FROM file LIMIT :limit OFFSET :offset";
-    private static final String isFileExist = "SELECT count(id) FROM fileVersion WHERE hash = :hash AND fileSize = :fileSize";
     private static final String getCount = "SELECT count(id) FROM file";
     private static final String getTitles = "SELECT id, title FROM file WHERE title LIKE :str";
     private static final String getVersions = "SELECT * FROM fileVersion WHERE fileId = :fileId ORDER BY CONVERT(version, decimal) DESC";
@@ -29,14 +28,7 @@ public class FileModel implements ModelInterface {
                                                 " UNION " +
                                                 " SELECT file.id,file.title as title, 1 as isNoCategory FROM file LEFT JOIN fileCategory ON fileCategory.fileId = file.id WHERE fileCategory.id IS NULL GROUP BY file.id " +
                                                 " LIMIT :limit OFFSET :offset;";
-    private static final String getAllUnfilledByUser = "SELECT id,fileName as title, 0 as isNoCategory FROM fileVersion WHERE isFilled = :isFilled AND userId = :userId" +
-            " UNION " +
-            " SELECT file.id,file.title as title, 1 as isNoCategory FROM file LEFT JOIN fileCategory ON fileCategory.fileId = file.id WHERE fileCategory.id IS NULL GROUP BY file.id " +
-            " LIMIT :limit OFFSET :offset;";
     private static final String getAllUnfilledCount = "SELECT count(id) AS count FROM fileVersion WHERE isFilled = :isFilled" +
-            " UNION " +
-            " SELECT count(file.id) AS count FROM file LEFT JOIN fileCategory ON fileCategory.fileId = file.id WHERE fileCategory.id IS NULL GROUP BY file.id";
-    private static final String getAllUnfilledCountByUser = "SELECT count(id) AS count FROM fileVersion WHERE isFilled = :isFilled AND userId = :userId" +
             " UNION " +
             " SELECT count(file.id) AS count FROM file LEFT JOIN fileCategory ON fileCategory.fileId = file.id WHERE fileCategory.id IS NULL GROUP BY file.id";
     private static final String getFilesByTitle = "SELECT file.id, file.title, fileVersion.version, fileVersion.date, user.displayName FROM file " +
@@ -120,20 +112,6 @@ public class FileModel implements ModelInterface {
         return template.queryForObject(getCount, Integer.class);
     }
 
-    /**
-     * Проверка на дублирование файла
-     * Проверка осуществляется по хэшу и размеру файла
-     * @return True если такой файл уже есть, иначе false
-     */
-    public static boolean isExist(String hash, long fileSize) {
-        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
-        MapSqlParameterSource parameters = new MapSqlParameterSource();
-        parameters.addValue("hash", hash);
-        parameters.addValue("fileSize", fileSize);
-        Integer count = template.queryForObject(isFileExist, parameters, Integer.class);
-        return count > 0;
-    }
-
     public boolean add() throws SQLException {
         if (this.validate()) {
             NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
@@ -206,24 +184,6 @@ public class FileModel implements ModelInterface {
         }
         return result;
     }
-    public static ArrayList<HashMap> findUnfilled(int userId, int limit, int offset) {
-        ArrayList<HashMap> result = new ArrayList<HashMap>();
-        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
-        MapSqlParameterSource parameters = new MapSqlParameterSource();
-        parameters.addValue("isFilled", false);
-        parameters.addValue("limit", limit);
-        parameters.addValue("offset", offset);
-        parameters.addValue("userId", userId);
-        List<Map<String, Object>> rows = template.queryForList(getAllUnfilledByUser, parameters);
-        for (Map row : rows) {
-            HashMap<String, String> info = new HashMap<String, String>();
-            info.put("id", String.valueOf(row.get("id")));
-            info.put("title", String.valueOf(row.get("title")));
-            info.put("isNoCategory", String.valueOf(row.get("isNoCategory")));
-            result.add(info);
-        }
-        return result;
-    }
 
     public static int getUnfilledCount() {
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
@@ -237,28 +197,6 @@ public class FileModel implements ModelInterface {
             count += c;
         }
         return count;
-    }
-
-    public static int getUnfilledCount(int userId) {
-        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
-        MapSqlParameterSource parameters = new MapSqlParameterSource();
-        parameters.addValue("userId", userId);
-        parameters.addValue("isFilled", false);
-        List<Map<String, Object>> rows = template.queryForList(getAllUnfilledCountByUser, parameters);
-        int count = 0;
-        for (Map row : rows) {
-            HashMap<String, String> info = new HashMap<String, String>();
-            long c = (Long) row.get("count");
-            count += c;
-        }
-        return count;
-    }
-
-    private static HashMap getFileInfo(Map row) {
-        HashMap<String, String> info = new HashMap<String, String>();
-        info.put("id", String.valueOf(row.get("id")));
-        info.put("title", String.valueOf(row.get("title")));
-        return info;
     }
 
     public FileVersionModel getLastVersion() {

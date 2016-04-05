@@ -330,7 +330,7 @@ public class FileController {
                             .append(secondDir);
 
                     // проверяем дублирование файла
-                    if (FileModel.isExist(hash, file.getSize())) {
+                    if (FileVersionModel.isExist(hash, file.getSize())) {
                         JSONObject err = new JSONObject();
                         err.put("number", fileCounter);
                         err.put("msg", "Такой файл уже есть");
