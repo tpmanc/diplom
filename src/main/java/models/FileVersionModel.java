@@ -200,6 +200,10 @@ public class FileVersionModel implements ModelInterface {
 
     public boolean delete() throws SQLException {
         // TODO: file version delete
+        // добавить в БД поле isDisabled
+        // при удалении модератором просто ставить isDisabled = true
+        // при просмотре админом выводить отключенные тоже
+        // админу дать возможность удалить окончательно
         return false;
     }
 

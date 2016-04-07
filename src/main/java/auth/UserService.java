@@ -27,7 +27,6 @@ public class UserService implements ApplicationListener<AuthenticationSuccessEve
                         details.getFullname(),
                         details.getDepartment(),
                         details.getDepartmentNumber(),
-                        details.getFax(),
                         details.getAddress()
                 );
                 user.add();
@@ -38,7 +37,6 @@ public class UserService implements ApplicationListener<AuthenticationSuccessEve
                 user.setAddress(details.getAddress());
                 user.setDepartment(details.getDepartment());
                 user.setDepartmentNumber(details.getDepartmentNumber());
-                user.setFax(details.getFax());
                 user.update();
             }
         } catch (SQLException e) {

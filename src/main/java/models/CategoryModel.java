@@ -20,7 +20,7 @@ public class CategoryModel implements ModelInterface {
     private static String updateElem = "UPDATE category SET parent = :parent, title = :title WHERE id = :id";
     private static String updateParents = "UPDATE category SET parent = :parent WHERE parent = :id";
     private static String getChildren = "SELECT * FROM category WHERE parent = :parentId";
-    private static String saveNew = "INSERT INTO category(parent, title, position, isEnabled) VALUES (:parent, :title, :position, :isEnabled)";
+    private static String saveNew = "INSERT INTO category(parent, title, position) VALUES (:parent, :title, :position)";
     private static String deleteById = "DELETE FROM category WHERE id = :id";
     private static final String getTreeElements = "SELECT * FROM category ORDER BY position ASC, id ASC";
     private static final String getCount = "SELECT count(id) FROM category";
@@ -35,7 +35,6 @@ public class CategoryModel implements ModelInterface {
     private int parent;
     private String title;
     private int position = 0;
-    private boolean isEnabled = true;
 
     public int getParent() {
         return parent;
@@ -238,7 +237,6 @@ public class CategoryModel implements ModelInterface {
             parameters.addValue("parent", parent);
             parameters.addValue("title", title);
             parameters.addValue("position", position);
-            parameters.addValue("isEnabled", isEnabled);
             template.update(saveNew, parameters, keyHolder);
             this.id = keyHolder.getKey().intValue();
             return true;

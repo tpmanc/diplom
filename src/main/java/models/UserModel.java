@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class UserModel implements ModelInterface {
-    private static final String saveNew = "INSERT INTO user(id, phone, email, displayName, department, departmentNumber, fax, address) VALUES(:id, :phone, :email, :displayName, :department, :departmentNumber, :fax, :address)";
+    private static final String saveNew = "INSERT INTO user(id, phone, email, displayName, department, departmentNumber, address) VALUES(:id, :phone, :email, :displayName, :department, :departmentNumber, :address)";
     private static final String updateById = "UPDATE user SET phone = :phone, email = :email, displayName = :displayName, department = :department, departmentNumber = :departmentNumber, fax = :fax, address = :address WHERE id = :id";
     private static final String getById = "SELECT * FROM user WHERE id = :id";
     private static final String getAllOnPage = "SELECT * FROM user LIMIT :limit OFFSET :offset";
@@ -23,21 +23,19 @@ public class UserModel implements ModelInterface {
     private String displayName;
     private String department;
     private String departmentNumber;
-    private String fax;
     private String address;
 
     public static final int PAGE_COUNT = 10;
 
     public HashMap<String, List<String>> errors = new HashMap<String, List<String>>();
 
-    public UserModel(int id, String phone, String email, String displayName, String department, String departmentNumber, String fax, String address) {
+    public UserModel(int id, String phone, String email, String displayName, String department, String departmentNumber, String address) {
         this.id = id;
         this.phone = phone;
         this.email = email;
         this.displayName = displayName;
         this.department = department;
         this.departmentNumber = departmentNumber;
-        this.fax = fax;
         this.address = address;
     }
 
@@ -71,7 +69,7 @@ public class UserModel implements ModelInterface {
             String departmentNumber = (String) row.get("departmentNumber");
             String fax = (String) row.get("fax");
             String address = (String) row.get("address");
-            result.add(new UserModel(modelId, phone, email, displayName, department, departmentNumber, fax, address));
+            result.add(new UserModel(modelId, phone, email, displayName, department, departmentNumber, address));
         }
         return result;
     }
@@ -92,7 +90,7 @@ public class UserModel implements ModelInterface {
             String departmentNumber = (String) result.get("departmentNumber");
             String fax = (String) result.get("fax");
             String address = (String) result.get("address");
-            return new UserModel(userId, phone, email, displayName, department, departmentNumber, fax, address);
+            return new UserModel(userId, phone, email, displayName, department, departmentNumber, address);
         } else {
             return null;
         }
@@ -108,7 +106,6 @@ public class UserModel implements ModelInterface {
             parameters.addValue("displayName", displayName);
             parameters.addValue("department", department);
             parameters.addValue("departmentNumber", departmentNumber);
-            parameters.addValue("fax", fax);
             parameters.addValue("address", address);
             int rows = template.update(updateById, parameters);
             return rows > 0;
@@ -187,14 +184,6 @@ public class UserModel implements ModelInterface {
 
     public void setDepartmentNumber(String departmentNumber) {
         this.departmentNumber = departmentNumber;
-    }
-
-    public String getFax() {
-        return fax;
-    }
-
-    public void setFax(String fax) {
-        this.fax = fax;
     }
 
     public String getAddress() {
