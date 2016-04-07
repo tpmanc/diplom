@@ -27,19 +27,14 @@ public class CustomUserDetails extends User {
         return departmentNumber;
     }
 
-    public String getFax() {
-        return fax;
-    }
-
     final String department;
     final String departmentNumber;
-    final String fax;
     final String address;
 
     public CustomUserDetails(String username, String password, boolean enabled, boolean accountNonExpired,
                              boolean credentialsNonExpired, boolean accountNonLocked,
                              Collection<? extends GrantedAuthority> authorities, String displayName,
-                             String email, String employeeId, String phone, String department, String departmentNumber, String fax, String address) {
+                             String email, String employeeId, String phone, String department, String departmentNumber, String address) {
 
         super(username, password, enabled, accountNonExpired, credentialsNonExpired,
                 accountNonLocked, authorities);
@@ -50,7 +45,6 @@ public class CustomUserDetails extends User {
         this.phone = phone;
         this.department = department;
         this.departmentNumber = departmentNumber;
-        this.fax = fax;
         this.address = address;
     }
 

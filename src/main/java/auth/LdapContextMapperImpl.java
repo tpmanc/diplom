@@ -24,7 +24,6 @@ public class LdapContextMapperImpl implements UserDetailsContextMapper {
         String displayName = "";
         String department = "";
         String departmentNumber = "";
-        String fax = "";
         String address = "";
 
         Attributes attributes = ctx.getAttributes();
@@ -46,9 +45,6 @@ public class LdapContextMapperImpl implements UserDetailsContextMapper {
             if (attributes.get("departmentNumber") != null) {
                 departmentNumber = (String) attributes.get("departmentNumber").get();
             }
-            if (attributes.get("facsimileTelephoneNumber") != null) {
-                fax = (String) attributes.get("facsimileTelephoneNumber").get();
-            }
             if (attributes.get("street") != null) {
                 address = (String) attributes.get("street").get();
             }
@@ -58,7 +54,7 @@ public class LdapContextMapperImpl implements UserDetailsContextMapper {
             e.printStackTrace();
         }
 
-        CustomUserDetails details = new CustomUserDetails(username, "", true, true, true, true, authorities, displayName, email, employeeId, phone, department, departmentNumber, fax, address);
+        CustomUserDetails details = new CustomUserDetails(username, "", true, true, true, true, authorities, displayName, email, employeeId, phone, department, departmentNumber, address);
         return details;
     }
 
