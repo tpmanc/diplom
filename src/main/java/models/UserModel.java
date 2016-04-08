@@ -11,7 +11,7 @@ import java.util.*;
 
 public class UserModel implements ModelInterface {
     private static final String saveNew = "INSERT INTO user(id, phone, email, displayName, department, departmentNumber, address) VALUES(:id, :phone, :email, :displayName, :department, :departmentNumber, :address)";
-    private static final String updateById = "UPDATE user SET phone = :phone, email = :email, displayName = :displayName, department = :department, departmentNumber = :departmentNumber, fax = :fax, address = :address WHERE id = :id";
+    private static final String updateById = "UPDATE user SET phone = :phone, email = :email, displayName = :displayName, department = :department, departmentNumber = :departmentNumber, address = :address WHERE id = :id";
     private static final String getById = "SELECT * FROM user WHERE id = :id";
     private static final String getAllOnPage = "SELECT * FROM user LIMIT :limit OFFSET :offset";
     private static final String deleteById = "DELETE FROM property WHERE id = :id";

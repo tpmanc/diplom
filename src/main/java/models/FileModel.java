@@ -23,6 +23,7 @@ public class FileModel implements ModelInterface {
     private static final String getCount = "SELECT count(id) FROM file";
     private static final String getTitles = "SELECT id, title FROM file WHERE title LIKE :str";
     private static final String getVersions = "SELECT * FROM fileVersion WHERE fileId = :fileId ORDER BY CONVERT(version, decimal) DESC";
+    private static final String getEnabledVersions = "SELECT * FROM fileVersion WHERE fileId = :fileId AND isDisabled = :isDisabled ORDER BY CONVERT(version, decimal) DESC";
     private static final String deleteById = "DELETE FROM file WHERE id = :id";
     private static final String getAllUnfilled = "SELECT id,fileName as title, 0 as isNoCategory FROM fileVersion WHERE isFilled = :isFilled " +
                                                 " UNION " +
@@ -215,17 +216,24 @@ public class FileModel implements ModelInterface {
             Long fileSize = (Long) row.get("fileSize");
             Long date = (Long) row.get("date");
             Boolean isFilled = ((Integer) row.get("isFilled") == 1);
-            return  new FileVersionModel(id, fileId, userId, version, hash, fileSize, date, isFilled, fileName);
+            Boolean isDisabled = ((Integer) row.get("isDisabled") == 1);
+            return  new FileVersionModel(id, fileId, userId, version, hash, fileSize, date, isFilled, fileName, isDisabled);
         }
         throw new NotFoundException("Версия не найдена");
     }
 
-    public ArrayList<FileVersionModel> getVersionList() {
+    public ArrayList<FileVersionModel> getVersionList(boolean onlyEnabled) {
         ArrayList<FileVersionModel> result = new ArrayList<FileVersionModel>();
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("fileId", id);
-        List<Map<String, Object>> rows = template.queryForList(getVersions, parameters);
+        parameters.addValue("isDisabled", false);
+        List<Map<String, Object>> rows;
+        if (onlyEnabled) {
+            rows = template.queryForList(getEnabledVersions, parameters);
+        } else {
+            rows = template.queryForList(getVersions, parameters);
+        }
         for (Map row : rows) {
             Integer modelId = (Integer) row.get("id");
             Integer fileId = (Integer) row.get("fileId");
@@ -236,7 +244,8 @@ public class FileModel implements ModelInterface {
             Long fileSize = (Long) row.get("fileSize");
             Long date = (Long) row.get("date");
             Boolean isFilled = (Integer) row.get("isFilled") == 1;
-            result.add(new FileVersionModel(modelId, fileId, userId, version, hash, fileSize, date, isFilled, fileName));
+            Boolean isDisabled = (Integer) row.get("isDisabled") == 1;
+            result.add(new FileVersionModel(modelId, fileId, userId, version, hash, fileSize, date, isFilled, fileName, isDisabled));
         }
         return result;
     }

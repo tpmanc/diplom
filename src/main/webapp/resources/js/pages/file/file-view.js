@@ -22,6 +22,51 @@ $(function () {
         }
     });
 
+    $('#deleteVersionBtn').on('click', function(){
+        var $this = $(this);
+        if (confirm("Вы действительно хотите удалить версию?")) {
+            $.ajax({
+                url: fileVersionDeleteUrl,
+                method: "post",
+                dataType: "json",
+                data: {versionId: $this.data('versionid')},
+                success: function (data) {
+                    if (!data.error) {
+                        toastr.success('Файл помечен как удаленный');
+                    } else {
+                        toastr.error('Ошибка при удалении');
+                    }
+                },
+                error: function (data) {
+                    toastr.error('Ошибка при удалении', data.msg);
+                }
+            });
+        }
+        return false;
+    });
+    $('#recoverVersionBtn').on('click', function(){
+        var $this = $(this);
+        if (confirm("Восстановить файл?")) {
+            $.ajax({
+                url: fileVersionRecoverUrl,
+                method: "post",
+                dataType: "json",
+                data: {versionId: $this.data('versionid')},
+                success: function (data) {
+                    if (!data.error) {
+                        toastr.success('Файл восстановлен');
+                    } else {
+                        toastr.error('Ошибка при восстановлении');
+                    }
+                },
+                error: function (data) {
+                    toastr.error('Ошибка при восстановлении', data.msg);
+                }
+            });
+        }
+        return false;
+    });
+
     $('.remove-file-version-property').on('click', function () {
         var $this = $(this);
         if (confirm("Удалить свойство?")) {

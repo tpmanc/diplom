@@ -5,6 +5,7 @@ package models.helpers;
  */
 public class CategoryFile {
     private int id;
+    private int versionId;
     private String title;
     private String version;
     private String date;
@@ -48,5 +49,13 @@ public class CategoryFile {
 
     public void setUserDN(String userDN) {
         this.userDN = userDN;
+    }
+
+    public int getVersionId() {
+        return versionId;
+    }
+
+    public void setVersionId(int versionId) {
+        this.versionId = versionId;
     }
 }

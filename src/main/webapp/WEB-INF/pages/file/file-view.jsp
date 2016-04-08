@@ -12,6 +12,8 @@
     <script>
         var filePropertyDeleteUrl = "<spring:url value="/file-property-delete" />";
         var fileVersionPropertyDeleteUrl = "<spring:url value="/file-version-property-delete" />";
+        var fileVersionDeleteUrl = "<spring:url value="/file-version-delete" />";
+        var fileVersionRecoverUrl = "<spring:url value="/file-version-recover" />";
     </script>
 </sec:authorize>
 <sec:authorize access="!hasRole('ROLE_FR-ADMIN') && !hasRole('ROLE_FR-MODERATOR')">
@@ -48,12 +50,22 @@
         <a href="<spring:url value="/file-export?versionId=${currentVersion.id}" />" class="btn btn-warning">Экспорт</a>
     </sec:authorize>
 </p>
+<p>
+    <a href="#" id="deleteVersionBtn" data-versionid="${currentVersion.id}" class="btn btn-danger">Удалить версию</a>
+    <sec:authorize access="hasRole('ROLE_FR-ADMIN')">
+        <a href="<spring:url value="/file-export?versionId=${currentVersion.id}" />" class="btn btn-danger">Экспорт</a>
+    </sec:authorize>
+</p>
 </sec:authorize>
 
 <c:if test="${fileCategories.size() == 0}">
     <div class="alert alert-danger">
         Файл не привязан ни к одной категории! <a class="alert-link" href="<spring:url value="/file-categories?fileId=${file.id}" />">Исправить</a>
     </div>
+</c:if>
+
+<c:if test="${currentVersion.isDisabled}">
+    <div class="alert alert-danger">Файл удален. <a class="alert-link" data-versionid="${currentVersion.id}" id="recoverVersionBtn" href="#">Восстановить</a></div>
 </c:if>
 
 <h3>${file.title}</h3>
@@ -81,7 +93,7 @@
                     <input type="hidden" name="id" value="${file.id}">
                     <select id="versionSelect" name="versionId">
                         <c:forEach items="${versionList}" var="item" varStatus="itemStat">
-                            <option <c:if test="${currentVersion.id == item.id}"> selected="selected" </c:if> value="${item.id}">${item.version}</option>
+                            <option <c:if test="${currentVersion.id == item.id}"> selected="selected" </c:if> value="${item.id}">${item.version} <c:if test="${item.isDisabled}">(удален)</c:if></option>
                         </c:forEach>
                     </select>
                 </form>

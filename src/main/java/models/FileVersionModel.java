@@ -14,14 +14,10 @@ import java.util.List;
 import java.util.Map;
 
 public class FileVersionModel implements ModelInterface {
-    private static String updateElem = "UPDATE fileVersion SET fileId = :fileId, userId = :userId, version = :version, hash = :hash, fileSize = :fileSize, date = :date, isFilled = :isFilled, fileName = :fileName WHERE id = :id";
+    private static String updateElem = "UPDATE fileVersion SET fileId = :fileId, userId = :userId, version = :version, hash = :hash, fileSize = :fileSize, date = :date, isFilled = :isFilled, fileName = :fileName, isDisabled = :isDisabled WHERE id = :id";
     private static final String getById = "SELECT * FROM fileVersion WHERE id = :id";
     private static final String getByIdAndFile = "SELECT * FROM fileVersion WHERE id = :id AND fileId = :fileId";
-    private static final String saveNew = "INSERT INTO fileVersion(fileId, userId, version, hash, fileSize, date, isFilled, fileName) VALUES(:fileId, :userId, :version, :hash, :fileSize, :date, :isFilled, :fileName)";
-    private static final String getUserUnfilled = "SELECT * FROM fileVersion WHERE userId = :userId AND isFilled = :isFilled LIMIT :limit OFFSET :offset";
-    private static final String getAllUnfilled = "SELECT * FROM fileVersion WHERE isFilled = :isFilled LIMIT :limit OFFSET :offset";
-    private static final String getAllUnfilledCount = "SELECT count(id) FROM fileVersion WHERE isFilled = :isFilled";
-    private static final String getUserUnfilledCount = "SELECT count(id) FROM fileVersion WHERE userId = :userId AND isFilled = :isFilled";
+    private static final String saveNew = "INSERT INTO fileVersion(fileId, userId, version, hash, fileSize, date, isFilled, fileName, isDisabled) VALUES(:fileId, :userId, :version, :hash, :fileSize, :date, :isFilled, :fileName, :isDisabled)";
     private static final String isFileExist = "SELECT count(id) FROM fileVersion WHERE hash = :hash AND fileSize = :fileSize";
 
     private int id;
@@ -33,6 +29,7 @@ public class FileVersionModel implements ModelInterface {
     private long fileSize;
     private long date;
     private boolean isFilled;
+    private boolean isDisabled = false;
 
     public HashMap<String, List<String>> errors = new HashMap<String, List<String>>();
 
@@ -49,6 +46,7 @@ public class FileVersionModel implements ModelInterface {
             parameters.addValue("date", date);
             parameters.addValue("isFilled", isFilled);
             parameters.addValue("fileName", fileName);
+            parameters.addValue("isDisabled", isDisabled);
             int rows = template.update(updateElem, parameters);
             if (rows > 0) {
                 return true;
@@ -61,7 +59,7 @@ public class FileVersionModel implements ModelInterface {
 
     }
 
-    public FileVersionModel(int id, int fileId, int userId, String version, String hash, long fileSize, long date, boolean isFilled, String fileName) {
+    public FileVersionModel(int id, int fileId, int userId, String version, String hash, long fileSize, long date, boolean isFilled, String fileName, boolean isDisabled) {
         this.id = id;
         this.fileId = fileId;
         this.userId = userId;
@@ -71,6 +69,7 @@ public class FileVersionModel implements ModelInterface {
         this.date = date;
         this.isFilled = isFilled;
         this.fileName = fileName;
+        this.isDisabled = isDisabled;
     }
 
     public boolean add() throws SQLException {
@@ -85,6 +84,7 @@ public class FileVersionModel implements ModelInterface {
             parameters.addValue("date", date);
             parameters.addValue("isFilled", isFilled);
             parameters.addValue("fileName", fileName);
+            parameters.addValue("isDisabled", isDisabled);
             KeyHolder keyHolder = new GeneratedKeyHolder();
             template.update(saveNew, parameters, keyHolder);
             id = keyHolder.getKey().intValue();
@@ -123,7 +123,8 @@ public class FileVersionModel implements ModelInterface {
             Long fileSize = (Long) row.get("fileSize");
             Long date = (Long) row.get("date");
             boolean isFilled = ((Integer) row.get("isFilled") == 1);
-            return new FileVersionModel(modelId, fileId, userId, version, hash, fileSize, date, isFilled, fileName);
+            boolean isDisabled = ((Integer) row.get("isDisabled") == 1);
+            return new FileVersionModel(modelId, fileId, userId, version, hash, fileSize, date, isFilled, fileName, isDisabled);
         }
         throw new NotFoundException("Версия не найдена");
     }
@@ -144,7 +145,8 @@ public class FileVersionModel implements ModelInterface {
             Long fileSize = (Long) row.get("fileSize");
             Long date = (Long) row.get("date");
             boolean isFilled = ((Integer) row.get("isFilled") == 1);
-            return new FileVersionModel(modelId, fileId, userId, version, hash, fileSize, date, isFilled, fileName);
+            boolean isDisabled = ((Integer) row.get("isDisabled") == 1);
+            return new FileVersionModel(modelId, fileId, userId, version, hash, fileSize, date, isFilled, fileName, isDisabled);
         }
         throw new NotFoundException("Версия не найдена");
     }
@@ -273,5 +275,13 @@ public class FileVersionModel implements ModelInterface {
 
     public void setUserId(int userId) {
         this.userId = userId;
+    }
+
+    public void setIsDisabled(boolean isDisabled) {
+        this.isDisabled = isDisabled;
+    }
+
+    public boolean getIsDisabled() {
+        return isDisabled;
     }
 }

@@ -25,8 +25,8 @@ public class CategoryModel implements ModelInterface {
     private static final String getTreeElements = "SELECT * FROM category ORDER BY position ASC, id ASC";
     private static final String getCount = "SELECT count(id) FROM category";
     private static final String getFiles = "SELECT fileId FROM fileCategory WHERE categoryId = :categoryId;";
-    private static final String getFilesInfo = "SELECT file.id, file.title, fileVersion.version, fileVersion.date, user.displayName FROM file " +
-            " LEFT JOIN fileVersion ON fileVersion.id = (SELECT id FROM fileVersion WHERE fileVersion.fileId = file.id ORDER BY version DESC LIMIT 1) " +
+    private static final String getFilesInfo = "SELECT file.id, file.title, fileVersion.version, fileVersion.date, fileVersion.id as versionId, user.displayName FROM file " +
+            " LEFT JOIN fileVersion ON fileVersion.id = (SELECT id FROM fileVersion WHERE fileVersion.fileId = file.id AND fileVersion.isDisabled = :isDisabled ORDER BY version DESC LIMIT 1) " +
             " LEFT JOIN user ON user.id = fileVersion.userId WHERE file.id IN (:idList) ORDER BY fileVersion.version DESC LIMIT :limit OFFSET :offset";
 
     public HashMap<String, List<String>> errors = new HashMap<String, List<String>>();
@@ -205,9 +205,11 @@ public class CategoryModel implements ModelInterface {
             parameters.addValue("limit", limit);
             parameters.addValue("offset", offset);
             parameters.addValue("idList", ids);
+            parameters.addValue("isDisabled", false);
             List<Map<String, Object>> rows = template.queryForList(getFilesInfo, parameters);
             for (Map row : rows) {
                 Integer fileId = (Integer) row.get("id");
+                Integer versionId = (Integer) row.get("versionId");
                 String title = (String) row.get("title");
                 String version = (String) row.get("version");
                 Long intDate = (Long) row.get("date");
@@ -218,6 +220,7 @@ public class CategoryModel implements ModelInterface {
 
                 CategoryFile categoryFile = new CategoryFile();
                 categoryFile.setId(fileId);
+                categoryFile.setVersionId(versionId);
                 categoryFile.setTitle(title);
                 categoryFile.setVersion(version);
                 categoryFile.setDate(strDate);
