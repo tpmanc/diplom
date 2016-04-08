@@ -14,6 +14,7 @@
         var fileVersionPropertyDeleteUrl = "<spring:url value="/file-version-property-delete" />";
         var fileVersionDeleteUrl = "<spring:url value="/file-version-delete" />";
         var fileVersionRecoverUrl = "<spring:url value="/file-version-recover" />";
+        var fileVersionDeletePermanentUrl = "<spring:url value="/file-version-delete-permanent" />";
     </script>
 </sec:authorize>
 <sec:authorize access="!hasRole('ROLE_FR-ADMIN') && !hasRole('ROLE_FR-MODERATOR')">
@@ -53,7 +54,9 @@
 <p>
     <a href="#" id="deleteVersionBtn" data-versionid="${currentVersion.id}" class="btn btn-danger">Удалить версию</a>
     <sec:authorize access="hasRole('ROLE_FR-ADMIN')">
-        <a href="<spring:url value="/file-export?versionId=${currentVersion.id}" />" class="btn btn-danger">Экспорт</a>
+        <c:if test="${currentVersion.isDisabled}">
+            <a href="#" id="deleteVersionPermanentBtn" data-versionid="${currentVersion.id}" class="btn btn-danger">Удалить окончательно</a>
+        </c:if>
     </sec:authorize>
 </p>
 </sec:authorize>

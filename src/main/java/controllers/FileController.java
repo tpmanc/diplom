@@ -564,8 +564,10 @@ public class FileController {
             model.setIsDisabled(true);
             if (model.update()) {
                 result.put("error", false);
+                LogModel.addInfo(activeUser.getEmployeeId(), "Версия файла id = "+model.getId()+" помечена как удаленная");
             } else {
                 result.put("error", true);
+                LogModel.addError(activeUser.getEmployeeId(), "Ошибка при пометке файла id = "+model.getId()+" как удаленного");
             }
             return result.toJSONString();
         } catch (SQLException e) {
@@ -595,8 +597,10 @@ public class FileController {
             model.setIsDisabled(false);
             if (model.update()) {
                 result.put("error", false);
+                LogModel.addInfo(activeUser.getEmployeeId(), "Файла id = "+model.getId()+" восстановлен");
             } else {
                 result.put("error", true);
+                LogModel.addError(activeUser.getEmployeeId(), "Ошибка при восстановлении файла id = "+model.getId());
             }
             return result.toJSONString();
         } catch (SQLException e) {

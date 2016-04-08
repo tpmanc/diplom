@@ -44,6 +44,30 @@ $(function () {
         }
         return false;
     });
+
+    $('#deleteVersionPermanentBtn').on('click', function(){
+        var $this = $(this);
+        if (confirm("Вы действительно хотите окончательно удалить файл?")) {
+            $.ajax({
+                url: fileVersionDeletePermanentUrl,
+                method: "post",
+                dataType: "json",
+                data: {versionId: $this.data('versionid')},
+                success: function (data) {
+                    if (!data.error) {
+                        toastr.success('Файл удален');
+                    } else {
+                        toastr.error('Ошибка при удалении');
+                    }
+                },
+                error: function (data) {
+                    toastr.error('Ошибка при удалении', data.msg);
+                }
+            });
+        }
+        return false;
+    });
+
     $('#recoverVersionBtn').on('click', function(){
         var $this = $(this);
         if (confirm("Восстановить файл?")) {
