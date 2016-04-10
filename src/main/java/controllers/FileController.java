@@ -95,12 +95,21 @@ public class FileController {
             }
             model.addAttribute("currentVersion", currentVersion);
 
+            if (!UserHelper.isModerator(activeUser) && currentVersion.getIsDisabled()) {
+                throw new NotFoundException("Старинца не найдена");
+            }
+
             UserModel user = UserModel.findById(currentVersion.getUserId());
             model.addAttribute("user", user);
 
-            // список версий файла
-            ArrayList<FileVersionModel> versionList = file.getVersionList();
-            model.addAttribute("versionList", versionList);
+            // список версий файла (для модератора добавляются отключенные файлы)
+            if (UserHelper.isModerator(activeUser)) {
+                ArrayList<FileVersionModel> versionList = file.getVersionList(false);
+                model.addAttribute("versionList", versionList);
+            } else {
+                ArrayList<FileVersionModel> versionList = file.getVersionList(true);
+                model.addAttribute("versionList", versionList);
+            }
 
             // свойства файла
             ArrayList<FileVersionPropertyModel> fileVersionProperties = FileVersionPropertyModel.getProperties(currentVersion.getId());
@@ -530,6 +539,72 @@ public class FileController {
             throw new NotFoundException("Файла не найден");
         } catch (IOException e) {
             throw new NotFoundException("Ошибка", "500");
+        }
+    }
+
+    /**
+     * Обработчик ajax запроса на удаление версии
+     * @return json строка
+     */
+    @ResponseBody
+    @RequestMapping(value = {"/file-version-delete"}, method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
+    public String fileVersionDelete(
+            @RequestParam("versionId") int versionId,
+            Principal principal
+    ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isModerator(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка удаления версии /file-version-delete без прав модератора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
+        JSONObject result = new JSONObject();
+
+        try {
+            FileVersionModel model = FileVersionModel.findById(versionId);
+            model.setIsDisabled(true);
+            if (model.update()) {
+                result.put("error", false);
+                LogModel.addInfo(activeUser.getEmployeeId(), "Версия файла id = "+model.getId()+" помечена как удаленная");
+            } else {
+                result.put("error", true);
+                LogModel.addError(activeUser.getEmployeeId(), "Ошибка при пометке файла id = "+model.getId()+" как удаленного");
+            }
+            return result.toJSONString();
+        } catch (SQLException e) {
+            throw new NotFoundException("Версия не найдена");
+        }
+    }
+
+    /**
+     * Обработчик ajax запроса на восстановление версии
+     * @return json строка
+     */
+    @ResponseBody
+    @RequestMapping(value = {"/file-version-recover"}, method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
+    public String fileVersionRecover(
+            @RequestParam("versionId") int versionId,
+            Principal principal
+    ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isModerator(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка восстановления версии /file-version-recover без прав модератора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
+        JSONObject result = new JSONObject();
+
+        try {
+            FileVersionModel model = FileVersionModel.findById(versionId);
+            model.setIsDisabled(false);
+            if (model.update()) {
+                result.put("error", false);
+                LogModel.addInfo(activeUser.getEmployeeId(), "Файла id = "+model.getId()+" восстановлен");
+            } else {
+                result.put("error", true);
+                LogModel.addError(activeUser.getEmployeeId(), "Ошибка при восстановлении файла id = "+model.getId());
+            }
+            return result.toJSONString();
+        } catch (SQLException e) {
+            throw new NotFoundException("Версия не найдена");
         }
     }
 }

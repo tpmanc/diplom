@@ -3,7 +3,7 @@
 
 <div class="file-box">
     <div class="file">
-        <a href="<spring:url value="/file-view?id=${file.id}" />">
+        <a href="<spring:url value="/file-view?id=${file.id}&versionId=${file.versionId}" />">
             <span class="corner"></span>
             <div class="file-name">${file.title}
                 <br>
