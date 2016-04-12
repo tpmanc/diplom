@@ -26,7 +26,7 @@ public class CategoryModel implements ModelInterface {
     private static final String getCount = "SELECT count(id) FROM category";
     private static final String getFiles = "SELECT fileId FROM fileCategory WHERE categoryId = :categoryId;";
     private static final String getFilesInfo = "SELECT file.id, file.title, fileVersion.version, fileVersion.date, fileVersion.id as versionId, user.displayName FROM file " +
-            " LEFT JOIN fileVersion ON fileVersion.id = (SELECT id FROM fileVersion WHERE fileVersion.fileId = file.id AND fileVersion.isDisabled = :isDisabled ORDER BY version DESC LIMIT 1) " +
+            " RIGHT JOIN fileVersion ON fileVersion.id = (SELECT id FROM fileVersion WHERE fileVersion.fileId = file.id AND fileVersion.isDisabled = :isDisabled ORDER BY version DESC LIMIT 1) " +
             " LEFT JOIN user ON user.id = fileVersion.userId WHERE file.id IN (:idList) ORDER BY fileVersion.version DESC LIMIT :limit OFFSET :offset";
 
     public HashMap<String, List<String>> errors = new HashMap<String, List<String>>();

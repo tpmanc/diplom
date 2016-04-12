@@ -89,6 +89,12 @@ public class FileHelper {
         return "";
     }
 
+    public static String getHashPath(String hash) {
+        String firstDir = hash.substring(0, 2);
+        String secondDir = hash.substring(2, 4);
+        return firstDir + File.separator + secondDir;
+    }
+
     /**
      * Кодирование файла в Base64
      */

@@ -19,6 +19,7 @@ public class FileVersionPropertyModel implements ModelInterface {
     private static final String saveNew = "INSERT INTO fileVersionProperty(fileVersionId, propertyId, value) VALUES(:fileVersionId, :propertyId, :value)";
     private static final String getByFileVersion = "SELECT fileVersionProperty.*, property.title FROM fileVersionProperty LEFT JOIN property ON fileVersionProperty.propertyId = property.id WHERE fileVersionId = :fileVersionId";
     private static final String deleteById = "DELETE FROM fileVersionProperty WHERE id = :id";
+    private static final String deleteByVersionId = "DELETE FROM fileVersionProperty WHERE fileVersionId = :fileVersionId";
     private static final String checkIsExist = "SELECT * FROM fileVersionProperty WHERE fileVersionId = :fileVersionId AND propertyId = :propertyId";
 
     private int id;
@@ -79,6 +80,14 @@ public class FileVersionPropertyModel implements ModelInterface {
             return new FileVersionPropertyModel(itemId, fileVersionId, propertyId, value);
         }
         return null;
+    }
+
+    public static boolean deleteByVersion(int fileVersionId) {
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("fileVersionId", fileVersionId);
+        int rows = template.update(deleteByVersionId, parameters);
+        return rows > 0;
     }
 
     public static ArrayList<FileVersionPropertyModel> getProperties(int fileVersionId) throws SQLException {

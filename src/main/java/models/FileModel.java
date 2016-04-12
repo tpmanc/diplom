@@ -3,6 +3,7 @@ package models;
 import db.Database2;
 import exceptions.NotFoundException;
 import models.helpers.CategoryFile;
+import models.helpers.FileCategory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -21,6 +22,7 @@ public class FileModel implements ModelInterface {
     private static final String getAll = "SELECT * FROM file";
     private static final String getAllLimit = "SELECT * FROM file LIMIT :limit OFFSET :offset";
     private static final String getCount = "SELECT count(id) FROM file";
+    private static final String getVersionCountExclude = "SELECT count(id) FROM fileVersion WHERE fileId = :fileId AND id <> :id";
     private static final String getTitles = "SELECT id, title FROM file WHERE title LIKE :str";
     private static final String getVersions = "SELECT * FROM fileVersion WHERE fileId = :fileId ORDER BY CONVERT(version, decimal) DESC";
     private static final String getEnabledVersions = "SELECT * FROM fileVersion WHERE fileId = :fileId AND isDisabled = :isDisabled ORDER BY CONVERT(version, decimal) DESC";
@@ -250,6 +252,14 @@ public class FileModel implements ModelInterface {
         return result;
     }
 
+    public int getVersionCount(int excludeVersionId) {
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("fileId", id);
+        parameters.addValue("id", excludeVersionId);
+        return template.queryForObject(getVersionCountExclude, parameters, Integer.class);
+    }
+
     public boolean validate() {
         // title
         List<String> titleErrors = new ArrayList<String>();
@@ -272,6 +282,14 @@ public class FileModel implements ModelInterface {
     public boolean delete() throws SQLException {
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
         MapSqlParameterSource parameters = new MapSqlParameterSource();
+
+        // удаляем свойства файла
+        FilePropertyModel.deleteByVersion(id);
+
+        // удаляем связь с категориями
+        FileCategoryModel.deleteByFile(id);
+
+        // удаляем сам файл
         parameters.addValue("id", id);
         int rows = template.update(deleteById, parameters);
         return rows > 0;

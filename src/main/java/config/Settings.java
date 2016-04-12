@@ -9,10 +9,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.ContextLoader;
 
 import javax.servlet.ServletContext;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import javax.servlet.http.HttpServletRequest;
+import java.io.*;
 import java.util.Properties;
 
 /**
@@ -153,5 +151,15 @@ public class Settings {
             // todo 500
             throw new InternalException("ERROR");
         }
+    }
+
+    public static String getUploadPath(HttpServletRequest request) {
+        String uploadPath = request.getServletContext().getRealPath("upload");
+        File uploadRootDir = new File(uploadPath);
+        // Создаем основную директорию, если ее нет
+        if (!uploadRootDir.exists()) {
+            uploadRootDir.mkdirs();
+        }
+        return uploadRootDir.getAbsolutePath();
     }
 }
