@@ -22,7 +22,7 @@ public class RequestModel implements ModelInterface {
     private static final String getFiles = "SELECT * FROM requestFile WHERE requestId = :requestId";
     private static final String deleteById = "DELETE FROM request WHERE id = :id";
     private static final String getNewCount = "SELECT count(id) FROM request WHERE status = :status AND userId = :userId";
-    private static final String updateById = "UPDATE request SET text = :text, status = :status, comment = :comment WHERE id = :id";
+    private static final String updateById = "UPDATE request SET status = :status, comment = :comment WHERE id = :id";
 
     public final static int NEW = 1;
     public final static int ACCEPTED = 2;
@@ -49,7 +49,13 @@ public class RequestModel implements ModelInterface {
 
     public boolean update() throws SQLException {
         if (validate()) {
-            // todo
+            NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+            MapSqlParameterSource parameters = new MapSqlParameterSource();
+            parameters.addValue("id", id);
+            parameters.addValue("comment", comment);
+            parameters.addValue("status", status);
+            int rows = template.update(updateById, parameters);
+            return rows > 0;
         }
         return false;
     }
