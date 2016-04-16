@@ -2,6 +2,7 @@ package controllers;
 
 import auth.CustomUserDetails;
 import exceptions.ForbiddenException;
+import exceptions.InternalException;
 import exceptions.NotFoundException;
 import helpers.FileHelper;
 import helpers.UserHelper;
@@ -67,7 +68,7 @@ public class RequestController {
         model.addAttribute("requestCount", requestCount);
 
         model.addAttribute("page", page);
-        model.addAttribute("pageTitle", "Мои заявки");
+        model.addAttribute("pageTitle", "Заявки");
         return "request/requests";
     }
 
@@ -260,6 +261,114 @@ public class RequestController {
             throw new InternalError(e.getMessage());
         } catch (IOException e) {
             throw new InternalError(e.getMessage());
+        }
+    }
+
+    /**
+     * Страница отклонение заявки
+     */
+    @RequestMapping(value = {"/request-cancel"}, method = RequestMethod.GET)
+    public String requestCancel(
+            @RequestParam int requestId,
+            Principal principal,
+            Model model
+    ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isModerator(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка отклонения заявки (/request-cancel) без прав модератора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
+
+        RequestModel request = RequestModel.findById(requestId);
+        model.addAttribute("request", request);
+
+        model.addAttribute("pageTitle", "Отклонить заявку");
+        return "request/request-cancel";
+    }
+
+    /**
+     * Обработчик отклонения заявки
+     */
+    @RequestMapping(value = {"/request-cancel-handler"}, method = RequestMethod.POST)
+    public String requestCancelHandler(
+            @RequestParam int requestId,
+            @RequestParam String comment,
+            Principal principal,
+            RedirectAttributes attr,
+            Model model
+    ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isModerator(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка отклонения заявки (/request-cancel-handler) без прав модератора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
+
+        RequestModel request = RequestModel.findById(requestId);
+        request.setComment(comment);
+        request.setStatus(RequestModel.CANCELED);
+        try {
+            if (request.update()) {
+                return "redirect:/request-view?requestId="+request.getId();
+            } else {
+                attr.addFlashAttribute("errors", true);
+                return "redirect:/request-cancel?requestId="+request.getId();
+            }
+        } catch (SQLException e) {
+            throw new InternalException("Ошибка при сохранении");
+        }
+    }
+
+    /**
+     * Страница принятия заявки
+     */
+    @RequestMapping(value = {"/request-accept"}, method = RequestMethod.GET)
+    public String requestAccept(
+            @RequestParam int requestId,
+            Principal principal,
+            Model model
+    ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isModerator(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка принятия заявки (/request-accept) без прав модератора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
+
+        RequestModel request = RequestModel.findById(requestId);
+        model.addAttribute("request", request);
+
+        model.addAttribute("pageTitle", "Принять заявку");
+        return "request/request-accept";
+    }
+
+    /**
+     * Обработчик принятия заявки
+     */
+    @RequestMapping(value = {"/request-accept-handler"}, method = RequestMethod.POST)
+    public String requestAcceptHandler(
+            @RequestParam int requestId,
+            @RequestParam String comment,
+            Principal principal,
+            RedirectAttributes attr,
+            Model model
+    ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isModerator(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка принятия заявки (/request-accept-handler) без прав модератора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
+
+        RequestModel request = RequestModel.findById(requestId);
+        request.setComment(comment);
+        request.setStatus(RequestModel.ACCEPTED);
+        try {
+            if (request.update()) {
+                return "redirect:/request-view?requestId="+request.getId();
+            } else {
+                attr.addFlashAttribute("errors", true);
+                return "redirect:/request-accept?requestId="+request.getId();
+            }
+        } catch (SQLException e) {
+            throw new InternalException("Ошибка при сохранении");
         }
     }
 }

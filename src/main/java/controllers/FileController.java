@@ -1,6 +1,7 @@
 package controllers;
 
 import auth.CustomUserDetails;
+import config.Settings;
 import exceptions.ForbiddenException;
 import exceptions.InternalException;
 import exceptions.NotFoundException;
@@ -312,12 +313,7 @@ public class FileController {
         JSONArray errors = new JSONArray();
         JSONArray success = new JSONArray();
 
-        String uploadPath = request.getServletContext().getRealPath("upload");
-        File uploadRootDir = new File(uploadPath);
-        // Создаем основную директорию, если ее нет
-        if (!uploadRootDir.exists()) {
-            uploadRootDir.mkdirs();
-        }
+        String uploadRootDir = Settings.getUploadPath(request);
 
         int fileCounter = 0;
         for (MultipartFile file : files) {
@@ -328,15 +324,11 @@ public class FileController {
                     // формирование пути до файла
                     String hash = FileHelper.getHash(inputStream);
                     inputStream.close();
-                    String firstDir = hash.substring(0, 2);
-                    String secondDir = hash.substring(2, 4);
                     StringBuilder newFileName = new StringBuilder();
                     newFileName
-                            .append(uploadRootDir.getAbsolutePath())
+                            .append(uploadRootDir)
                             .append(File.separator)
-                            .append(firstDir)
-                            .append(File.separator)
-                            .append(secondDir);
+                            .append(FileHelper.getHashPath(hash));
 
                     // проверяем дублирование файла
                     if (FileVersionModel.isExist(hash, file.getSize())) {
@@ -601,6 +593,38 @@ public class FileController {
             } else {
                 result.put("error", true);
                 LogModel.addError(activeUser.getEmployeeId(), "Ошибка при восстановлении файла id = "+model.getId());
+            }
+            return result.toJSONString();
+        } catch (SQLException e) {
+            throw new NotFoundException("Версия не найдена");
+        }
+    }
+
+    /**
+     * Обработчик ajax запроса на окончательное удаление версии
+     * @return json строка
+     */
+    @ResponseBody
+    @RequestMapping(value = {"/file-version-delete-permanent"}, method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
+    public String fileVersionDeletePermanent(
+            @RequestParam("versionId") int versionId,
+            Principal principal,
+            HttpServletRequest request
+    ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isAdmin(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка удаления версии /file-version-delete-permanent без прав администратора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
+        JSONObject result = new JSONObject();
+
+        try {
+            FileVersionModel model = FileVersionModel.findById(versionId);
+            if (model.getIsDisabled()) {
+                model.delete(request);
+                result.put("error", false);
+            } else {
+                result.put("error", true);
             }
             return result.toJSONString();
         } catch (SQLException e) {

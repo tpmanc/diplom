@@ -33,6 +33,7 @@ $(function () {
                 success: function (data) {
                     if (!data.error) {
                         toastr.success('Файл помечен как удаленный');
+                        location.reload();
                     } else {
                         toastr.error('Ошибка при удалении');
                     }
@@ -56,6 +57,7 @@ $(function () {
                 success: function (data) {
                     if (!data.error) {
                         toastr.success('Файл удален');
+                        location.href = fileVersionDeleteRedirectUrl;
                     } else {
                         toastr.error('Ошибка при удалении');
                     }
@@ -79,6 +81,7 @@ $(function () {
                 success: function (data) {
                     if (!data.error) {
                         toastr.success('Файл восстановлен');
+                        location.reload();
                     } else {
                         toastr.error('Ошибка при восстановлении');
                     }

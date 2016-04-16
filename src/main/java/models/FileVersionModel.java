@@ -1,12 +1,16 @@
 package models;
 
+import config.Settings;
 import db.Database2;
 import exceptions.NotFoundException;
+import helpers.FileHelper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +23,7 @@ public class FileVersionModel implements ModelInterface {
     private static final String getByIdAndFile = "SELECT * FROM fileVersion WHERE id = :id AND fileId = :fileId";
     private static final String saveNew = "INSERT INTO fileVersion(fileId, userId, version, hash, fileSize, date, isFilled, fileName, isDisabled) VALUES(:fileId, :userId, :version, :hash, :fileSize, :date, :isFilled, :fileName, :isDisabled)";
     private static final String isFileExist = "SELECT count(id) FROM fileVersion WHERE hash = :hash AND fileSize = :fileSize";
+    private static final String deleteById = "DELETE FROM fileVersion WHERE id = :id";
 
     private int id;
     private int fileId;
@@ -201,12 +206,44 @@ public class FileVersionModel implements ModelInterface {
     }
 
     public boolean delete() throws SQLException {
-        // TODO: file version delete
-        // добавить в БД поле isDisabled
-        // при удалении модератором просто ставить isDisabled = true
-        // при просмотре админом выводить отключенные тоже
-        // админу дать возможность удалить окончательно
         return false;
+    }
+
+    public boolean delete(HttpServletRequest request) throws SQLException {
+        // всем категориям, прявязанным к этому элементу, надо изменить родителя на родителя этого элемента
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+
+        // удаляем свойства версии
+        FileVersionPropertyModel.deleteByVersion(id);
+
+        // удаляем файл с диска
+        String uploadPath = Settings.getUploadPath(request);
+        StringBuilder filePath = new StringBuilder()
+                .append(uploadPath)
+                .append(File.separator)
+                .append(FileHelper.getHashPath(hash))
+                .append(File.separator)
+                .append(fileName);
+        File file = new File(filePath.toString());
+        if (file.exists() && !file.isDirectory()) {
+            file.delete();
+        }
+
+        // проверка осталась ли у сущности файл хотя бы одна версия
+        if (isFilled) {
+            FileModel fileModel = FileModel.findById(fileId);
+            int versionCount = fileModel.getVersionCount(id);
+            if (versionCount == 0) {
+                fileModel.delete();
+            }
+        }
+
+        // удаляем саму версию
+        parameters.addValue("id", id);
+        int rows = template.update(deleteById, parameters);
+
+        return rows > 0;
     }
 
     public void setFileId(int fileId) {

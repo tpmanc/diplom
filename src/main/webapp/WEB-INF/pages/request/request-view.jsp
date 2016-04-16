@@ -10,7 +10,7 @@
 
 <ol class="breadcrumb">
     <li><a href="<spring:url value="/" />">Главная</a></li>
-    <li><a href="<spring:url value="/request-list" />">Мои заявки</a></li>
+    <li><a href="<spring:url value="/request-list" />">Заявки</a></li>
     <li class="active">
         <strong>${pageTitle}</strong>
     </li>
@@ -65,6 +65,14 @@
             </c:forEach>
         </td>
     </tr>
+    <c:if test="${!requestModel.comment.equals(\"\")}">
+        <tr>
+            <td>Комментарий модератора</td>
+            <td>
+                ${requestModel.comment}
+            </td>
+        </tr>
+    </c:if>
     </tbody>
 </table>
 

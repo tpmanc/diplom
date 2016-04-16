@@ -20,6 +20,7 @@ public class FilePropertyModel implements ModelInterface {
     private static final String getByFile = "SELECT fileProperty.*, property.title FROM fileProperty LEFT JOIN property ON fileProperty.propertyId = property.id WHERE fileId = :fileId AND propertyId <> :fileName AND propertyId <> :version";
     private static final String deleteById = "DELETE FROM fileProperty WHERE id = :id";
     private static final String checkIsExist = "SELECT * FROM fileProperty WHERE fileId = :fileId AND propertyId = :propertyId";
+    private static final String deleteByVersionId = "DELETE FROM fileProperty WHERE fileId = :fileId";
 
     private int id;
     private int fileId;
@@ -164,6 +165,14 @@ public class FilePropertyModel implements ModelInterface {
         }
 
         return isValid;
+    }
+
+    public static boolean deleteByVersion(int fileId) {
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("fileId", fileId);
+        int rows = template.update(deleteByVersionId, parameters);
+        return rows > 0;
     }
 
     public boolean delete() throws SQLException {

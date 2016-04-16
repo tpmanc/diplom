@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public class RequestModel implements ModelInterface {
-    private static final String saveNew = "INSERT INTO request(userId, text, status, date) VALUES(:userId, :text, :status, :date)";
+    private static final String saveNew = "INSERT INTO request(userId, text, status, date, comment) VALUES(:userId, :text, :status, :date, :comment)";
     private static final String getAll = "SELECT * FROM request ORDER BY date DESC LIMIT :limit OFFSET :offset";
     private static final String getAllByUser = "SELECT * FROM request WHERE userId = :userId ORDER BY date DESC LIMIT :limit OFFSET :offset";
     private static final String getCountByUser = "SELECT count(id) FROM request WHERE userId = :userId";
@@ -22,7 +22,7 @@ public class RequestModel implements ModelInterface {
     private static final String getFiles = "SELECT * FROM requestFile WHERE requestId = :requestId";
     private static final String deleteById = "DELETE FROM request WHERE id = :id";
     private static final String getNewCount = "SELECT count(id) FROM request WHERE status = :status AND userId = :userId";
-    private static final String updateById = "UPDATE request SET text = :text, status = :status WHERE id = :id";
+    private static final String updateById = "UPDATE request SET status = :status, comment = :comment WHERE id = :id";
 
     public final static int NEW = 1;
     public final static int ACCEPTED = 2;
@@ -35,19 +35,27 @@ public class RequestModel implements ModelInterface {
     private String text;
     private int status;
     private long date;
+    private String comment;
 
     public RequestModel() {}
-    public RequestModel(int id, int userId, String text, int status, long date) {
+    public RequestModel(int id, int userId, String text, int status, long date, String comment) {
         this.id = id;
         this.userId = userId;
         this.text = text;
         this.status = status;
         this.date = date;
+        this.comment = comment;
     }
 
     public boolean update() throws SQLException {
         if (validate()) {
-            // todo
+            NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+            MapSqlParameterSource parameters = new MapSqlParameterSource();
+            parameters.addValue("id", id);
+            parameters.addValue("comment", comment);
+            parameters.addValue("status", status);
+            int rows = template.update(updateById, parameters);
+            return rows > 0;
         }
         return false;
     }
@@ -60,6 +68,7 @@ public class RequestModel implements ModelInterface {
             parameters.addValue("date", date);
             parameters.addValue("status", status);
             parameters.addValue("userId", userId);
+            parameters.addValue("comment", comment);
             KeyHolder keyHolder = new GeneratedKeyHolder();
             int rows = template.update(saveNew, parameters, keyHolder);
             if (rows > 0) {
@@ -96,7 +105,8 @@ public class RequestModel implements ModelInterface {
             String text = (String) result.get("text");
             int status = (Integer) result.get("status");
             long date = (Long) result.get("date");
-            return new RequestModel(requestId, userId, text, status, date);
+            String comment = (String) result.get("comment");
+            return new RequestModel(requestId, userId, text, status, date, comment);
         } else {
             throw new NotFoundException("Свойство не найдено");
         }
@@ -115,7 +125,8 @@ public class RequestModel implements ModelInterface {
             String text = (String) row.get("text");
             Integer status = (Integer) row.get("status");
             Long date = (Long) row.get("date");
-            result.add(new RequestModel(reqId, userId, text, status, date));
+            String comment = (String) row.get("comment");
+            result.add(new RequestModel(reqId, userId, text, status, date, comment));
         }
         return result;
     }
@@ -150,7 +161,8 @@ public class RequestModel implements ModelInterface {
             String text = (String) row.get("text");
             Integer status = (Integer) row.get("status");
             Long date = (Long) row.get("date");
-            result.add(new RequestModel(reqId, userId, text, status, date));
+            String comment = (String) row.get("comment");
+            result.add(new RequestModel(reqId, userId, text, status, date, comment));
         }
         return result;
     }
@@ -214,5 +226,13 @@ public class RequestModel implements ModelInterface {
 
     public void setDate(long date) {
         this.date = date;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }

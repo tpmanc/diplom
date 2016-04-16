@@ -15,6 +15,7 @@
         var fileVersionDeleteUrl = "<spring:url value="/file-version-delete" />";
         var fileVersionRecoverUrl = "<spring:url value="/file-version-recover" />";
         var fileVersionDeletePermanentUrl = "<spring:url value="/file-version-delete-permanent" />";
+        var fileVersionDeleteRedirectUrl = "<spring:url value="/files" />";
     </script>
 </sec:authorize>
 <sec:authorize access="!hasRole('ROLE_FR-ADMIN') && !hasRole('ROLE_FR-MODERATOR')">
