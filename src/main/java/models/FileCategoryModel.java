@@ -47,7 +47,6 @@ public class FileCategoryModel implements ModelInterface {
     }
 
     public boolean update() throws SQLException {
-        // todo
         return false;
     }
 

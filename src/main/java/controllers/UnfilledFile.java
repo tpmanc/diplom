@@ -102,7 +102,6 @@ public class UnfilledFile {
                 throw new AccessDeniedException("Доступ запрещен");
             }
 
-            // todo validation
             FileVersionModel fileVersion = FileVersionModel.findById(versionId);
             FileModel file = FileModel.findByTitle(title);
             if (file == null) {

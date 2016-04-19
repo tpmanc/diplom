@@ -36,9 +36,6 @@ public class RequestFileModel implements ModelInterface {
     }
 
     public boolean update() throws SQLException {
-        if (validate()) {
-            // todo
-        }
         return false;
     }
 

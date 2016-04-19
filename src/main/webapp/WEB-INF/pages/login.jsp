@@ -15,7 +15,7 @@
 <div class="loginColumns">
     <div class="row">
         <div class="col-md-6 col-md-offset-3">
-            <h2 class="font-bold">Панель администратора</h2>
+            <h2 class="font-bold">Репозиторий инсталляционных пакетов</h2>
             <p>
                 Для входа введите логин и пароль
             </p>
