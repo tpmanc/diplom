@@ -11,6 +11,7 @@ public class ExportParam {
     private String value;
     private ArrayList<String> variants;
     private String commands;
+    private String regexp;
 
     public String getName() {
         return name;
@@ -50,5 +51,13 @@ public class ExportParam {
 
     public void setCommands(String commands) {
         this.commands = commands;
+    }
+
+    public String getRegexp() {
+        return regexp;
+    }
+
+    public void setRegexp(String regexp) {
+        this.regexp = regexp;
     }
 }

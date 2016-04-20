@@ -11,11 +11,16 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Команды для экспорта и выполнение команд
@@ -28,6 +33,33 @@ public class CommandHelper {
         result.add("user 1");
         result.add("user 2");
         result.add("user 3");
+        return result;
+    }
+
+    public static ArrayList<String> executeLinux(String command, String regexp) {
+        ArrayList<String> result = new ArrayList<String>();
+        Process p = null;
+        try {
+            p = Runtime.getRuntime().exec(command);
+            p.waitFor();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+            StringBuilder sb = new StringBuilder();
+            String line = "";
+            while ((line = reader.readLine())!= null) {
+                sb.append(line + "\n");
+            }
+            Pattern pattern = Pattern.compile(regexp);
+            Matcher matcher = pattern.matcher(sb.toString());
+            while (matcher.find()) {
+                result.add(matcher.group(1));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return result;
     }
 

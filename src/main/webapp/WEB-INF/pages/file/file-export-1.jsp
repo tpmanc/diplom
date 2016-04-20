@@ -17,7 +17,8 @@
                     <div class="select">\
                         <select name="types[]">\
                             <option value="1">Значение</option>\
-                            <option value="2">Команды</option>\
+                            <option value="2">Команды Linux</option>\
+                            <option value="3">Команды Windows</option>\
                         </select>\
                     </div>\
                 </td>\
@@ -26,9 +27,11 @@
                         <label class="field">\
                             <textarea class="gui-textarea" required name="values[]" placeholder="Значение"></textarea>\
                         </label>\
+                        <input type="text" class="regexp-field" name="regexps[]" placeholder="Регулярка">\
                     </div>\
                 </td>\
                 <td class="param-delete">\
+                    <input type="hidden" class="regexp-field" name="regexps[]" placeholder="Регулярка">\
                     <a class="btn btn-white btn-bitbucket add-parameter">\
                         <i class="fa fa-times"></i>\
                         Удалить\
@@ -70,7 +73,8 @@
                             <div class="select">
                                 <select name="types[]">\
                                     <option value="1">Значение</option>
-                                    <option value="2" <c:if test="${item.type == 2}">selected</c:if>>Команды</option>
+                                    <option value="2" <c:if test="${item.type == 2}">selected</c:if>>Команды Linux</option>
+                                    <option value="3" <c:if test="${item.type == 3}">selected</c:if>>Команды Windows</option>
                                 </select>
                             </div>
                         </td>
@@ -78,12 +82,13 @@
                             <div class="section">
                                 <label class="field">
                                     <c:choose>
-                                        <c:when test="${item.type == 2}">
+                                        <c:when test="${item.type == 2 || item.type == 3}">
                                             <textarea
                                                     class="gui-textarea"
                                                     required name="values[]"
                                                     placeholder="Значение"
                                             >${item.commands}</textarea>
+                                            <input type="text" class="regexp-field" name="regexps[]" value="${item.regexp}" placeholder="Регулярка">
                                         </c:when>
                                         <c:otherwise>
                                             <textarea class="gui-textarea" required name="values[]" placeholder="Значение">${item.value}</textarea>
@@ -93,6 +98,7 @@
                             </div>
                         </td>
                         <td class="param-delete">
+                            <input type="hidden" class="regexp-field" name="regexps[]" placeholder="Регулярка">
                             <a class="btn btn-white btn-bitbucket add-parameter">
                                 <i class="fa fa-times"></i>
                                 Удалить

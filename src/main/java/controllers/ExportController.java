@@ -61,6 +61,7 @@ public class ExportController {
             @RequestParam("names[]") String[] names,
             @RequestParam("types[]") int[] types,
             @RequestParam("values[]") String[] values,
+            @RequestParam("regexps[]") String[] regexps,
             @RequestParam int versionId,
             Principal principal,
             HttpServletRequest request,
@@ -86,10 +87,16 @@ public class ExportController {
                 ExportParam params = new ExportParam();
                 params.setName(names[i]);
                 params.setType(types[i]);
-                if (types[i] == 2) {
+                if (types[i] == 2 || types[i] == 3) {
                     params.setCommands(values[i]);
+                    params.setRegexp(regexps[i]);
                     // todo: execute commands and get result
-                    ArrayList<String> commandResult = CommandHelper.execute(values[i]);
+                    ArrayList<String> commandResult = null;
+                    if (types[i] == 2) {
+                        commandResult = CommandHelper.executeLinux(values[i], regexps[i]);
+                    } else if (types[i] == 3) {
+                        commandResult = CommandHelper.execute(values[i]);
+                    }
                     params.setVariants(commandResult);
                 } else {
                     params.setValue(values[i]);
