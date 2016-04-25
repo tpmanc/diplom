@@ -6,6 +6,7 @@ import exceptions.InternalException;
 import exceptions.NotFoundException;
 import helpers.CommandHelper;
 import helpers.UserHelper;
+import models.ExportTemplateModel;
 import models.FileModel;
 import models.FileVersionModel;
 import models.LogModel;
@@ -30,6 +31,59 @@ import java.util.HashMap;
  */
 @Controller
 public class ExportController {
+    /**
+     * Экспорт файла - выбор шаблона или создание нового
+     * @param versionId Id версии файла
+     */
+    @RequestMapping(value = {"/file-export-template" }, method = RequestMethod.GET)
+    public String fileExportTemplate(
+            @RequestParam int versionId,
+            Principal principal,
+            Model model
+    ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isAdmin(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка экспорта файла (/file-export-template) без прав администратора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
+
+        try {
+            FileVersionModel version = FileVersionModel.findById(versionId);
+            model.addAttribute("version", version);
+
+            ArrayList<ExportTemplateModel> templates = ExportTemplateModel.findAll();
+            model.addAttribute("templates", templates);
+
+            model.addAttribute("pageTitle", "Экспорт файла - выбор шаблона");
+            return "file/file-export-0";
+        } catch (SQLException e) {
+            throw new NotFoundException("Файл не найден");
+        }
+    }
+
+    @RequestMapping(value = {"/file-export-template-handler" }, method = RequestMethod.POST)
+    public String fileExportTemplateHandler(
+            @RequestParam(value="template", required=false) Integer template,
+            @RequestParam int versionId,
+            Principal principal,
+            HttpServletRequest request,
+            Model model
+    ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isAdmin(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка экспотра файла (/file-export-template-handler) без прав администратора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
+
+        try {
+            FileVersionModel version = FileVersionModel.findById(versionId);
+
+            return "redirect:/file-export?versionId="+versionId;
+        } catch (SQLException e) {
+            throw new NotFoundException("Файл не найден");
+        }
+    }
+
     /**
      * Экспорт файла
      * @param versionId Id версии файла

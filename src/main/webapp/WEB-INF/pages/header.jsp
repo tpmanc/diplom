@@ -52,6 +52,11 @@
                                     <a href="<spring:url value="/users" />"><i class="fa fa-user"></i> <span class="nav-label">Пользователи</span></a>
                                 </li>
                                 <sec:authorize access="hasRole('ROLE_FR-ADMIN')">
+                                    <li <c:if test="${param.activePage == 'settings'}"> class="active" </c:if>>
+                                        <a href="<spring:url value="/settings" />"><i class="fa fa-cog"></i> <span class="nav-label">Настройки</span></a>
+                                    </li>
+                                </sec:authorize>
+                                <sec:authorize access="hasRole('ROLE_FR-ADMIN')">
                                     <li <c:if test="${param.activePage == 'log'}"> class="active" </c:if>>
                                         <a href="<spring:url value="/logs" />"><i class="fa fa-warning"></i> <span class="nav-label">Логи</span></a>
                                     </li>
