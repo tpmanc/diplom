@@ -64,15 +64,22 @@ public class ExportController {
     @RequestMapping(value = {"/file-export-template-handler" }, method = RequestMethod.POST)
     public String fileExportTemplateHandler(
             @RequestParam(value="template", required=false) Integer template,
+            @RequestParam(value="title", required=false) String title,
             @RequestParam int versionId,
             Principal principal,
             HttpServletRequest request,
-            Model model
+            Model model,
+            RedirectAttributes attr
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isAdmin(activeUser)) {
             LogModel.addWarning(activeUser.getEmployeeId(), "Попытка экспотра файла (/file-export-template-handler) без прав администратора");
             throw new ForbiddenException("Доступ запрещен");
+        }
+
+        if (template == null && title == null) {
+            attr.addFlashAttribute("error", true);
+            return "redirect:/file-export-template?versionId="+versionId;
         }
 
         try {

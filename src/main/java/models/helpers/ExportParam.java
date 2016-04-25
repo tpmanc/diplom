@@ -13,6 +13,9 @@ public class ExportParam {
     private String commands;
     private String regexp;
 
+    private int templateId;
+    private String templateTitle;
+
     public String getName() {
         return name;
     }
@@ -59,5 +62,21 @@ public class ExportParam {
 
     public void setRegexp(String regexp) {
         this.regexp = regexp;
+    }
+
+    public int getTemplateId() {
+        return templateId;
+    }
+
+    public void setTemplateId(int templateId) {
+        this.templateId = templateId;
+    }
+
+    public String getTemplateTitle() {
+        return templateTitle;
+    }
+
+    public void setTemplateTitle(String templateTitle) {
+        this.templateTitle = templateTitle;
     }
 }
