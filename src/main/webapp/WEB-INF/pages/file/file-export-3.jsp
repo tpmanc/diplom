@@ -9,6 +9,7 @@
 
 <ol class="breadcrumb">
     <li><a href="<spring:url value="/file-view?id=${version.fileId}&versionId=${version.id}" />">Просмотр файла</a></li>
+    <li><a href="<spring:url value="/file-export-template?versionId=${version.id}" />">Выбор шаблона</a></li>
     <li><a href="<spring:url value="/file-export?versionId=${version.id}" />">Шаг 1</a></li>
     <li><a href="<spring:url value="/file-export-2?versionId=${version.id}" />">Шаг 2</a></li>
     <li class="active">

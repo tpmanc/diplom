@@ -25,26 +25,27 @@
 </c:if>
 
 <div class="kform">
-    <form action="<spring:url value="/file-export-template-handler" />" method="post" class="form-horizontal" name="params">
+    <form action="<spring:url value="/file-export-template-handler" />" method="post" id="form" class="form-horizontal" name="params">
         <input type="hidden" name="versionId" value="${version.id}">
         <div class="select">
-            Использовать шаблон
+            <h3>Использовать шаблон</h3>
 
             <select name="template">
+                <option value="0"> </option>
                 <c:forEach items="${templates}" var="item" varStatus="itemStat">
-                    <option value="${item.id}">${item.title}</option>
+                    <option <c:if test="${savedParameters.templateId == item.id}">selected="selected"</c:if> value="${item.id}">${item.title}</option>
                 </c:forEach>
             </select>
         </div>
-        <br>
+        <br><br><br><br>
         <div>
-            <label>Добавить шаблон</label>
+            <h3>Добавить шаблон</h3>
             <input type="text" name="templateTitle" placeholder="Название шаблона" class="form-control" value="">
         </div>
-
+        <br><br>
         <div class="form-group">
             <div class="col-sm-4">
-                <button class="btn btn-success" type="submit">Далее</button>
+                <button class="btn btn-success" id="exportTemplateSelectBtn" type="submit">Далее</button>
             </div>
         </div>
     </form>

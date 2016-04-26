@@ -12,6 +12,7 @@ import models.FileVersionModel;
 import models.LogModel;
 import models.helpers.ExportParam;
 import models.helpers.ExportParamForUse;
+import models.helpers.ExportParams;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,6 +40,7 @@ public class ExportController {
     public String fileExportTemplate(
             @RequestParam int versionId,
             Principal principal,
+            HttpServletRequest request,
             Model model
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
@@ -48,6 +50,9 @@ public class ExportController {
         }
 
         try {
+            ExportParams savedParameters = (ExportParams) request.getSession().getAttribute("export"+versionId);
+            model.addAttribute("savedParameters", savedParameters);
+
             FileVersionModel version = FileVersionModel.findById(versionId);
             model.addAttribute("version", version);
 
@@ -64,7 +69,7 @@ public class ExportController {
     @RequestMapping(value = {"/file-export-template-handler" }, method = RequestMethod.POST)
     public String fileExportTemplateHandler(
             @RequestParam(value="template", required=false) Integer template,
-            @RequestParam(value="title", required=false) String title,
+            @RequestParam(value="templateTitle", required=false) String templateTitle,
             @RequestParam int versionId,
             Principal principal,
             HttpServletRequest request,
@@ -77,9 +82,15 @@ public class ExportController {
             throw new ForbiddenException("Доступ запрещен");
         }
 
-        if (template == null && title == null) {
+        if ((template == null || template == 0) && (templateTitle == null || templateTitle.trim().equals(""))) {
             attr.addFlashAttribute("error", true);
             return "redirect:/file-export-template?versionId="+versionId;
+        }
+
+        if (template != null && template > 0) {
+            ExportParams params = new ExportParams();
+            params.setTemplateId(template);
+            request.getSession().setAttribute("export"+versionId, params);
         }
 
         try {
@@ -107,7 +118,7 @@ public class ExportController {
             FileVersionModel version = FileVersionModel.findById(versionId);
             model.addAttribute("version", version);
 
-            ArrayList<ExportParam> savedParameters = (ArrayList<ExportParam>) request.getSession().getAttribute("export"+versionId);
+            ExportParams savedParameters = (ExportParams) request.getSession().getAttribute("export"+versionId);
             model.addAttribute("savedParameters", savedParameters);
 
             model.addAttribute("pageTitle", "Экспорт файла - шаг 1");
@@ -165,7 +176,9 @@ public class ExportController {
                 parameters.add(params);
             }
 
-            request.getSession().setAttribute("export"+versionId, parameters);
+            ExportParams savedParameters = (ExportParams) request.getSession().getAttribute("export"+versionId);
+            savedParameters.setParams(parameters);
+            request.getSession().setAttribute("export"+versionId, savedParameters);
 
             return "redirect:/file-export-2?versionId="+versionId;
         } catch (SQLException e) {
@@ -194,7 +207,7 @@ public class ExportController {
             FileVersionModel version = FileVersionModel.findById(versionId);
             model.addAttribute("version", version);
 
-            ArrayList<ExportParam> savedParameters = (ArrayList<ExportParam>) request.getSession().getAttribute("export"+versionId);
+            ExportParams savedParameters = (ExportParams) request.getSession().getAttribute("export"+versionId);
             model.addAttribute("savedParameters", savedParameters);
 
             model.addAttribute("parameters", savedParameters);
@@ -227,13 +240,13 @@ public class ExportController {
         try {
             FileVersionModel version = FileVersionModel.findById(versionId);
 
-            ArrayList<ExportParam> savedParameters = (ArrayList<ExportParam>) request.getSession().getAttribute("export"+versionId);
+            ExportParams savedParameters = (ExportParams) request.getSession().getAttribute("export"+versionId);
             HashMap<String, String> errors = new HashMap<String, String>();
             // проверяем, правильные ли значения переданы
             if (names != null && values != null) {
                 int count = names.length;
                 for (int i = 0; i < count; i++) {
-                    for (ExportParam param : savedParameters) {
+                    for (ExportParam param : savedParameters.getParams()) {
                         if (param.getName().equals(names[i])) {
                             if (param.getType() == 2) {
                                 boolean isFind = false;

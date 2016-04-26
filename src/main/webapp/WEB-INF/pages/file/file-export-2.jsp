@@ -9,6 +9,7 @@
 
 <ol class="breadcrumb">
     <li><a href="<spring:url value="/file-view?id=${version.fileId}&versionId=${version.id}" />">Просмотр файла</a></li>
+    <li><a href="<spring:url value="/file-export-template?versionId=${version.id}" />">Выбор шаблона</a></li>
     <li><a href="<spring:url value="/file-export?versionId=${version.id}" />">Шаг 1</a></li>
     <li class="active">
         <strong>${pageTitle}</strong>
@@ -28,7 +29,7 @@
                 </tr>
             </thead>
             <tbody>
-                <c:forEach items="${parameters}" var="item" varStatus="itemStat">
+                <c:forEach items="${parameters.params}" var="item" varStatus="itemStat">
                     <tr>
                         <td>${item.name}</td>
                         <td>
