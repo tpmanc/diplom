@@ -5,8 +5,8 @@ import java.util.ArrayList;
 /**
  * Параметры при экспорте версии файла
  */
-public class ExportParams {
-    private ArrayList<ExportParam> params;
+public class ExportParamsForUse {
+    private ArrayList<ExportParamForUse> params;
     private Integer templateId;
     private String templateTitle;
 
@@ -14,7 +14,7 @@ public class ExportParams {
         return templateId;
     }
 
-    public void setTemplateId(int templateId) {
+    public void setTemplateId(Integer templateId) {
         this.templateId = templateId;
     }
 
@@ -26,11 +26,11 @@ public class ExportParams {
         this.templateTitle = templateTitle;
     }
 
-    public ArrayList<ExportParam> getParams() {
+    public ArrayList<ExportParamForUse> getParams() {
         return params;
     }
 
-    public void setParams(ArrayList<ExportParam> variants) {
+    public void setParams(ArrayList<ExportParamForUse> variants) {
         this.params = variants;
     }
 }

@@ -57,6 +57,21 @@ public class CommandHelper {
         return result;
     }
 
+    public static String executeLinux(String command) throws IOException, InterruptedException {
+        Process p = null;
+        p = Runtime.getRuntime().exec(command);
+        p.waitFor();
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+        StringBuilder sb = new StringBuilder();
+        String line = "";
+        while ((line = reader.readLine())!= null) {
+            sb.append(line + "\n");
+        }
+        return sb.toString();
+    }
+
     public static String generateXsd(ArrayList<ExportParam> parameters) {
         try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();

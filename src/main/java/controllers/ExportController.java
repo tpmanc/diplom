@@ -13,6 +13,7 @@ import models.LogModel;
 import models.helpers.ExportParam;
 import models.helpers.ExportParamForUse;
 import models.helpers.ExportParams;
+import models.helpers.ExportParamsForUse;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.security.Principal;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -92,6 +94,12 @@ public class ExportController {
             ExportParams params = new ExportParams();
             params.setTemplateId(template);
             request.getSession().setAttribute("export"+versionId, params);
+        } else {
+            ExportParams params = new ExportParams();
+            params.setTemplateTitle(templateTitle);
+            request.getSession().setAttribute("export"+versionId, params);
+
+            // todo: проверка названия шаблона на повторение
         }
 
         try {
@@ -178,7 +186,6 @@ public class ExportController {
                 if (types[i] == 2 || types[i] == 3) {
                     params.setCommands(values[i]);
                     params.setRegexp(regexps[i]);
-                    // todo: execute commands and get result
                     ArrayList<String> commandResult = null;
                     if (types[i] == 2) {
                         try {
@@ -188,6 +195,7 @@ public class ExportController {
                             errors.put(names[i], ex.getMessage());
                         }
                     } else if (types[i] == 3) {
+                        // todo: windows commands
                         commandResult = CommandHelper.execute(values[i]);
                     }
                 } else {
@@ -299,19 +307,26 @@ public class ExportController {
                 }
             }
 
+            ExportParamsForUse parameters = new ExportParamsForUse();
+            parameters.setTemplateTitle(savedParameters.getTemplateTitle());
+            parameters.setTemplateId(savedParameters.getTemplateId());
+
             if (errors.size() > 0) {
                 attr.addFlashAttribute("errors", errors);
                 return "redirect:/file-export-2?versionId="+versionId;
             } else {
-                ArrayList<ExportParamForUse> parameters = new ArrayList<ExportParamForUse>();
+                ArrayList<ExportParamForUse> params = new ArrayList<ExportParamForUse>();
                 if (names != null && values != null) {
                     int count = names.length;
                     for (int i = 0; i < count; i++) {
-                        parameters.add(new ExportParamForUse(names[i], values[i]));
+                        params.add(new ExportParamForUse(names[i], values[i]));
                     }
-                    request.getSession().setAttribute("export-use" + versionId, parameters);
+
                 }
+                parameters.setParams(params);
             }
+
+            request.getSession().setAttribute("export-use" + versionId, parameters);
 
             return "redirect:/file-export-3?versionId="+versionId;
         } catch (SQLException e) {
@@ -348,7 +363,7 @@ public class ExportController {
             FileModel file = FileModel.findById(version.getFileId());
             model.addAttribute("file", file);
 
-            ArrayList<ExportParamForUse> parameters = (ArrayList<ExportParamForUse>) request.getSession().getAttribute("export-use"+versionId);
+            ExportParamsForUse parameters = (ExportParamsForUse) request.getSession().getAttribute("export-use"+versionId);
             model.addAttribute("parameters", parameters);
 
             model.addAttribute("pageTitle", "Экспорт файла - шаг 3");
@@ -363,7 +378,8 @@ public class ExportController {
             @RequestParam String commands,
             @RequestParam int versionId,
             Principal principal,
-            HttpServletRequest request
+            HttpServletRequest request,
+            RedirectAttributes attr
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isAdmin(activeUser)) {
@@ -371,9 +387,15 @@ public class ExportController {
             throw new ForbiddenException("Доступ запрещен");
         }
 
-        ExportParams savedParameters = (ExportParams) request.getSession().getAttribute("export"+versionId);
+        ExportParamsForUse savedParameters = (ExportParamsForUse) request.getSession().getAttribute("export-use" + versionId);
         if (savedParameters == null) {
             return "redirect:/file-export-template?versionId="+versionId;
+        }
+
+        if (savedParameters.getTemplateId() == null) {
+            // todo: добавить шаблон
+        } else {
+            // todo: обновить шаблон
         }
 
         try {
@@ -382,14 +404,28 @@ public class ExportController {
 
             String resultCommand = commands.replace("{title}", file.getTitle());
             resultCommand = resultCommand.replace("{version}", version.getVersion());
-            ArrayList<ExportParamForUse> parameters = (ArrayList<ExportParamForUse>) request.getSession().getAttribute("export-use"+versionId);
-            for (ExportParamForUse param : parameters) {
+            for (ExportParamForUse param : savedParameters.getParams()) {
                 resultCommand = resultCommand.replace("{"+param.getName()+"}", param.getValue());
             }
 
-            // todo: execute resultCommand
-            // todo: LogModel.addInfo
+            HashMap<String, String> errors = new HashMap<String, String>();
 
+            String result = null;
+            try {
+                result = CommandHelper.executeLinux(resultCommand);
+            } catch (Exception e) {
+                errors.put("commands", e.getMessage());
+            }
+
+            if (errors.size() > 0) {
+                attr.addFlashAttribute("errors", errors);
+                return "redirect:/file-export-3?versionId="+versionId;
+            }
+            // todo: LogModel.addInfo
+            // todo: redirect export finish page
+            System.out.println(result);
+
+            attr.addFlashAttribute("result", result);
             return "redirect:/file-export-3?versionId="+versionId;
         } catch (SQLException e) {
             throw new NotFoundException("Файл не найден");
