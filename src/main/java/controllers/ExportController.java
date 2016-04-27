@@ -26,6 +26,7 @@ import java.security.Principal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * Контроллер экспорта файлов
@@ -114,11 +115,15 @@ public class ExportController {
             throw new ForbiddenException("Доступ запрещен");
         }
 
+        ExportParams savedParameters = (ExportParams) request.getSession().getAttribute("export"+versionId);
+        if (savedParameters == null) {
+            return "redirect:/file-export-template?versionId="+versionId;
+        }
+
         try {
             FileVersionModel version = FileVersionModel.findById(versionId);
             model.addAttribute("version", version);
 
-            ExportParams savedParameters = (ExportParams) request.getSession().getAttribute("export"+versionId);
             model.addAttribute("savedParameters", savedParameters);
 
             model.addAttribute("pageTitle", "Экспорт файла - шаг 1");
@@ -130,21 +135,28 @@ public class ExportController {
 
     @RequestMapping(value = {"/file-export-handler" }, method = RequestMethod.POST)
     public String fileExportHandler(
-            @RequestParam("names[]") String[] names,
-            @RequestParam("types[]") int[] types,
-            @RequestParam("values[]") String[] values,
-            @RequestParam("regexps[]") String[] regexps,
+            @RequestParam(value="names[]", required=false) String[] names,
+            @RequestParam(value="types[]", required=false) int[] types,
+            @RequestParam(value="values[]", required=false) String[] values,
+            @RequestParam(value="regexps[]", required=false) String[] regexps,
             @RequestParam int versionId,
             Principal principal,
             HttpServletRequest request,
-            Model model
+            Model model,
+            RedirectAttributes attr
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isAdmin(activeUser)) {
             LogModel.addWarning(activeUser.getEmployeeId(), "Попытка экспотра файла (/file-export-handler) без прав администратора");
             throw new ForbiddenException("Доступ запрещен");
         }
-        if (names.length != values.length || names.length != types.length) {
+
+        ExportParams savedParameters = (ExportParams) request.getSession().getAttribute("export"+versionId);
+        if (savedParameters == null) {
+            return "redirect:/file-export-template?versionId="+versionId;
+        }
+
+        if (names != null && (names.length != values.length || names.length != types.length)) {
             LogModel.addError(activeUser.getEmployeeId(), "При экспорте файла, на 1 шаге, не все поля были заполнены");
             throw new InternalException("Ошибка при обработке запроса");
         }
@@ -153,8 +165,12 @@ public class ExportController {
             FileVersionModel version = FileVersionModel.findById(versionId);
             model.addAttribute("version", version);
 
+            HashMap<String, String> errors = new HashMap<String, String>();
             ArrayList<ExportParam> parameters = new ArrayList<ExportParam>();
-            int count = names.length;
+            int count = 0;
+            if (names != null) {
+                count = names.length;
+            }
             for (int i = 0; i < count; i++) {
                 ExportParam params = new ExportParam();
                 params.setName(names[i]);
@@ -165,20 +181,28 @@ public class ExportController {
                     // todo: execute commands and get result
                     ArrayList<String> commandResult = null;
                     if (types[i] == 2) {
-                        commandResult = CommandHelper.executeLinux(values[i], regexps[i]);
+                        try {
+                            commandResult = CommandHelper.executeLinux(values[i], regexps[i]);
+                            params.setVariants(commandResult);
+                        } catch (Exception ex) {
+                            errors.put(names[i], ex.getMessage());
+                        }
                     } else if (types[i] == 3) {
                         commandResult = CommandHelper.execute(values[i]);
                     }
-                    params.setVariants(commandResult);
                 } else {
                     params.setValue(values[i]);
                 }
                 parameters.add(params);
             }
 
-            ExportParams savedParameters = (ExportParams) request.getSession().getAttribute("export"+versionId);
             savedParameters.setParams(parameters);
             request.getSession().setAttribute("export"+versionId, savedParameters);
+
+            if (errors.size() > 0) {
+                attr.addFlashAttribute("errors", errors);
+                return "redirect:/file-export?versionId="+versionId;
+            }
 
             return "redirect:/file-export-2?versionId="+versionId;
         } catch (SQLException e) {
@@ -203,12 +227,14 @@ public class ExportController {
             throw new ForbiddenException("Доступ запрещен");
         }
 
+        ExportParams savedParameters = (ExportParams) request.getSession().getAttribute("export"+versionId);
+        if (savedParameters == null) {
+            return "redirect:/file-export-template?versionId="+versionId;
+        }
+
         try {
             FileVersionModel version = FileVersionModel.findById(versionId);
             model.addAttribute("version", version);
-
-            ExportParams savedParameters = (ExportParams) request.getSession().getAttribute("export"+versionId);
-            model.addAttribute("savedParameters", savedParameters);
 
             model.addAttribute("parameters", savedParameters);
             model.addAttribute("pageTitle", "Экспорт файла - шаг 2");
@@ -232,6 +258,12 @@ public class ExportController {
             LogModel.addWarning(activeUser.getEmployeeId(), "Попытка экспотра файла (/file-export-handler-2) без прав администратора");
             throw new ForbiddenException("Доступ запрещен");
         }
+
+        ExportParams savedParameters = (ExportParams) request.getSession().getAttribute("export"+versionId);
+        if (savedParameters == null) {
+            return "redirect:/file-export-template?versionId="+versionId;
+        }
+
         if (names != null && values != null && names.length != values.length) {
             LogModel.addError(activeUser.getEmployeeId(), "При экспорте файла, на 2 шаге, не все поля были заполнены");
             throw new InternalException("Ошибка при обработке запроса");
@@ -240,7 +272,6 @@ public class ExportController {
         try {
             FileVersionModel version = FileVersionModel.findById(versionId);
 
-            ExportParams savedParameters = (ExportParams) request.getSession().getAttribute("export"+versionId);
             HashMap<String, String> errors = new HashMap<String, String>();
             // проверяем, правильные ли значения переданы
             if (names != null && values != null) {
@@ -305,6 +336,11 @@ public class ExportController {
             throw new ForbiddenException("Доступ запрещен");
         }
 
+        ExportParams savedParameters = (ExportParams) request.getSession().getAttribute("export"+versionId);
+        if (savedParameters == null) {
+            return "redirect:/file-export-template?versionId="+versionId;
+        }
+
         try {
             FileVersionModel version = FileVersionModel.findById(versionId);
             model.addAttribute("version", version);
@@ -333,6 +369,11 @@ public class ExportController {
         if (!UserHelper.isAdmin(activeUser)) {
             LogModel.addWarning(activeUser.getEmployeeId(), "Попытка экспотра файла (/file-export-handler-3) без прав администратора");
             throw new ForbiddenException("Доступ запрещен");
+        }
+
+        ExportParams savedParameters = (ExportParams) request.getSession().getAttribute("export"+versionId);
+        if (savedParameters == null) {
+            return "redirect:/file-export-template?versionId="+versionId;
         }
 
         try {

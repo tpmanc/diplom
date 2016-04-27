@@ -12,9 +12,9 @@ $(function () {
     parameters.on('change', '.type-select', function(){
         var $this = $(this);
         if ($this.val() == 2 || $this.val() == 3) {
-            $this.closest('tr').find('.field-regexp').removeClass('hidden');
+            $this.closest('tr').find('.group-regexp').removeClass('hidden');
         } else {
-            $this.closest('tr').find('.field-regexp').removeClass('hidden').addClass('hidden');
+            $this.closest('tr').find('.group-regexp').removeClass('hidden').addClass('hidden');
         }
     });
 });

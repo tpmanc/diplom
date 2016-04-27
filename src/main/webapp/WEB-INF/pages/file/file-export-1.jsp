@@ -27,11 +27,15 @@
                         <label class="field">\
                             <textarea class="gui-textarea" required name="values[]" placeholder="Значение"></textarea>\
                         </label>\
-                        <input type="text" class="regexp-field field-regexp hidden" name="regexps[]" placeholder="Регулярка">\
+                        <br>\
+                        <div class="hidden group-regexp">\
+                            <input type="text" class="form-control regexp-field" name="regexps[]" value="" placeholder="Регулярка">\
+                            <span class="help-block">\
+                            </span>\
+                        </div>\
                     </div>\
                 </td>\
                 <td class="param-delete">\
-                    <input type="hidden" class="regexp-field" name="regexps[]" placeholder="Регулярка">\
                     <a class="btn btn-white btn-bitbucket add-parameter">\
                         <i class="fa fa-times"></i>\
                         Удалить\
@@ -89,17 +93,22 @@
                                                     required name="values[]"
                                                     placeholder="Значение"
                                             >${item.commands}</textarea>
-                                            <input type="text" class="regexp-field field-regexp" name="regexps[]" value="${item.regexp}" placeholder="Регулярка">
                                         </c:when>
                                         <c:otherwise>
                                             <textarea class="gui-textarea" required name="values[]" placeholder="Значение">${item.value}</textarea>
                                         </c:otherwise>
                                     </c:choose>
                                 </label>
+                                <br>
+                                <div class="group-regexp <c:if test="${item.type != 2 && item.type != 3}">hidden</c:if> <c:if test="${errors.get(item.name) != null}">has-error</c:if>">
+                                    <input type="text" class="form-control regexp-field" name="regexps[]" value="${item.regexp}" placeholder="Регулярка">
+                                    <span class="help-block">
+                                        <div>${errors.get(item.name)}</div>
+                                    </span>
+                                </div>
                             </div>
                         </td>
                         <td class="param-delete">
-                            <input type="hidden" class="regexp-field" name="regexps[]" placeholder="Регулярка">
                             <a class="btn btn-white btn-bitbucket add-parameter">
                                 <i class="fa fa-times"></i>
                                 Удалить
