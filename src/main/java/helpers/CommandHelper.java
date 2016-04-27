@@ -36,31 +36,40 @@ public class CommandHelper {
         return result;
     }
 
-    public static ArrayList<String> executeLinux(String command, String regexp) {
+    public static ArrayList<String> executeLinux(String command, String regexp) throws IOException, InterruptedException {
         ArrayList<String> result = new ArrayList<String>();
         Process p = null;
-        try {
-            p = Runtime.getRuntime().exec(command);
-            p.waitFor();
+        p = Runtime.getRuntime().exec(command);
+        p.waitFor();
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
-            StringBuilder sb = new StringBuilder();
-            String line = "";
-            while ((line = reader.readLine())!= null) {
-                sb.append(line + "\n");
-            }
-            Pattern pattern = Pattern.compile(regexp);
-            Matcher matcher = pattern.matcher(sb.toString());
-            while (matcher.find()) {
-                result.add(matcher.group(1));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        StringBuilder sb = new StringBuilder();
+        String line = "";
+        while ((line = reader.readLine())!= null) {
+            sb.append(line + "\n");
+        }
+        Pattern pattern = Pattern.compile(regexp);
+        Matcher matcher = pattern.matcher(sb.toString());
+        while (matcher.find()) {
+            result.add(matcher.group(1));
         }
         return result;
+    }
+
+    public static String executeLinux(String command) throws IOException, InterruptedException {
+        Process p = null;
+        p = Runtime.getRuntime().exec(command);
+        p.waitFor();
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+        StringBuilder sb = new StringBuilder();
+        String line = "";
+        while ((line = reader.readLine())!= null) {
+            sb.append(line + "\n");
+        }
+        return sb.toString();
     }
 
     public static String generateXsd(ArrayList<ExportParam> parameters) {

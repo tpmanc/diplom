@@ -9,6 +9,7 @@
 
 <ol class="breadcrumb">
     <li><a href="<spring:url value="/file-view?id=${version.fileId}&versionId=${version.id}" />">Просмотр файла</a></li>
+    <li><a href="<spring:url value="/file-export-template?versionId=${version.id}" />">Выбор шаблона</a></li>
     <li><a href="<spring:url value="/file-export?versionId=${version.id}" />">Шаг 1</a></li>
     <li><a href="<spring:url value="/file-export-2?versionId=${version.id}" />">Шаг 2</a></li>
     <li class="active">
@@ -22,7 +23,7 @@
     <h3>Доступные переменные:</h3>
     <div><strong>{title}</strong> = ${file.title}</div>
     <div><strong>{version}</strong> = ${version.version}</div>
-    <c:forEach items="${parameters}" var="item" varStatus="itemStat">
+    <c:forEach items="${parameters.params}" var="item" varStatus="itemStat">
         <div><strong>{${item.name}}</strong> = ${item.value}</div>
     </c:forEach>
 </div>
@@ -30,12 +31,17 @@
 <div class="kform">
     <form action="<spring:url value="/file-export-handler-3" />" method="post" id="parameters" class="form-horizontal" name="params">
         <input type="hidden" name="versionId" value="${version.id}">
-        <div class="section">
+        <div class="section <c:if test="${errors.get(\"commands\") != null}">has-error</c:if>">
             <label class="field prepend-icon">
                 <textarea class="gui-textarea" required name="commands" id="commands" placeholder="Комманды"></textarea>
                 <label for="commands" class="field-icon">
                     <i class="fa fa-terminal"></i>
                 </label>
+                <c:if test="${errors.get(\"commands\") != null}">
+                    <span class="help-block">
+                        <div>${errors.get("commands")}</div>
+                    </span>
+                </c:if>
             </label>
         </div>
 

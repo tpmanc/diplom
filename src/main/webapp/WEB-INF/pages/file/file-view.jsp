@@ -49,7 +49,7 @@
     <a href="<spring:url value="/file-property-add?id=${file.id}" />" class="btn btn-success">Добавить свойство файла</a>
     <a href="<spring:url value="/file-version-property-add?id=${currentVersion.id}" />" class="btn btn-success">Добавить свойство версии</a>
     <sec:authorize access="hasRole('ROLE_FR-ADMIN')">
-        <a href="<spring:url value="/file-export?versionId=${currentVersion.id}" />" class="btn btn-warning">Экспорт</a>
+        <a href="<spring:url value="/file-export-template?versionId=${currentVersion.id}" />" class="btn btn-warning">Экспорт</a>
     </sec:authorize>
 </p>
 <p>

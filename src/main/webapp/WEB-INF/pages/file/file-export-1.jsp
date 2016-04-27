@@ -15,7 +15,7 @@
                 </td>\
                 <td class="param-type">\
                     <div class="select">\
-                        <select name="types[]">\
+                        <select class="type-select" name="types[]">\
                             <option value="1">Значение</option>\
                             <option value="2">Команды Linux</option>\
                             <option value="3">Команды Windows</option>\
@@ -27,11 +27,15 @@
                         <label class="field">\
                             <textarea class="gui-textarea" required name="values[]" placeholder="Значение"></textarea>\
                         </label>\
-                        <input type="text" class="regexp-field" name="regexps[]" placeholder="Регулярка">\
+                        <br>\
+                        <div class="hidden group-regexp">\
+                            <input type="text" class="form-control regexp-field" name="regexps[]" value="" placeholder="Регулярка">\
+                            <span class="help-block">\
+                            </span>\
+                        </div>\
                     </div>\
                 </td>\
                 <td class="param-delete">\
-                    <input type="hidden" class="regexp-field" name="regexps[]" placeholder="Регулярка">\
                     <a class="btn btn-white btn-bitbucket add-parameter">\
                         <i class="fa fa-times"></i>\
                         Удалить\
@@ -44,6 +48,7 @@
 
 <ol class="breadcrumb">
     <li><a href="<spring:url value="/file-view?id=${version.fileId}&versionId=${version.id}" />">Просмотр файла</a></li>
+    <li><a href="<spring:url value="/file-export-template?versionId=${version.id}" />">Выбор шаблона</a></li>
     <li class="active">
         <strong>${pageTitle}</strong>
     </li>
@@ -64,14 +69,14 @@
                 </tr>
             </thead>
             <tbody>
-                <c:forEach items="${savedParameters}" var="item" varStatus="itemStat">
+                <c:forEach items="${savedParameters.params}" var="item" varStatus="itemStat">
                     <tr>
                         <td class="param-name">
                             <input type="text" name="names[]" placeholder="Название" required class="form-control" value="${item.name}">
                         </td>
                         <td class="param-type">
                             <div class="select">
-                                <select name="types[]">\
+                                <select class="type-select" name="types[]">\
                                     <option value="1">Значение</option>
                                     <option value="2" <c:if test="${item.type == 2}">selected</c:if>>Команды Linux</option>
                                     <option value="3" <c:if test="${item.type == 3}">selected</c:if>>Команды Windows</option>
@@ -88,17 +93,22 @@
                                                     required name="values[]"
                                                     placeholder="Значение"
                                             >${item.commands}</textarea>
-                                            <input type="text" class="regexp-field" name="regexps[]" value="${item.regexp}" placeholder="Регулярка">
                                         </c:when>
                                         <c:otherwise>
                                             <textarea class="gui-textarea" required name="values[]" placeholder="Значение">${item.value}</textarea>
                                         </c:otherwise>
                                     </c:choose>
                                 </label>
+                                <br>
+                                <div class="group-regexp <c:if test="${item.type != 2 && item.type != 3}">hidden</c:if> <c:if test="${errors.get(item.name) != null}">has-error</c:if>">
+                                    <input type="text" class="form-control regexp-field" name="regexps[]" value="${item.regexp}" placeholder="Регулярка">
+                                    <span class="help-block">
+                                        <div>${errors.get(item.name)}</div>
+                                    </span>
+                                </div>
                             </div>
                         </td>
                         <td class="param-delete">
-                            <input type="hidden" class="regexp-field" name="regexps[]" placeholder="Регулярка">
                             <a class="btn btn-white btn-bitbucket add-parameter">
                                 <i class="fa fa-times"></i>
                                 Удалить
