@@ -91,8 +91,18 @@ public class ExportController {
         }
 
         if (template != null && template > 0) {
+            ExportTemplateModel templateModel;
+            try {
+                templateModel = ExportTemplateModel.findById(template);
+            } catch (SQLException e) {
+                // todo add log
+                throw new InternalException("Ошибка при чтении шаблона");
+            }
             ExportParams params = new ExportParams();
-            params.setTemplateId(template);
+            params.setTemplateId(templateModel.getId());
+            params.setTemplateTitle(templateModel.getTitle());
+            params.setParams(templateModel.getParameters());
+            params.setFinalCommand(templateModel.getFinalCommands());
             request.getSession().setAttribute("export"+versionId, params);
         } else {
             ExportParams params = new ExportParams();
@@ -387,15 +397,52 @@ public class ExportController {
             throw new ForbiddenException("Доступ запрещен");
         }
 
-        ExportParamsForUse savedParameters = (ExportParamsForUse) request.getSession().getAttribute("export-use" + versionId);
-        if (savedParameters == null) {
+        ExportParams savedParameters = (ExportParams) request.getSession().getAttribute("export"+versionId);
+        ExportParamsForUse savedParametersForUse = (ExportParamsForUse) request.getSession().getAttribute("export-use" + versionId);
+        if (savedParametersForUse == null) {
             return "redirect:/file-export-template?versionId="+versionId;
         }
 
-        if (savedParameters.getTemplateId() == null) {
-            // todo: добавить шаблон
+        savedParameters.setFinalCommand(commands);
+        savedParametersForUse.setFinalCommand(commands);
+
+        if (savedParametersForUse.getTemplateId() == null) {
+            ExportTemplateModel model = new ExportTemplateModel();
+            model.setTitle(savedParameters.getTemplateTitle());
+            model.setParameters(savedParameters.getParamJson());
+            model.setFinalCommands(savedParameters.getFinalCommand());
+            try {
+                if (model.add()) {
+                    savedParameters.setTemplateId(model.getId());
+                    savedParametersForUse.setTemplateId(model.getId());
+                } else {
+                    // todo 500 to log
+                    throw new InternalException("Ошибка при добавлении шаблона");
+                }
+            } catch (SQLException e) {
+                // todo 500 to log
+                throw new InternalException("Ошибка при добавлении шаблона");
+            }
         } else {
             // todo: обновить шаблон
+            ExportTemplateModel model = null;
+            try {
+                model = ExportTemplateModel.findById(savedParameters.getTemplateId());
+            } catch (SQLException e) {
+                // todo add log
+                throw new NotFoundException("Шаблон не найден");
+            }
+            model.setParameters(savedParameters.getParamJson());
+            model.setFinalCommands(savedParameters.getFinalCommand());
+            try {
+                if (!model.update()) {
+                    // todo 500 to log
+                    throw new InternalException("Ошибка при сохранении шаблона");
+                }
+            } catch (SQLException e) {
+                // todo 500 to log
+                throw new InternalException("Ошибка при сохранении шаблона");
+            }
         }
 
         try {
@@ -404,7 +451,7 @@ public class ExportController {
 
             String resultCommand = commands.replace("{title}", file.getTitle());
             resultCommand = resultCommand.replace("{version}", version.getVersion());
-            for (ExportParamForUse param : savedParameters.getParams()) {
+            for (ExportParamForUse param : savedParametersForUse.getParams()) {
                 resultCommand = resultCommand.replace("{"+param.getName()+"}", param.getValue());
             }
 
@@ -418,12 +465,10 @@ public class ExportController {
             }
 
             if (errors.size() > 0) {
-                attr.addFlashAttribute("errors", errors);
+                attr.addFlashAttribute("result", errors.get("commands"));
                 return "redirect:/file-export-3?versionId="+versionId;
             }
             // todo: LogModel.addInfo
-            // todo: redirect export finish page
-            System.out.println(result);
 
             attr.addFlashAttribute("result", result);
             return "redirect:/file-export-3?versionId="+versionId;

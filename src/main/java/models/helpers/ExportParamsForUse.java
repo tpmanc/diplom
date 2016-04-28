@@ -9,6 +9,7 @@ public class ExportParamsForUse {
     private ArrayList<ExportParamForUse> params;
     private Integer templateId;
     private String templateTitle;
+    private String finalCommand;
 
     public Integer getTemplateId() {
         return templateId;
@@ -32,5 +33,13 @@ public class ExportParamsForUse {
 
     public void setParams(ArrayList<ExportParamForUse> variants) {
         this.params = variants;
+    }
+
+    public String getFinalCommand() {
+        return finalCommand;
+    }
+
+    public void setFinalCommand(String finalCommand) {
+        this.finalCommand = finalCommand;
     }
 }

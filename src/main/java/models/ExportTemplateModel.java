@@ -23,6 +23,7 @@ public class ExportTemplateModel implements ModelInterface {
     private static final String getAll = "SELECT * FROM exportTemplate";
     private static final String getById = "SELECT * FROM exportTemplate WHERE id = :id";
     private static final String deleteById = "DELETE FROM exportTemplate WHERE id = :id";
+    private static final String updateById = "UPDATE exportTemplate SET parameters = :parameters, finalCommands = :finalCommands WHERE id = :id";
 
     private int id;
     private String title;
@@ -39,7 +40,17 @@ public class ExportTemplateModel implements ModelInterface {
     }
 
     public boolean update() throws SQLException {
-        // nothing
+        if (validate()) {
+            NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+            MapSqlParameterSource queryParameters = new MapSqlParameterSource();
+            queryParameters.addValue("id", id);
+            queryParameters.addValue("parameters", parameters);
+            queryParameters.addValue("finalCommands", finalCommands);
+            int rows = template.update(updateById, queryParameters);
+            if (rows > 0) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -53,7 +64,7 @@ public class ExportTemplateModel implements ModelInterface {
             KeyHolder keyHolder = new GeneratedKeyHolder();
             template.update(saveNew, queryParameters, keyHolder);
             id = keyHolder.getKey().intValue();
-            return true;
+            return id > 0;
         }
         return false;
     }
@@ -78,7 +89,7 @@ public class ExportTemplateModel implements ModelInterface {
 
         if (rows.size() > 0) {
             Map<String, Object> result = rows.get(0);
-            int templateId = (Integer) result.get("templateId");
+            int templateId = (Integer) result.get("id");
             String title = (String) result.get("title");
             String params = (String) result.get("parameters");
             String finalCommands = (String) result.get("finalCommands");

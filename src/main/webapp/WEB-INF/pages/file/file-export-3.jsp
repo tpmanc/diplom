@@ -33,7 +33,7 @@
         <input type="hidden" name="versionId" value="${version.id}">
         <div class="section <c:if test="${errors.get(\"commands\") != null}">has-error</c:if>">
             <label class="field prepend-icon">
-                <textarea class="gui-textarea" required name="commands" id="commands" placeholder="Комманды"></textarea>
+                <textarea class="gui-textarea" required name="commands" id="commands" placeholder="Комманды">${parameters.finalCommand}</textarea>
                 <label for="commands" class="field-icon">
                     <i class="fa fa-terminal"></i>
                 </label>
@@ -52,5 +52,10 @@
         </div>
     </form>
 </div>
+
+<c:if test="${result != null}">
+    <h3>Результат выполнения</h3>
+    <pre>${result}</pre>
+</c:if>
 
 <jsp:include page="../layouts/layout_bottom.jsp" />
