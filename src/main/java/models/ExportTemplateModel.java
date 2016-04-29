@@ -22,6 +22,7 @@ public class ExportTemplateModel implements ModelInterface {
     private static final String saveNew = "INSERT INTO exportTemplate(title, parameters, finalCommands) VALUES (:title, :parameters, :finalCommands)";
     private static final String getAll = "SELECT * FROM exportTemplate";
     private static final String getById = "SELECT * FROM exportTemplate WHERE id = :id";
+    private static final String getCountByTitle = "SELECT count(id) FROM exportTemplate WHERE title = :title";
     private static final String deleteById = "DELETE FROM exportTemplate WHERE id = :id";
     private static final String updateById = "UPDATE exportTemplate SET parameters = :parameters, finalCommands = :finalCommands WHERE id = :id";
 
@@ -96,6 +97,14 @@ public class ExportTemplateModel implements ModelInterface {
             return new ExportTemplateModel(templateId, title, params, finalCommands);
         }
         throw new NotFoundException("Шаблон не найден", "404");
+    }
+
+    public static boolean isTitleExist(String title) {
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("title", title);
+        return template.queryForObject(getCountByTitle, parameters, Integer.class) > 0;
+
     }
 
     public static ArrayList<ExportTemplateModel> findAll() throws SQLException {

@@ -95,7 +95,7 @@ public class ExportController {
             try {
                 templateModel = ExportTemplateModel.findById(template);
             } catch (SQLException e) {
-                // todo add log
+                LogModel.addError(activeUser.getEmployeeId(), "Ошибка при чтении шаблона (/file-export-template-handler)");
                 throw new InternalException("Ошибка при чтении шаблона");
             }
             ExportParams params = new ExportParams();
@@ -105,11 +105,13 @@ public class ExportController {
             params.setFinalCommand(templateModel.getFinalCommands());
             request.getSession().setAttribute("export"+versionId, params);
         } else {
+            if (ExportTemplateModel.isTitleExist(templateTitle)) {
+                attr.addFlashAttribute("titleError", "Шаблон с таким названием уже существует");
+                return "redirect:/file-export-template?versionId="+versionId;
+            }
             ExportParams params = new ExportParams();
             params.setTemplateTitle(templateTitle);
             request.getSession().setAttribute("export"+versionId, params);
-
-            // todo: проверка названия шаблона на повторение
         }
 
         try {
@@ -189,17 +191,18 @@ public class ExportController {
             if (names != null) {
                 count = names.length;
             }
+            int commandsCounter = 0;
             for (int i = 0; i < count; i++) {
                 ExportParam params = new ExportParam();
                 params.setName(names[i]);
                 params.setType(types[i]);
                 if (types[i] == 2 || types[i] == 3) {
                     params.setCommands(values[i]);
-                    params.setRegexp(regexps[i]);
+                    params.setRegexp(regexps[commandsCounter]);
                     ArrayList<String> commandResult = null;
                     if (types[i] == 2) {
                         try {
-                            commandResult = CommandHelper.executeLinux(values[i], regexps[i]);
+                            commandResult = CommandHelper.executeLinux(values[i], regexps[commandsCounter]);
                             params.setVariants(commandResult);
                         } catch (Exception ex) {
                             errors.put(names[i], ex.getMessage());
@@ -208,6 +211,7 @@ public class ExportController {
                         // todo: windows commands
                         commandResult = CommandHelper.execute(values[i]);
                     }
+                    commandsCounter++;
                 } else {
                     params.setValue(values[i]);
                 }
@@ -320,6 +324,9 @@ public class ExportController {
             ExportParamsForUse parameters = new ExportParamsForUse();
             parameters.setTemplateTitle(savedParameters.getTemplateTitle());
             parameters.setTemplateId(savedParameters.getTemplateId());
+            if (savedParameters.getFinalCommand() != null) {
+                parameters.setFinalCommand(savedParameters.getFinalCommand());
+            }
 
             if (errors.size() > 0) {
                 attr.addFlashAttribute("errors", errors);
@@ -416,31 +423,31 @@ public class ExportController {
                     savedParameters.setTemplateId(model.getId());
                     savedParametersForUse.setTemplateId(model.getId());
                 } else {
-                    // todo 500 to log
+                    LogModel.addError(activeUser.getEmployeeId(), "Ошибка при добавлении шаблона (/file-export-handler-3)");
                     throw new InternalException("Ошибка при добавлении шаблона");
                 }
             } catch (SQLException e) {
-                // todo 500 to log
+                LogModel.addError(activeUser.getEmployeeId(), "Ошибка при добавлении шаблона (/file-export-handler-3)");
                 throw new InternalException("Ошибка при добавлении шаблона");
             }
         } else {
-            // todo: обновить шаблон
+            LogModel.addError(activeUser.getEmployeeId(), "Ошибка при обновлении шаблона (/file-export-handler-3)");
             ExportTemplateModel model = null;
             try {
                 model = ExportTemplateModel.findById(savedParameters.getTemplateId());
             } catch (SQLException e) {
-                // todo add log
+                LogModel.addError(activeUser.getEmployeeId(), "Ошибка при обновлении шаблона (/file-export-handler-3)");
                 throw new NotFoundException("Шаблон не найден");
             }
             model.setParameters(savedParameters.getParamJson());
             model.setFinalCommands(savedParameters.getFinalCommand());
             try {
                 if (!model.update()) {
-                    // todo 500 to log
+                    LogModel.addError(activeUser.getEmployeeId(), "Ошибка при сохранении шаблона (/file-export-handler-3)");
                     throw new InternalException("Ошибка при сохранении шаблона");
                 }
             } catch (SQLException e) {
-                // todo 500 to log
+                LogModel.addError(activeUser.getEmployeeId(), "Ошибка при сохранении шаблона (/file-export-handler-3)");
                 throw new InternalException("Ошибка при сохранении шаблона");
             }
         }
@@ -468,7 +475,7 @@ public class ExportController {
                 attr.addFlashAttribute("result", errors.get("commands"));
                 return "redirect:/file-export-3?versionId="+versionId;
             }
-            // todo: LogModel.addInfo
+            LogModel.addInfo(activeUser.getEmployeeId(), "Экспорт файла id="+versionId+", команды: "+commands+", результат: "+result);
 
             attr.addFlashAttribute("result", result);
             return "redirect:/file-export-3?versionId="+versionId;

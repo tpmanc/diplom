@@ -49,7 +49,7 @@
                             </c:when>
                             <c:otherwise>
                                 <div class="form-group <c:if test="${errors.get(item.name) != null}">has-error</c:if>">
-                                    <input type="text" class="form-control disabled" name="values[]" value="${item.value}">
+                                    <input type="text" class="form-control disabled" readonly name="values[]" value="${item.value}">
                                     <span class="help-block">
                                         <div>${errors.get(item.name)}</div>
                                     </span>

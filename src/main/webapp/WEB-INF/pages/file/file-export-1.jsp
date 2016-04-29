@@ -29,7 +29,7 @@
                         </label>\
                         <br>\
                         <div class="hidden group-regexp">\
-                            <input type="text" class="form-control regexp-field" name="regexps[]" value="" placeholder="Регулярка">\
+                            <input type="text" class="form-control regexp-field" required disabled name="regexps[]" value="" placeholder="Регулярка">\
                             <span class="help-block">\
                             </span>\
                         </div>\
@@ -101,7 +101,7 @@
                                 </label>
                                 <br>
                                 <div class="group-regexp <c:if test="${item.type != 2 && item.type != 3}">hidden</c:if> <c:if test="${errors.get(item.name) != null}">has-error</c:if>">
-                                    <input type="text" class="form-control regexp-field" name="regexps[]" value="${item.regexp}" placeholder="Регулярка">
+                                    <input type="text" class="form-control regexp-field" required <c:if test="${item.type != 2 && item.type != 3}">disabled</c:if> name="regexps[]" value="${item.regexp}" placeholder="Регулярка">
                                     <span class="help-block">
                                         <div>${errors.get(item.name)}</div>
                                     </span>

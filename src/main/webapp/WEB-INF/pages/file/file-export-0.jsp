@@ -38,9 +38,14 @@
             </select>
         </div>
         <br><br><br><br>
-        <div>
+        <div <c:if test="${titleError != null}">class="has-error" </c:if>
             <h3>Добавить шаблон</h3>
             <input type="text" name="templateTitle" placeholder="Название шаблона" class="form-control" value="">
+            <c:if test="${titleError != null}">
+                    <span class="help-block">
+                        <div>${titleError}</div>
+                    </span>
+            </c:if>
         </div>
         <br><br>
         <div class="form-group">
