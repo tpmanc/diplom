@@ -12,24 +12,16 @@
         <div class="inqbox float-e-margins">
             <form method="post" action="<spring:url value="/settings-save" />" class="form-horizontal">
                 <div class="inqbox-title">
-                    <h5>База данных</h5>
+                    <h5>Пути для загрузки файлов</h5>
                 </div>
                 <div class="inqbox-content">
                     <div class="form-group">
-                        <label class="col-sm-4 control-label">Драйвер</label>
-                        <div class="col-sm-8"><input type="text" name="dbDriver" value="${database.driver}" class="form-control"></div>
+                        <label class="col-sm-4 control-label">Путь для загрузки файлов каталога</label>
+                        <div class="col-sm-8"><input type="text" name="dbDriver" value="" class="form-control"></div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-4 control-label">Адрес</label>
-                        <div class="col-sm-8"><input type="text" name="dbUrl" value="${database.url}" class="form-control"></div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-4 control-label">Пользователь</label>
-                        <div class="col-sm-8"><input type="text" name="dbUser" value="${database.user}" class="form-control"></div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-4 control-label">Пароль</label>
-                        <div class="col-sm-8"><input type="text" name="dbPassword" value="${database.password}" class="form-control"></div>
+                        <label class="col-sm-4 control-label">Путь для загрузки файлов заявок</label>
+                        <div class="col-sm-8"><input type="text" name="dbUrl" value="" class="form-control"></div>
                     </div>
                 </div>
                 <div class="inqbox-title">

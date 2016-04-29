@@ -3,6 +3,7 @@ package controllers;
 import config.IsFilled;
 import config.Settings;
 import exceptions.NotFoundException;
+import models.SettingsModel;
 import models.helpers.ActiveDirectorySettings;
 import models.helpers.DatabaseSettings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,27 +23,28 @@ import javax.servlet.ServletContext;
  */
 @Controller
 public class SettingsController {
-//    /**
-//     * Страница с настройками
-//     */
-//    @RequestMapping(value = {"/init-settings" }, method = RequestMethod.GET)
-//    public String initSettings(Model model) {
-//        ApplicationContext ctx = ContextLoader.getCurrentWebApplicationContext();
-//        IsFilled isFilled = (IsFilled) ctx.getBean("isFilled");
-//        if (isFilled.isFilled()) {
-//            throw new NotFoundException("Страница не найдена");
-//        }
-//
-//        Settings settings = new Settings();
-//
-//        DatabaseSettings databaseSettings = settings.getDatabaseSettings();
-//        model.addAttribute("database", databaseSettings);
-//
-//        model.addAttribute("isFilled", isFilled);
-//
-//        model.addAttribute("pageTitle", "Настройки");
-//        return "setting/settings";
-//    }
+    /**
+     * Стартовая страница с настройками
+     */
+    @RequestMapping(value = {"/init-settings" }, method = RequestMethod.GET)
+    public String initSettings(Model model) {
+        SettingsModel model1 = SettingsModel.findById(SettingsModel.UPLOAD_PATH);
+        SettingsModel model2 = SettingsModel.findById(SettingsModel.UPLOAD_REQUEST_PATH);
+        if (model1 == null) {
+            model1 = new SettingsModel(SettingsModel.UPLOAD_PATH);
+        }
+        if (model2 == null) {
+            model2 = new SettingsModel(SettingsModel.UPLOAD_REQUEST_PATH);
+        }
+        if (!model1.getValue().equals("") && !model2.getValue().equals("")) {
+            throw new NotFoundException("Страница не найдена");
+        }
+        model.addAttribute("pageTitle", "Настройки");model.addAttribute("model1", model1);
+        model.addAttribute("pageTitle", "Настройки");model.addAttribute("model2", model2);
+
+        model.addAttribute("pageTitle", "Настройки");
+        return "setting/init-settings";
+    }
 //
 //    @RequestMapping(value = {"/settings-save"}, method = RequestMethod.POST)
 //    public String saveSettings(
