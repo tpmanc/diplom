@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://www.springframework.org/tags" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="cl" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
@@ -24,6 +25,9 @@
     <div class="row">
         <div class="col-md-6 col-md-offset-3">
             <div class="inqbox-content">
+                <cl:if test="${error}">
+                    <div class="alert alert-danger">Неправильный служебный номер или пароль</div>
+                </cl:if>
                 <form class="m-t" role="form" method="post" action="<c:url value='j_spring_security_check' />">
                     <div class="form-group">
                         <input type="text" class="form-control" placeholder="Логин" required name="username">

@@ -1,9 +1,10 @@
 package db;
 
 
-import config.Settings;
-import models.helpers.DatabaseSettings;
+import helpers.ConfigDB;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.ContextLoader;
 
 /**
  * Соединение с базой данных
@@ -12,19 +13,18 @@ public class Database2 {
     private BasicDataSource bds = new BasicDataSource();
 
     private Database2() {
-        Settings settings = new Settings();
-        DatabaseSettings databaseSettings = settings.getDatabaseSettings();
+        ApplicationContext ctx = ContextLoader.getCurrentWebApplicationContext();
+        ConfigDB configDB = (ConfigDB) ctx.getBean("dbConfig");
         // имя дравйвера
-        bds.setDriverClassName(databaseSettings.getDriver());
+        bds.setDriverClassName(configDB.getDriverClassName());
         // url БД
-        bds.setUrl(databaseSettings.getUrl());
+        bds.setUrl(configDB.getDbUrl());
         // пользователь БД
-        bds.setUsername(databaseSettings.getUser());
+        bds.setUsername(configDB.getDbUser());
         // пароль БД
-        bds.setPassword(databaseSettings.getPassword());
+        bds.setPassword(configDB.getDbPassword());
         // размер пула
-        bds.setInitialSize(5);
-//        bds.setInitialSize(Integer.parseInt(config.getPoolSize()));
+        bds.setInitialSize(Integer.parseInt(configDB.getPoolSize()));
         // свойства соединения
         bds.setConnectionProperties("useUnicode=yes;characterEncoding=utf8;");
     }

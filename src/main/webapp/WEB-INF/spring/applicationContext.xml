@@ -12,10 +12,17 @@
 
     <bean id="startListener" class="config.StartupListener"/>
 
-    <bean id="isFilled" class="config.IsFilled"/>
-
-    <context:property-placeholder
-            location="/WEB-INF/config/database.properties,/WEB-INF/config/active-directory.properties"/>
+    <bean id="placeholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="ignoreResourceNotFound" value="true" />
+        <property name="locations">
+            <list>
+                <value>/WEB-INF/config/database.properties</value>
+                <value>/WEB-INF/config/active-directory.properties</value>
+                <value>file:${user.home}/rip/database.properties</value>
+                <value>file:${user.home}/rip/active-directory.properties</value>
+            </list>
+        </property>
+    </bean>
 
     <bean id="dbConfig" class="helpers.ConfigDB">
         <property name="driverClassName" value="${db.driverClassName}"/>
@@ -24,4 +31,6 @@
         <property name="dbPassword" value="${db.password}"/>
         <property name="poolSize" value="${db.poolSize}"/>
     </bean>
+
+    <!--<bean id="ldapConfiguration" class="config.LdapConfiguration"/>-->
 </beans>

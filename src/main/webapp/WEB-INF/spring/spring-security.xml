@@ -15,7 +15,7 @@
         <form-login
                 login-page="/login"
                 default-target-url="/"
-                authentication-failure-url="/login?error"
+                authentication-failure-url="/login?error=true"
                 username-parameter="username"
                 password-parameter="password" />
         <logout logout-success-url="/login" />
@@ -23,10 +23,10 @@
 
     <authentication-manager>
         <ldap-authentication-provider
-                user-search-filter="(&amp;(employeeID={0})(objectCategory=user))"
-                group-search-base="CN=fr-admin,OU=FRAdmins"
-                group-search-filter="(member={0})"
-                group-role-attribute="CN"
+                user-search-filter="${ldap.user-search-filter}"
+                group-search-base="${ldap.group-search-base}"
+                group-search-filter="${ldap.group-search-filter}"
+                group-role-attribute="${ldap.role-attribute}"
                 role-prefix="ROLE_"
                 user-context-mapper-ref="ldapContextMapperImpl">
         </ldap-authentication-provider>

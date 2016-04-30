@@ -1,157 +1,19 @@
 package config;
 
 import exceptions.InternalException;
-import exceptions.NotFoundException;
-import helpers.ConfigDB;
-import models.helpers.ActiveDirectorySettings;
-import models.helpers.DatabaseSettings;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.ContextLoader;
+import models.LogModel;
+import models.SettingsModel;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import java.io.*;
-import java.util.Properties;
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Set;
 
-/**
- * Настройки
- */
 public class Settings {
-    private final static String CONFIG_PATH = "/WEB-INF/config/";
-    private final static String DATABASE_FILE = "database.properties";
-    private final static String ACTIVE_DIRECTORY_FILE = "active-directory.properties";
-
-    private ServletContext servletContext;
-    private Properties database;
-//    private Properties activeDirectory;
-
-    public final static String DRIVER_FIELD = "db.driverClassName";
-    public final static String URL_FIELD = "db.url";
-    public final static String USER_FIELD = "db.user";
-    public final static String PASSWORD_FIELD = "db.password";
-    public final static String POOL_FIELD = "db.poolSize";
-    public final static String LDAP_URL = "ldap.url";
-    public final static String LDAP_MANAGER_DN = "ldap.manager-dn";
-    public final static String LDAP_MANAGER_PASS = "ldap.manager-password";
-    public final static String LDAP_USER_SEARCH_FILTER = "ldap.user-search-filter";
-    public final static String LDAP_GROUP_SEARCH= "ldap.group-search-base";
-    public final static String LDAP_GROUP_SEARCH_FILTER = "ldap.group-search-filter";
-    public final static String LDAP_ROLE_ATTRIBUTE = "ldap.role-attribute";
-
-    public Settings() {
-        this.servletContext = ContextLoader.getCurrentWebApplicationContext().getServletContext();
-        try {
-            FileInputStream in = new FileInputStream(servletContext.getRealPath(Settings.getDatabaseFile()));
-            database = new Properties();
-            database.load(in);
-            in.close();
-
-//            in = new FileInputStream(servletContext.getRealPath(Settings.getActiveDirectoryFile()));
-//            activeDirectory = new Properties();
-//            activeDirectory.load(in);
-//            in.close();
-        } catch (FileNotFoundException e) {
-            // todo 500
-            throw new InternalException("ERROR");
-        } catch (IOException e) {
-            // todo 500
-            throw new InternalException("ERROR");
-        }
-    }
-
-    private static String getDatabaseFile() {
-        return CONFIG_PATH + DATABASE_FILE;
-    }
-    private static String getActiveDirectoryFile() {
-        return CONFIG_PATH + ACTIVE_DIRECTORY_FILE;
-    }
-
-    public boolean isDBFilled() {
-        boolean isValid = true;
-        if (database.getProperty(DRIVER_FIELD).equals("")) {
-            isValid = false;
-        }
-        if (database.getProperty(URL_FIELD).equals("")) {
-            isValid = false;
-        }
-        if (database.getProperty(USER_FIELD).equals("")) {
-            isValid = false;
-        }
-        if (database.getProperty(POOL_FIELD).equals("")) {
-            isValid = false;
-        }
-        if (database.getProperty(POOL_FIELD).equals("")) {
-            isValid = false;
-        }
-        return isValid;
-    }
-
-    public boolean isADFilled() {
-        ApplicationContext ctx = ContextLoader.getCurrentWebApplicationContext();
-        IsFilled isFilled = (IsFilled) ctx.getBean("isFilled");
-        boolean isADValid = true;
-
-        if (System.getProperty(LDAP_URL) == null || System.getProperty(LDAP_URL).equals("")) {
-            isADValid = false;
-            isFilled.setAdUrl(false);
-        }
-        if (System.getProperty(LDAP_MANAGER_DN).equals("")) {
-            isADValid = false;
-            isFilled.setAdManager(false);
-        }
-        if (System.getProperty(LDAP_MANAGER_PASS).equals("")) {
-            isADValid = false;
-            isFilled.setAdPassword(false);
-        }
-        if (System.getProperty(LDAP_USER_SEARCH_FILTER).equals("")) {
-            isADValid = false;
-            isFilled.setAdUserSearch(false);
-        }
-        if (System.getProperty(LDAP_GROUP_SEARCH).equals("")) {
-            isADValid = false;
-            isFilled.setAdGroupSearch(false);
-        }
-        if (System.getProperty(LDAP_GROUP_SEARCH_FILTER).equals("")) {
-            isADValid = false;
-            isFilled.setAdGroupFilter(false);
-        }
-        if (System.getProperty(LDAP_ROLE_ATTRIBUTE).equals("")) {
-            isADValid = false;
-            isFilled.setAdRoleAttribute(false);
-        }
-
-        return isADValid;
-    }
-
-    public void setDatabaseFile(String driver, String url, String user, String password) {
-        database.setProperty(DRIVER_FIELD, driver);
-        database.setProperty(URL_FIELD, url);
-        database.setProperty(USER_FIELD, user);
-        database.setProperty(PASSWORD_FIELD, password);
-    }
-
-    public DatabaseSettings getDatabaseSettings() {
-        DatabaseSettings databaseSettings = new DatabaseSettings();
-        databaseSettings.setDriver(database.getProperty(DRIVER_FIELD));
-        databaseSettings.setUrl(database.getProperty(URL_FIELD));
-        databaseSettings.setUser(database.getProperty(USER_FIELD));
-        databaseSettings.setPassword(database.getProperty(PASSWORD_FIELD));
-        return databaseSettings;
-    }
-
-    public void save() {
-        try {
-            FileOutputStream out = new FileOutputStream(servletContext.getRealPath(Settings.getDatabaseFile()));
-            database.store(out, null);
-            out.close();
-        } catch (FileNotFoundException e) {
-            // todo 500
-            throw new InternalException("ERROR");
-        } catch (IOException e) {
-            // todo 500
-            throw new InternalException("ERROR");
-        }
-    }
+    public static final String appDir = "repository";
+    public static final String adProperties = "active-directory.properties";
+    public static final String dbProperties = "database.properties";
 
     public static String getUploadPath(HttpServletRequest request) {
         String uploadPath = request.getServletContext().getRealPath("upload");
@@ -160,6 +22,72 @@ public class Settings {
         if (!uploadRootDir.exists()) {
             uploadRootDir.mkdirs();
         }
-        return uploadRootDir.getAbsolutePath();
+        return uploadPath;
+    }
+
+    public static boolean isAllFilled() {
+        boolean isFilled = true;
+        // путь для сохранения файлов каталога
+        SettingsModel catalogFilePath = SettingsModel.findById(SettingsModel.UPLOAD_PATH);
+        if (catalogFilePath == null) {
+            catalogFilePath = new SettingsModel(SettingsModel.UPLOAD_PATH);
+            try {
+                catalogFilePath.add();
+                isFilled = false;
+            } catch (SQLException e) {
+                throw new InternalException("Ошибка при добавлении настройки в БД");
+            }
+        }
+        if (catalogFilePath.getValue().equals("")) {
+            isFilled = false;
+        }
+
+        // путь для сохранения файлов заяков
+        SettingsModel requestFilePath = SettingsModel.findById(SettingsModel.UPLOAD_REQUEST_PATH);
+        if (requestFilePath == null) {
+            requestFilePath = new SettingsModel(SettingsModel.UPLOAD_REQUEST_PATH);
+            try {
+                requestFilePath.add();
+                isFilled = false;
+            } catch (SQLException e) {
+                throw new InternalException("Ошибка при добавлении настройки в БД");
+            }
+        }
+        if (requestFilePath.getValue().equals("")) {
+            isFilled = false;
+        }
+
+        String userHome = System.getProperty("user.home");
+        File fileDir = new File(userHome + File.separator + Settings.appDir);
+        // Создаем основную директорию, если ее нет
+        if (!fileDir.exists()) {
+            boolean res = fileDir.mkdirs();
+            if (!res) {
+                throw new InternalException("Невозможно создать директорию " + fileDir);
+            }
+        }
+        String dbFilePath = fileDir + File.separator + Settings.dbProperties;
+        File dbFile = new File(dbFilePath);
+        if (!dbFile.exists()) {
+            try {
+                dbFile.createNewFile();
+            } catch (IOException e) {
+                throw new InternalException("Невозможно создать файл " + dbFilePath);
+            }
+            isFilled = false;
+        }
+
+        String adFilePath = fileDir + File.separator + Settings.adProperties;
+        File adFile = new File(adFilePath);
+        if (!dbFile.exists()) {
+            try {
+                adFile.createNewFile();
+            } catch (IOException e) {
+                throw new InternalException("Невозможно создать файл " + adFilePath);
+            }
+            isFilled = false;
+        }
+
+        return isFilled;
     }
 }

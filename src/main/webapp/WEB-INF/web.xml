@@ -16,18 +16,19 @@
             <param-value>true</param-value>
         </init-param>
     </filter>
-    <filter>
-        <filter-name>springSecurityFilterChain</filter-name>
-        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-    </filter>
     <filter-mapping>
         <filter-name>characterEncodingFilter</filter-name>
         <url-pattern>*</url-pattern>
     </filter-mapping>
-    <filter-mapping>
-        <filter-name>springSecurityFilterChain</filter-name>
-        <url-pattern>*</url-pattern>
-    </filter-mapping>
+
+    <!--<filter>-->
+        <!--<filter-name>springSecurityFilterChain</filter-name>-->
+        <!--<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>-->
+    <!--</filter>-->
+    <!--<filter-mapping>-->
+        <!--<filter-name>springSecurityFilterChain</filter-name>-->
+        <!--<url-pattern>/*</url-pattern>-->
+    <!--</filter-mapping>-->
 
     <error-page>
         <error-code>404</error-code>
@@ -46,18 +47,25 @@
         <location>/WEB-INF/pages/error500.jsp</location>
     </error-page>
 
+    <!--<context-param>-->
+        <!--<param-name>contextConfigLocation</param-name>-->
+        <!--<param-value>-->
+            <!--/WEB-INF/spring/applicationContext.xml-->
+            <!--/WEB-INF/spring/spring-database.xml-->
+            <!--/WEB-INF/spring/spring-security.xml-->
+        <!--</param-value>-->
+    <!--</context-param>-->
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
             /WEB-INF/spring/applicationContext.xml
-            /WEB-INF/spring/spring-database.xml
             /WEB-INF/spring/spring-security.xml
         </param-value>
     </context-param>
-    <context-param>
-        <param-name>tempUploadDirectory</param-name>
-        <param-value>${tempUploadDirectory}</param-value>
-    </context-param>
+    <!--<context-param>-->
+        <!--<param-name>tempUploadDirectory</param-name>-->
+        <!--<param-value>${tempUploadDirectory}</param-value>-->
+    <!--</context-param>-->
 
     <listener>
         <listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
@@ -65,6 +73,16 @@
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
+
+    <filter>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <url-pattern>*</url-pattern>
+    </filter-mapping>
 
     <servlet>
         <servlet-name>dispatcher</servlet-name>
