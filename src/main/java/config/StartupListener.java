@@ -1,5 +1,6 @@
 package config;
 
+import helpers.ConfigDB;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -12,9 +13,5 @@ import java.io.File;
  */
 public class StartupListener implements ApplicationListener<ContextRefreshedEvent> {
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        try {
-            String currentUsersHomeDir = System.getProperty("user.home");
-            int t = 1;
-        } catch (Exception e) {}
     }
 }

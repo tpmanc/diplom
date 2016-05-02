@@ -18,6 +18,7 @@ import java.util.Map;
 public class SettingsModel implements ModelInterface {
     private static final String getById = "SELECT * FROM settings WHERE id = :id";
     private static final String saveNew = "INSERT INTO settings(id, value) VALUES (:id, :value)";
+    private static final String updateById = "UPDATE settings SET value = :value WHERE id = :id";
 
     public static final int UPLOAD_PATH = 1;
     public static final int UPLOAD_REQUEST_PATH = 2;
@@ -36,7 +37,14 @@ public class SettingsModel implements ModelInterface {
     }
 
     public boolean update() throws SQLException {
-        // todo
+        if (validate()) {
+            NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+            MapSqlParameterSource parameters = new MapSqlParameterSource();
+            parameters.addValue("id", id);
+            parameters.addValue("value", value);
+            int rows = template.update(updateById, parameters);
+            return rows > 0;
+        }
         return false;
     }
 

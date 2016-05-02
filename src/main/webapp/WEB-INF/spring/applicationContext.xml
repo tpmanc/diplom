@@ -10,6 +10,8 @@
 
     <bean id="defaultAuthEventPublisher" class="auth.UserService"/>
 
+    <bean id="isFilled" class="config.IsFilled"/>
+
     <bean id="startListener" class="config.StartupListener"/>
 
     <bean id="placeholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -18,8 +20,8 @@
             <list>
                 <value>/WEB-INF/config/database.properties</value>
                 <value>/WEB-INF/config/active-directory.properties</value>
-                <value>file:${user.home}/rip/database.properties</value>
-                <value>file:${user.home}/rip/active-directory.properties</value>
+                <value>file:${user.home}/repository/database.properties</value>
+                <value>file:${user.home}/repository/active-directory.properties</value>
             </list>
         </property>
     </bean>

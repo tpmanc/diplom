@@ -1,14 +1,17 @@
 package controllers;
 
+import config.IsFilled;
 import config.Settings;
 import exceptions.InternalException;
 import exceptions.NotFoundException;
 import helpers.UserHelper;
 import models.SettingsModel;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.ContextLoader;
 
 import java.sql.SQLException;
 
@@ -25,7 +28,12 @@ public class LoginController {
         }
 
         // если не заполнены настройки, то редиректим на страницу с настройками
-        if (!Settings.isAllFilled()) {
+        ApplicationContext ctx = ContextLoader.getCurrentWebApplicationContext();
+        IsFilled isFilled = (IsFilled) ctx.getBean("isFilled");
+        if (isFilled.isFilled() == null) {
+            isFilled.setIsFilled(Settings.isAllFilled());
+        }
+        if (!isFilled.isFilled()) {
             return "redirect:/init-settings";
         }
 

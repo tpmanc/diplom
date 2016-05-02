@@ -10,33 +10,82 @@
 <div class="row">
     <div class="col-lg-12">
         <div class="inqbox float-e-margins">
-            <form method="post" action="<spring:url value="/settings-save" />" class="form-horizontal">
+            <form method="post" action="<spring:url value="/settings-init-save" />" class="form-horizontal">
                 <div class="inqbox-title">
                     <h5>Пути для загрузки файлов</h5>
                 </div>
                 <div class="inqbox-content">
-                    <div class="form-group">
+                    <div class="form-group <c:if test="${errors.get(\"catalogPath\") != null}"> has-error</c:if>">
                         <label class="col-sm-4 control-label">Путь для загрузки файлов каталога</label>
-                        <div class="col-sm-8"><input type="text" name="dbDriver" value="" class="form-control"></div>
+                        <div class="col-sm-8"><input type="text" name="catalogPath" required value="${model1.value}" class="form-control"></div>
+                        <c:if test="${errors.get(\"catalogPath\") != null}">
+                            <span class="help-block">
+                                <div>${errors.get("catalogPath")}</div>
+                            </span>
+                        </c:if>
+                    </div>
+                    <div class="form-group <c:if test="${errors.get(\"requestPath\") != null}"> has-error</c:if>">
+                        <label class="col-sm-4 control-label">Путь для загрузки файлов заявок</label>
+                        <div class="col-sm-8"><input type="text" name="requestPath" required value="${model2.value}" class="form-control"></div>
+                        <c:if test="${errors.get(\"requestPath\") != null}">
+                            <span class="help-block">
+                                <div>${errors.get("requestPath")}</div>
+                            </span>
+                        </c:if>
+                    </div>
+                </div>
+                <div class="inqbox-title">
+                    <h5>База данных</h5>
+                </div>
+                <div class="inqbox-content">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Адрес</label>
+                        <div class="col-sm-8"><input type="text" name="dbUrl" required value="${dbProperties.get("db.url")}" class="form-control"></div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-4 control-label">Путь для загрузки файлов заявок</label>
-                        <div class="col-sm-8"><input type="text" name="dbUrl" value="" class="form-control"></div>
+                        <label class="col-sm-4 control-label">Пользователь</label>
+                        <div class="col-sm-8"><input type="text" name="dbUser" required value="${dbProperties.get("db.user")}" class="form-control"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Пароль</label>
+                        <div class="col-sm-8"><input type="password" name="dbPass" value="${dbProperties.get("db.password")}" class="form-control"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Размер пула соединений</label>
+                        <div class="col-sm-8"><input type="number" name="dbPool" required value="${dbProperties.get("db.poolSize")}" class="form-control"></div>
                     </div>
                 </div>
                 <div class="inqbox-title">
                     <h5>Active Directory</h5>
                 </div>
                 <div class="inqbox-content">
-                    <div class="panel panel-danger">
-                        <div class="panel-heading">
-                            Не заданы настройки Active Directory
-                        </div>
-                        <div class="panel-body">
-                            <c:if test="${!isFilled.adUrl}">
-                                <p>Добавить системное свойство "ldap.url"</p>
-                            </c:if>
-                        </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Адрес сервера</label>
+                        <div class="col-sm-8"><input type="text" name="ldapUrl" value="${adProperties.get("ldap.url")}" class="form-control"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">DN менеджера</label>
+                        <div class="col-sm-8"><input type="text" name="ldapManager" value="${adProperties.get("ldap.manager-dn")}" class="form-control"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Пароль менеджера</label>
+                        <div class="col-sm-8"><input type="password" name="ldapPassword" value="${adProperties.get("ldap.manager-password")}" class="form-control"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Фильтр поиска пользователей</label>
+                        <div class="col-sm-8"><input type="text" name="ldapUserFilter" value="${adProperties.get("ldap.user-search-filter")}" class="form-control"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Путь, где искать группы</label>
+                        <div class="col-sm-8"><input type="text" name="ldapGroupSearch" value="${adProperties.get("ldap.group-search-base")}" class="form-control"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Фильтр поиска группы</label>
+                        <div class="col-sm-8"><input type="text" name="ldapGroupFilter" value="${adProperties.get("ldap.group-search-filter")}" class="form-control"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Аттрибут роли</label>
+                        <div class="col-sm-8"><input type="text" name="ldapRole" value="${adProperties.get("ldap.role-attribute")}" class="form-control"></div>
                     </div>
                 </div>
                 <div class="inqbox-content">
