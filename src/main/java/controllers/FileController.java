@@ -312,7 +312,7 @@ public class FileController {
         JSONArray errors = new JSONArray();
         JSONArray success = new JSONArray();
 
-        String uploadRootDir = Settings.getUploadPath(request);
+        String uploadRootDir = Settings.getUploadPath();
 
         int fileCounter = 0;
         for (MultipartFile file : files) {

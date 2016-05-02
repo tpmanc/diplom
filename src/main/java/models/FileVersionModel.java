@@ -218,7 +218,7 @@ public class FileVersionModel implements ModelInterface {
         FileVersionPropertyModel.deleteByVersion(id);
 
         // удаляем файл с диска
-        String uploadPath = Settings.getUploadPath(request);
+        String uploadPath = Settings.getUploadPath();
         StringBuilder filePath = new StringBuilder()
                 .append(uploadPath)
                 .append(File.separator)

@@ -1,11 +1,15 @@
 package controllers;
 
+import auth.CustomUserDetails;
 import config.IsFilled;
 import config.Settings;
+import exceptions.ForbiddenException;
 import exceptions.InternalException;
-import exceptions.NotFoundException;
+import helpers.UserHelper;
+import models.LogModel;
 import models.SettingsModel;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +19,7 @@ import org.springframework.web.context.ContextLoader;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.File;
+import java.security.Principal;
 import java.sql.SQLException;
 import java.util.HashMap;
 
@@ -58,7 +63,36 @@ public class SettingsController {
         return "setting/init-settings";
     }
 
-    @RequestMapping(value = {"/settings-init-save" }, method = RequestMethod.POST)
+    @RequestMapping(value = {"/settings" }, method = RequestMethod.GET)
+    public String settings(Model model, Principal principal) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isAdmin(activeUser)) {
+            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка доступа к настройкам (/settings) без прав администратора");
+            throw new ForbiddenException("Доступ запрещен");
+        }
+
+        SettingsModel model1 = SettingsModel.findById(SettingsModel.UPLOAD_PATH);
+        SettingsModel model2 = SettingsModel.findById(SettingsModel.UPLOAD_REQUEST_PATH);
+        if (model1 == null) {
+            model1 = new SettingsModel(SettingsModel.UPLOAD_PATH);
+        }
+        if (model2 == null) {
+            model2 = new SettingsModel(SettingsModel.UPLOAD_REQUEST_PATH);
+        }
+        model.addAttribute("model1", model1);
+        model.addAttribute("model2", model2);
+
+        HashMap<String, String> dbProperties = Settings.getDbProperties();
+        model.addAttribute("dbProperties", dbProperties);
+
+        HashMap<String, String> adProperties = Settings.getADProperties();
+        model.addAttribute("adProperties", adProperties);
+
+        model.addAttribute("pageTitle", "Настройки");
+        return "setting/settings";
+    }
+
+    @RequestMapping(value = {"/settings-save" }, method = RequestMethod.POST)
     public String settingsInitSave(
             @RequestParam String catalogPath,
             @RequestParam String requestPath,
@@ -73,7 +107,8 @@ public class SettingsController {
             @RequestParam String ldapGroupSearch,
             @RequestParam String ldapGroupFilter,
             @RequestParam String ldapRole,
-            RedirectAttributes attr
+            RedirectAttributes attr,
+            @RequestParam(value="isFromPanel", required=false, defaultValue = "false") boolean isFromPanel
     ) {
         HashMap<String, String> errors = new HashMap<>();
 
@@ -127,8 +162,18 @@ public class SettingsController {
 
         if (errors.size() > 0) {
             attr.addFlashAttribute("errors", errors);
+            if (isFromPanel) {
+                return "redirect:/settings";
+            } else {
+                return "redirect:/init-settings";
+            }
+        }
+        if (isFromPanel) {
+            attr.addFlashAttribute("isNeedRestart", true);
+            return "redirect:/settings";
+        } else {
+            attr.addFlashAttribute("isNeedRestart", true);
             return "redirect:/init-settings";
         }
-        return "redirect:/";
     }
 }

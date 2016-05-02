@@ -1,6 +1,7 @@
 package controllers;
 
 import auth.CustomUserDetails;
+import config.Settings;
 import exceptions.ForbiddenException;
 import exceptions.InternalException;
 import exceptions.NotFoundException;
@@ -167,12 +168,7 @@ public class RequestController {
             requestModel.setText(text);
             requestModel.setUserId(user.getId());
 
-            String uploadPath = request.getServletContext().getRealPath("requests");
-            File uploadRootDir = new File(uploadPath);
-            // Создаем основную директорию, если ее нет
-            if (!uploadRootDir.exists()) {
-                uploadRootDir.mkdirs();
-            }
+            String uploadPath = Settings.getRequestUploadPath();
             ArrayList<String> names = new ArrayList<String>();
             ArrayList<String> hashes = new ArrayList<String>();
             // проверка файлов на дублирование
@@ -209,7 +205,7 @@ public class RequestController {
                     String secondDir = hash.substring(2, 4);
                     StringBuilder newFileName = new StringBuilder();
                     newFileName
-                            .append(uploadRootDir.getAbsolutePath())
+                            .append(uploadPath)
                             .append(File.separator)
                             .append(firstDir)
                             .append(File.separator)

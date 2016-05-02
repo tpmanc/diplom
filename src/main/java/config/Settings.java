@@ -32,14 +32,22 @@ public class Settings {
     private static final String ldapGroupSearchFilter = "ldap.group-search-filter";
     private static final String ldapRole = "ldap.role-attribute";
 
-    public static String getUploadPath(HttpServletRequest request) {
-        String uploadPath = request.getServletContext().getRealPath("upload");
-        File uploadRootDir = new File(uploadPath);
-        // Создаем основную директорию, если ее нет
-        if (!uploadRootDir.exists()) {
-            uploadRootDir.mkdirs();
+    public static String getUploadPath() {
+        SettingsModel filePath = SettingsModel.findById(SettingsModel.UPLOAD_PATH);
+        if (filePath != null) {
+            return filePath.getValue();
+        } else {
+            throw new InternalException("Путь для сохранения файлов не настроен");
         }
-        return uploadPath;
+    }
+
+    public static String getRequestUploadPath() {
+        SettingsModel filePath = SettingsModel.findById(SettingsModel.UPLOAD_REQUEST_PATH);
+        if (filePath != null) {
+            return filePath.getValue();
+        } else {
+            throw new InternalException("Путь для сохранения файлов не настроен");
+        }
     }
 
     private static String getAppHome() {

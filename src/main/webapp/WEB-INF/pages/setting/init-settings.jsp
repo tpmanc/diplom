@@ -7,10 +7,16 @@
 
 <h2>${pageTitle}</h2>
 
+<c:if test="${isNeedRestart != null && isNeedRestart == true}">
+    <div class="alert alert-success">
+        Настройки сохранены. Необходимо перезагрузить приложение!
+    </div>
+</c:if>
+
 <div class="row">
     <div class="col-lg-12">
         <div class="inqbox float-e-margins">
-            <form method="post" action="<spring:url value="/settings-init-save" />" class="form-horizontal">
+            <form method="post" action="<spring:url value="/settings-save" />" class="form-horizontal">
                 <div class="inqbox-title">
                     <h5>Пути для загрузки файлов</h5>
                 </div>
@@ -61,31 +67,31 @@
                 <div class="inqbox-content">
                     <div class="form-group">
                         <label class="col-sm-4 control-label">Адрес сервера</label>
-                        <div class="col-sm-8"><input type="text" name="ldapUrl" value="${adProperties.get("ldap.url")}" class="form-control"></div>
+                        <div class="col-sm-8"><input type="text" name="ldapUrl" required value="${adProperties.get("ldap.url")}" class="form-control"></div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-4 control-label">DN менеджера</label>
-                        <div class="col-sm-8"><input type="text" name="ldapManager" value="${adProperties.get("ldap.manager-dn")}" class="form-control"></div>
+                        <div class="col-sm-8"><input type="text" name="ldapManager" required value="${adProperties.get("ldap.manager-dn")}" class="form-control"></div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-4 control-label">Пароль менеджера</label>
-                        <div class="col-sm-8"><input type="password" name="ldapPassword" value="${adProperties.get("ldap.manager-password")}" class="form-control"></div>
+                        <div class="col-sm-8"><input type="password" name="ldapPassword" required value="${adProperties.get("ldap.manager-password")}" class="form-control"></div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-4 control-label">Фильтр поиска пользователей</label>
-                        <div class="col-sm-8"><input type="text" name="ldapUserFilter" value="${adProperties.get("ldap.user-search-filter")}" class="form-control"></div>
+                        <div class="col-sm-8"><input type="text" name="ldapUserFilter" required value="${adProperties.get("ldap.user-search-filter")}" class="form-control"></div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-4 control-label">Путь, где искать группы</label>
-                        <div class="col-sm-8"><input type="text" name="ldapGroupSearch" value="${adProperties.get("ldap.group-search-base")}" class="form-control"></div>
+                        <div class="col-sm-8"><input type="text" name="ldapGroupSearch" required value="${adProperties.get("ldap.group-search-base")}" class="form-control"></div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-4 control-label">Фильтр поиска группы</label>
-                        <div class="col-sm-8"><input type="text" name="ldapGroupFilter" value="${adProperties.get("ldap.group-search-filter")}" class="form-control"></div>
+                        <div class="col-sm-8"><input type="text" name="ldapGroupFilter" required value="${adProperties.get("ldap.group-search-filter")}" class="form-control"></div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-4 control-label">Аттрибут роли</label>
-                        <div class="col-sm-8"><input type="text" name="ldapRole" value="${adProperties.get("ldap.role-attribute")}" class="form-control"></div>
+                        <div class="col-sm-8"><input type="text" name="ldapRole" required value="${adProperties.get("ldap.role-attribute")}" class="form-control"></div>
                     </div>
                 </div>
                 <div class="inqbox-content">
