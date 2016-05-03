@@ -17,13 +17,16 @@
     <div class="col-lg-12">
         <div class="inqbox float-e-margins">
             <form method="post" action="<spring:url value="/settings-save" />" class="form-horizontal">
+                <c:if test="${noDatabaseFound != null && noDatabaseFound == true}">
+                    <input type="hidden" name="isNoDatabase" value="1">
+                </c:if>
                 <div class="inqbox-title">
                     <h5>Пути для загрузки файлов</h5>
                 </div>
                 <div class="inqbox-content">
                     <div class="form-group <c:if test="${errors.get(\"catalogPath\") != null}"> has-error</c:if>">
                         <label class="col-sm-4 control-label">Путь для загрузки файлов каталога</label>
-                        <div class="col-sm-8"><input type="text" name="catalogPath" required value="${model1.value}" class="form-control"></div>
+                        <div class="col-sm-8"><input type="text" name="catalogPath" <c:if test="${noDatabaseFound != null && noDatabaseFound == true}"> readonly </c:if> required value="${model1.value}" class="form-control"></div>
                         <c:if test="${errors.get(\"catalogPath\") != null}">
                             <span class="help-block">
                                 <div>${errors.get("catalogPath")}</div>
@@ -32,12 +35,18 @@
                     </div>
                     <div class="form-group <c:if test="${errors.get(\"requestPath\") != null}"> has-error</c:if>">
                         <label class="col-sm-4 control-label">Путь для загрузки файлов заявок</label>
-                        <div class="col-sm-8"><input type="text" name="requestPath" required value="${model2.value}" class="form-control"></div>
+                        <div class="col-sm-8"><input type="text" name="requestPath" <c:if test="${noDatabaseFound != null && noDatabaseFound == true}"> readonly </c:if> required value="${model2.value}" class="form-control"></div>
                         <c:if test="${errors.get(\"requestPath\") != null}">
                             <span class="help-block">
                                 <div>${errors.get("requestPath")}</div>
                             </span>
                         </c:if>
+                    </div>
+                    <div class="panel panel-danger">
+                        <div class="panel-heading">Нет соединения с БД</div>
+                        <div class="panel-body">
+                            <p>Для настройки путей сохранения файлов необходимо заполнить настройки сеодинения с БД</p>
+                        </div>
                     </div>
                 </div>
                 <div class="inqbox-title">

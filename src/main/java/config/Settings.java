@@ -3,13 +3,11 @@ package config;
 import exceptions.InternalException;
 import models.SettingsModel;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
 
@@ -67,32 +65,40 @@ public class Settings {
     public static boolean isAllFilled() {
         boolean isFilled = true;
         // путь для сохранения файлов каталога
-        SettingsModel catalogFilePath = SettingsModel.findById(SettingsModel.UPLOAD_PATH);
-        if (catalogFilePath == null) {
-            catalogFilePath = new SettingsModel(SettingsModel.UPLOAD_PATH);
-            try {
-                catalogFilePath.add();
-                isFilled = false;
-            } catch (SQLException e) {
-                throw new InternalException("Ошибка при добавлении настройки в БД");
+        try {
+            SettingsModel catalogFilePath = SettingsModel.findById(SettingsModel.UPLOAD_PATH);
+            if (catalogFilePath == null) {
+                catalogFilePath = new SettingsModel(SettingsModel.UPLOAD_PATH);
+                try {
+                    catalogFilePath.add();
+                    isFilled = false;
+                } catch (SQLException e) {
+                    throw new InternalException("Ошибка при добавлении настройки в БД");
+                }
             }
-        }
-        if (catalogFilePath.getValue().equals("")) {
+            if (catalogFilePath.getValue().equals("")) {
+                isFilled = false;
+            }
+        } catch (Exception e) {
             isFilled = false;
         }
 
         // путь для сохранения файлов заяков
-        SettingsModel requestFilePath = SettingsModel.findById(SettingsModel.UPLOAD_REQUEST_PATH);
-        if (requestFilePath == null) {
-            requestFilePath = new SettingsModel(SettingsModel.UPLOAD_REQUEST_PATH);
-            try {
-                requestFilePath.add();
-                isFilled = false;
-            } catch (SQLException e) {
-                throw new InternalException("Ошибка при добавлении настройки в БД");
+        try {
+            SettingsModel requestFilePath = SettingsModel.findById(SettingsModel.UPLOAD_REQUEST_PATH);
+            if (requestFilePath == null) {
+                requestFilePath = new SettingsModel(SettingsModel.UPLOAD_REQUEST_PATH);
+                try {
+                    requestFilePath.add();
+                    isFilled = false;
+                } catch (SQLException e) {
+                    throw new InternalException("Ошибка при добавлении настройки в БД");
+                }
             }
-        }
-        if (requestFilePath.getValue().equals("")) {
+            if (requestFilePath.getValue().equals("")) {
+                isFilled = false;
+            }
+        } catch (Exception e) {
             isFilled = false;
         }
 
@@ -110,7 +116,7 @@ public class Settings {
 
         String adFilePath = fileDir + File.separator + Settings.adProperties;
         File adFile = new File(adFilePath);
-        if (!dbFile.exists()) {
+        if (!adFile.exists()) {
             try {
                 adFile.createNewFile();
             } catch (IOException e) {
