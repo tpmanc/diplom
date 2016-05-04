@@ -24,6 +24,14 @@
                     <h5>Пути для загрузки файлов</h5>
                 </div>
                 <div class="inqbox-content">
+                    <c:if test="${noDatabaseFound != null && noDatabaseFound == true}">
+                        <div class="panel panel-danger">
+                            <div class="panel-heading">Нет соединения с БД</div>
+                            <div class="panel-body">
+                                <p>Для настройки путей сохранения файлов необходимо заполнить настройки соединения с БД</p>
+                            </div>
+                        </div>
+                    </c:if>
                     <div class="form-group <c:if test="${errors.get(\"catalogPath\") != null}"> has-error</c:if>">
                         <label class="col-sm-4 control-label">Путь для загрузки файлов каталога</label>
                         <div class="col-sm-8"><input type="text" name="catalogPath" <c:if test="${noDatabaseFound != null && noDatabaseFound == true}"> readonly </c:if> required value="${model1.value}" class="form-control"></div>
@@ -42,15 +50,11 @@
                             </span>
                         </c:if>
                     </div>
-                    <div class="panel panel-danger">
-                        <div class="panel-heading">Нет соединения с БД</div>
-                        <div class="panel-body">
-                            <p>Для настройки путей сохранения файлов необходимо заполнить настройки сеодинения с БД</p>
-                        </div>
-                    </div>
                 </div>
                 <div class="inqbox-title">
                     <h5>База данных</h5>
+                    <br><br>
+                    <code>Файл: ${dbFilePath}</code>
                 </div>
                 <div class="inqbox-content">
                     <div class="form-group">
@@ -72,6 +76,8 @@
                 </div>
                 <div class="inqbox-title">
                     <h5>Active Directory</h5>
+                    <br><br>
+                    <code>Файл: ${adFilePath}</code>
                 </div>
                 <div class="inqbox-content">
                     <div class="form-group">
@@ -101,6 +107,17 @@
                     <div class="form-group">
                         <label class="col-sm-4 control-label">Аттрибут роли</label>
                         <div class="col-sm-8"><input type="text" name="ldapRole" required value="${adProperties.get("ldap.role-attribute")}" class="form-control"></div>
+                    </div>
+                </div>
+                <div class="inqbox-title">
+                    <h5>Логи</h5>
+                    <br><br>
+                    <code>Файл: ${logFilePath}</code>
+                </div>
+                <div class="inqbox-content">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Адрес</label>
+                        <div class="col-sm-8"><input type="text" name="dbUrl" required value="${dbProperties.get("db.url")}" class="form-control"></div>
                     </div>
                 </div>
                 <div class="inqbox-content">
