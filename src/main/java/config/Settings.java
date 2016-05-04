@@ -285,7 +285,6 @@ public class Settings {
     public static void setDbProperties(String url, String user, String pass, Integer pool) {
         String dbFilePath = getDbPath();
 
-        HashMap<String, String> res = new HashMap<>();
         FileInputStream fis;
         Properties property = new Properties();
         try {
@@ -317,7 +316,6 @@ public class Settings {
     public static void setAdProperties(String url, String manager, String pass, String userSearch, String groupSearch, String groupFilter, String role) {
         String adFilePath = getADPath();
 
-        HashMap<String, String> res = new HashMap<>();
         FileInputStream fis;
         Properties property = new Properties();
         try {

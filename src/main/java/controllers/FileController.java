@@ -505,7 +505,8 @@ public class FileController {
             FileVersionModel fileVersion = FileVersionModel.findById(id);
             StringBuilder filePath = new StringBuilder();
             // формируем путь до файла
-            filePath.append(request.getServletContext().getRealPath("upload"));
+            String uploadRootDir = Settings.getUploadPath();
+            filePath.append(uploadRootDir);
             String hash = fileVersion.getHash();
             String firstDir = hash.substring(0, 2);
             String secondDir = hash.substring(2, 4);
@@ -516,6 +517,7 @@ public class FileController {
                     .append(secondDir)
                     .append(File.separator)
                     .append(fileVersion.getFileName());
+            System.out.println(filePath.toString());
             File file = new File(filePath.toString());
             InputStream inputStream = new FileInputStream(file);
             response.setContentType("application/octet-stream");
