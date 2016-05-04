@@ -66,7 +66,7 @@
         </td>
     </tr>
     <c:if test="${!requestModel.comment.equals(\"\")}">
-        <tr>
+        <tr class="<c:if test="${requestModel.status == 3}">danger</c:if> <c:if test="${requestModel.status == 2}">success</c:if>">
             <td>Комментарий модератора</td>
             <td>
                 ${requestModel.comment}
