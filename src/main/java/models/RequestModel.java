@@ -68,7 +68,11 @@ public class RequestModel implements ModelInterface {
             parameters.addValue("date", date);
             parameters.addValue("status", status);
             parameters.addValue("userId", userId);
-            parameters.addValue("comment", comment);
+            if (comment == null) {
+                parameters.addValue("comment", "");
+            } else {
+                parameters.addValue("comment", comment);
+            }
             KeyHolder keyHolder = new GeneratedKeyHolder();
             int rows = template.update(saveNew, parameters, keyHolder);
             if (rows > 0) {

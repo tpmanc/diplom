@@ -15,6 +15,7 @@ public class Settings {
     public static final String appDir = "repository";
     public static final String adProperties = "active-directory.properties";
     public static final String dbProperties = "database.properties";
+    public static final String logProperties = "logs.properties";
 
     private static final String dbDriver = "db.driverClassName";
     private static final String dbUrl = "db.url";
@@ -48,7 +49,7 @@ public class Settings {
         }
     }
 
-    private static String getAppHome() {
+    public static String getAppHome() {
         String userHome = System.getProperty("user.home");
         String appHome = userHome + File.separator + Settings.appDir;
         File fileDir = new File(appHome);
@@ -60,6 +61,21 @@ public class Settings {
             }
         }
         return appHome;
+    }
+
+    public static String getDbPath() {
+        String fileDir = getAppHome();
+        return fileDir + File.separator + Settings.dbProperties;
+    }
+
+    public static String getADPath() {
+        String fileDir = getAppHome();
+        return fileDir + File.separator + Settings.adProperties;
+    }
+
+    public static String getLogPath() {
+        String fileDir = getAppHome();
+        return fileDir + File.separator + Settings.logProperties;
     }
 
     public static boolean isAllFilled() {
@@ -102,8 +118,7 @@ public class Settings {
             isFilled = false;
         }
 
-        String fileDir = getAppHome();
-        String dbFilePath = fileDir + File.separator + Settings.dbProperties;
+        String dbFilePath = getDbPath();
         File dbFile = new File(dbFilePath);
         if (!dbFile.exists()) {
             try {
@@ -114,13 +129,24 @@ public class Settings {
             isFilled = false;
         }
 
-        String adFilePath = fileDir + File.separator + Settings.adProperties;
+        String adFilePath = getADPath();
         File adFile = new File(adFilePath);
         if (!adFile.exists()) {
             try {
                 adFile.createNewFile();
             } catch (IOException e) {
                 throw new InternalException("Невозможно создать файл " + adFilePath);
+            }
+            isFilled = false;
+        }
+
+        String logFilePath = getLogPath();
+        File logFile = new File(logFilePath);
+        if (!logFile.exists()) {
+            try {
+                logFile.createNewFile();
+            } catch (IOException e) {
+                throw new InternalException("Невозможно создать файл " + logFilePath);
             }
             isFilled = false;
         }
@@ -159,12 +185,13 @@ public class Settings {
             isFilled = false;
         }
 
+        // todo: log properties
+
         return isFilled;
     }
 
     public static HashMap<String, String> getDbProperties() {
-        String fileDir = getAppHome();
-        String dbFilePath = fileDir + File.separator + Settings.dbProperties;
+        String dbFilePath = getDbPath();
 
         HashMap<String, String> res = new HashMap<>();
         FileInputStream fis;
@@ -205,8 +232,7 @@ public class Settings {
     }
 
     public static HashMap<String, String> getADProperties() {
-        String fileDir = getAppHome();
-        String dbFilePath = fileDir + File.separator + Settings.adProperties;
+        String dbFilePath = getADPath();
 
         HashMap<String, String> res = new HashMap<>();
         FileInputStream fis;
@@ -257,10 +283,8 @@ public class Settings {
     }
 
     public static void setDbProperties(String url, String user, String pass, Integer pool) {
-        String fileDir = getAppHome();
-        String dbFilePath = fileDir + File.separator + Settings.dbProperties;
+        String dbFilePath = getDbPath();
 
-        HashMap<String, String> res = new HashMap<>();
         FileInputStream fis;
         Properties property = new Properties();
         try {
@@ -290,10 +314,8 @@ public class Settings {
     }
 
     public static void setAdProperties(String url, String manager, String pass, String userSearch, String groupSearch, String groupFilter, String role) {
-        String fileDir = getAppHome();
-        String adFilePath = fileDir + File.separator + Settings.adProperties;
+        String adFilePath = getADPath();
 
-        HashMap<String, String> res = new HashMap<>();
         FileInputStream fis;
         Properties property = new Properties();
         try {

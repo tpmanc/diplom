@@ -59,9 +59,18 @@ public class SettingsController {
 
         HashMap<String, String> dbProperties = Settings.getDbProperties();
         model.addAttribute("dbProperties", dbProperties);
+        String dbFilePath = Settings.getDbPath();
+        model.addAttribute("dbFilePath", dbFilePath);
 
         HashMap<String, String> adProperties = Settings.getADProperties();
         model.addAttribute("adProperties", adProperties);
+        String adFilePath = Settings.getADPath();
+        model.addAttribute("adFilePath", adFilePath);
+
+//        HashMap<String, String> logProperties = Settings.getLogProperties();
+//        model.addAttribute("logProperties", logProperties);
+        String logFilePath = Settings.getLogPath();
+        model.addAttribute("logFilePath", logFilePath);
 
         model.addAttribute("pageTitle", "Настройки");
         return "setting/init-settings";
