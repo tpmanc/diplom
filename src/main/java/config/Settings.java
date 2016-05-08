@@ -15,7 +15,7 @@ public class Settings {
     public static final String appDir = "repository";
     public static final String adProperties = "active-directory.properties";
     public static final String dbProperties = "database.properties";
-    public static final String logProperties = "logs.properties";
+    public static final String logProperties = "log4j.properties";
 
     private static final String dbDriver = "db.driverClassName";
     private static final String dbUrl = "db.url";
@@ -30,6 +30,12 @@ public class Settings {
     private static final String ldapGroupSearchBase = "ldap.group-search-base";
     private static final String ldapGroupSearchFilter = "ldap.group-search-filter";
     private static final String ldapRole = "ldap.role-attribute";
+
+    private static final String logFilePath = "log4j.appender.fileRoll.File";
+    private static final String logFileMaxSize = "log4j.appender.fileRoll.MaxFileSize";
+    private static final String logFileCount = "log4j.appender.fileRoll.MaxBackupIndex";
+    private static final String logSyslogHost = "log4j.appender.SYSLOG.syslogHost";
+    private static final String logSyslogCategory = "log4j.appender.SYSLOG.facility";
 
     public static String getUploadPath() {
         SettingsModel filePath = SettingsModel.findById(SettingsModel.UPLOAD_PATH);
@@ -186,6 +192,7 @@ public class Settings {
         }
 
         // todo: log properties
+        HashMap<String, String> logProperties = getLogProperties();
 
         return isFilled;
     }
@@ -227,7 +234,7 @@ public class Settings {
             }
             return res;
         } catch (IOException e) {
-            throw new InternalException("Файл "+Settings.dbProperties+" не найден");
+            throw new InternalException("Файл "+Settings.getDbPath()+" не найден");
         }
     }
 
@@ -278,7 +285,39 @@ public class Settings {
             }
             return res;
         } catch (IOException e) {
-            throw new InternalException("Файл "+Settings.adProperties+" не найден");
+            throw new InternalException("Файл "+Settings.getADPath()+" не найден");
+        }
+    }
+
+    public static HashMap<String, String> getLogProperties() {
+        String lodFilePath = getLogPath();
+
+        HashMap<String, String> res = new HashMap<>();
+        FileInputStream fis;
+        Properties property = new Properties();
+        try {
+            fis = new FileInputStream(lodFilePath);
+            property.load(fis);
+            fis.close();
+
+            String filePath = property.getProperty(logFilePath);
+            if (filePath != null) {
+                res.put(logFilePath, filePath);
+            }
+
+            String fileSize = property.getProperty(logFileMaxSize);
+            if (fileSize != null) {
+                res.put(logFileMaxSize, fileSize);
+            }
+
+            String fileCount = property.getProperty(logFileCount);
+            if (fileCount != null) {
+                res.put(logFileCount, fileCount);
+            }
+
+            return res;
+        } catch (IOException e) {
+            throw new InternalException("Файл "+Settings.getLogPath()+" не найден");
         }
     }
 
@@ -352,4 +391,38 @@ public class Settings {
             throw new InternalException("Файл "+Settings.adProperties+" не найден");
         }
     }
+
+    public static void setFileProperties(String path, Integer fileSize, Integer fileCount) {
+        String logPath = getLogPath();
+
+        FileInputStream fis;
+        Properties property = new Properties();
+        try {
+            fis = new FileInputStream(logPath);
+            property.load(fis);
+            fis.close();
+
+//            property.setProperty("log4j.appender.fileRoll", "org.apache.log4j.RollingFileAppender");
+
+            if (path != null && path.length() > 0) {
+                property.setProperty(logFilePath, path);
+            }
+            if (fileSize != null && fileSize > 0) {
+                property.setProperty(logFileMaxSize, fileSize.toString());
+            }
+            if (fileCount != null && fileCount > 0) {
+                property.setProperty(logFileCount, fileCount.toString());
+            }
+
+//            property.setProperty("log4j.appender.fileRoll.layout", "org.apache.log4j.PatternLayout");
+//            property.setProperty("log4j.appender.fileRoll.layout.ConversionPattern", "%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n");
+
+            FileOutputStream out = new FileOutputStream(logPath);
+            property.store(out, null);
+            out.close();
+        } catch (IOException e) {
+            throw new InternalException("Файл "+Settings.getLogPath()+" не найден");
+        }
+    }
+
 }

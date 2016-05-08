@@ -4,9 +4,8 @@ import auth.CustomUserDetails;
 import exceptions.ForbiddenException;
 import exceptions.NotFoundException;
 import helpers.UserHelper;
-import models.LogModel;
 import models.PropertyModel;
-import models.UserModel;
+import org.apache.log4j.Logger;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,13 +18,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.security.Principal;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Контроллер свойств для администратора
  */
 @Controller
 public class PropertyController {
+    private static final Logger logger = Logger.getLogger(PropertyController.class);
 
     /**
      * Список всех свойств
@@ -40,7 +39,7 @@ public class PropertyController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка просмотра списка свойств (/properties) без прав модератора");
+            logger.warn("Попытка просмотра списка свойств (/properties) без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
 
@@ -74,7 +73,7 @@ public class PropertyController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка добавления свойства (/property-add) без прав модератора");
+            logger.warn("Попытка добавления свойства (/property-add) без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
         model.addAttribute("pageTitle", "Добавить свойство файла");
@@ -95,7 +94,7 @@ public class PropertyController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка изменения свойства (/property-edit) без прав модератора");
+            logger.warn("Попытка изменения свойства (/property-edit) без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
         try {
@@ -122,7 +121,7 @@ public class PropertyController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка просмотра свойства (/property-view) без прав модератора");
+            logger.warn("Попытка просмотра свойства (/property-view) без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
 
@@ -149,7 +148,7 @@ public class PropertyController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка добавления/изменения свойства (/property-handler) без прав модератора");
+            logger.warn("Попытка добавления/изменения свойства (/property-handler) без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
 
@@ -161,7 +160,7 @@ public class PropertyController {
                 String oldTitle = property.getTitle();
                 property.setTitle(title);
                 if (property.update()) {
-                    LogModel.addInfo(activeUser.getEmployeeId(), "Название свойства было изменено с "+oldTitle+"на "+property.getTitle()+", id=" + property.getId());
+                    logger.info("Название свойства было изменено с "+oldTitle+"на "+property.getTitle()+", id=" + property.getId()+"; служебный номер - "+activeUser.getEmployeeId());
                     return "redirect:/properties";
                 } else {
                     attr.addFlashAttribute("errors", property.errors);
@@ -175,7 +174,7 @@ public class PropertyController {
             property = new PropertyModel(title);
             try {
                 if (property.add()) {
-                    LogModel.addInfo(activeUser.getEmployeeId(), "Добавлено новое свойство "+property.getTitle()+", id=" + property.getId());
+                    logger.info("Добавлено новое свойство "+property.getTitle()+", id=" + property.getId()+"; служебный номер - "+activeUser.getEmployeeId());
                     return "redirect:/properties";
                 } else {
                     attr.addFlashAttribute("errors", property.errors);
@@ -201,7 +200,7 @@ public class PropertyController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка удаления свойства (/property-delete) без прав модератора");
+            logger.warn("Попытка удаления свойства (/property-delete) без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
         // TODO: обработка удаления свойства

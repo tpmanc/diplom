@@ -5,7 +5,7 @@ import exceptions.NotFoundException;
 import helpers.UserHelper;
 import models.FileModel;
 import models.FileVersionModel;
-import models.LogModel;
+import org.apache.log4j.Logger;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -24,6 +24,8 @@ import java.util.HashMap;
  */
 @Controller
 public class UnfilledFile {
+    private static final Logger logger = Logger.getLogger(UnfilledFile.class);
+
     /**
      * Список незаполненных файлов
      */
@@ -35,7 +37,7 @@ public class UnfilledFile {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка просмотра незаполненных файлов (/unfilled-files) без прав модератора");
+            logger.warn("Попытка просмотра незаполненных файлов (/unfilled-files) без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new AccessDeniedException("Доступ запрещен");
         }
 
@@ -70,7 +72,7 @@ public class UnfilledFile {
 
             CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
             if (!UserHelper.isModerator(activeUser)) {
-                LogModel.addWarning(activeUser.getEmployeeId(), "Попытка доступа на страницу заполнения файла (/file-filling) без прав модератора");
+                logger.warn("Попытка доступа на страницу заполнения файла (/file-filling) без прав модератора; служебный номер - "+activeUser.getEmployeeId());
                 throw new AccessDeniedException("Доступ запрещен");
             }
 
@@ -98,7 +100,7 @@ public class UnfilledFile {
         try {
             CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
             if (!UserHelper.isModerator(activeUser)) {
-                LogModel.addWarning(activeUser.getEmployeeId(), "Попытка заполнения файла (/file-filling-handler) без прав модератора");
+                logger.warn("Попытка заполнения файла (/file-filling-handler) без прав модератора; служебный номер - "+activeUser.getEmployeeId());
                 throw new AccessDeniedException("Доступ запрещен");
             }
 
@@ -131,7 +133,7 @@ public class UnfilledFile {
             fileVersion.setVersion(version);
             fileVersion.setIsFilled(true);
             fileVersion.update();
-            LogModel.addInfo(activeUser.getEmployeeId(), "Заполнен файл id=" + versionId);
+            logger.info("Заполнен файл id=" + versionId+"; служебный номер - "+activeUser.getEmployeeId());
 
             return "redirect:/file-view?id="+file.getId()+"&versionId="+fileVersion.getId();
         } catch (SQLException e) {

@@ -1,28 +1,24 @@
 package controllers;
 
 import auth.CustomUserDetails;
-import exceptions.NotFoundException;
-import models.CategoryModel;
 import models.FileModel;
-import models.LogModel;
 import models.RequestModel;
 import models.helpers.CategoryFile;
-import org.json.simple.JSONObject;
+import org.apache.log4j.Logger;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.security.Principal;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 @Controller
 public class SearchController {
+    private static final Logger logger = Logger.getLogger(SearchController.class);
+
     @RequestMapping(value = {"/search"}, method = RequestMethod.GET)
     public String users(
             @RequestParam String text,
@@ -39,7 +35,7 @@ public class SearchController {
         model.addAttribute("searchText", text);
         model.addAttribute("pageTitle", "Результаты поиска \"" + text + "\"");
 
-        LogModel.addInfo(activeUser.getEmployeeId(), "Поиск файла, поисковый запрос: " + text);
+        logger.warn("Поиск файла, поисковый запрос: " + text+"; служебный номер - "+activeUser.getEmployeeId());
         return "search/search";
     }
 }

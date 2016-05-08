@@ -5,6 +5,7 @@ import exceptions.ForbiddenException;
 import exceptions.NotFoundException;
 import helpers.UserHelper;
 import models.*;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -25,6 +26,8 @@ import java.util.HashMap;
  */
 @Controller
 public class VersionPropertyController {
+    private static final Logger logger = Logger.getLogger(VersionPropertyController.class);
+
     /**
      * Добавление свойства версии
      * @param id Id версии
@@ -39,7 +42,7 @@ public class VersionPropertyController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка добавления свойства версии файла (/file-version-property-add) без прав модератора");
+            logger.warn("Попытка добавления свойства версии файла (/file-version-property-add) без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
 
@@ -71,7 +74,7 @@ public class VersionPropertyController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка изменения свойства версии файла (/file-version-property-edit) без прав модератора");
+            logger.warn("Попытка изменения свойства версии файла (/file-version-property-edit) без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
         try {
@@ -101,7 +104,7 @@ public class VersionPropertyController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка удаления свойства версии файла (/file-version-property-delete) без прав модератора");
+            logger.warn("Попытка удаления свойства версии файла (/file-version-property-delete) без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
         JSONObject result = new JSONObject();
@@ -113,7 +116,7 @@ public class VersionPropertyController {
             int propertyId = fileProperty.getPropertyId();
             if (fileProperty.delete()) {
                 error = false;
-                LogModel.addInfo(activeUser.getEmployeeId(), "У версии id="+versionId+" удалено свойство id="+propertyId);
+                logger.info("У версии id="+versionId+" удалено свойство id="+propertyId+"; служебный номер - "+activeUser.getEmployeeId());
             }
         } catch (SQLException e) {
             throw new NotFoundException("Свойство файла не найдено");
@@ -142,7 +145,7 @@ public class VersionPropertyController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка добавления/изменения свойства версии файла (/file-version-property-handler) без прав модератора");
+            logger.warn("Попытка добавления/изменения свойства версии файла (/file-version-property-handler) без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
         // проверяем, есть ли такое свойство
@@ -158,7 +161,7 @@ public class VersionPropertyController {
                 FileVersionModel fileVersion = FileVersionModel.findById(fileVersionId);
                 FileVersionPropertyModel fileProperty = new FileVersionPropertyModel(fileVersion.getId(), propertyId, value);
                 if (fileProperty.add()) {
-                    LogModel.addInfo(activeUser.getEmployeeId(), "Версии файла id="+fileProperty.getFileVersionId()+" добавлено свойство id="+fileProperty.getPropertyId());
+                    logger.info("Версии файла id="+fileProperty.getFileVersionId()+" добавлено свойство id="+fileProperty.getPropertyId()+"; служебный номер - "+activeUser.getEmployeeId());
                     return "redirect:/file-view?id="+fileVersion.getFileId()+"&versionId="+fileVersion.getId();
                 } else {
                     attr.addFlashAttribute("errors", fileProperty.errors);
@@ -175,7 +178,7 @@ public class VersionPropertyController {
                 FileVersionPropertyModel fileProperty = FileVersionPropertyModel.findById(id);
                 fileProperty.setValue(value);
                 if (fileProperty.update()) {
-                    LogModel.addInfo(activeUser.getEmployeeId(), "У версии файла id="+fileProperty.getFileVersionId()+" изменено свойство id="+fileProperty.getPropertyId()+", значение - "+value);
+                    logger.info("У версии файла id="+fileProperty.getFileVersionId()+" изменено свойство id="+fileProperty.getPropertyId()+", значение - "+value+"; служебный номер - "+activeUser.getEmployeeId());
                     return "redirect:/file-view?id="+fileVersion.getFileId()+"&versionId="+fileVersion.getId();
                 } else {
                     attr.addFlashAttribute("errors", fileProperty.errors);

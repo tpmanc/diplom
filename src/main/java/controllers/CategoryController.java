@@ -5,7 +5,7 @@ import exceptions.ForbiddenException;
 import exceptions.NotFoundException;
 import helpers.UserHelper;
 import models.CategoryModel;
-import models.LogModel;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -15,13 +15,13 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Контроллер категорий для модератора
  */
 @Controller
 public class CategoryController {
+    private static final Logger logger = Logger.getLogger(CategoryController.class);
 
     /**
      * Страница с деревом категорий
@@ -33,7 +33,7 @@ public class CategoryController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка доступа на страницу /categories без прав модератора");
+            logger.warn("Попытка доступа на страницу /categories без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
         try {
@@ -64,7 +64,7 @@ public class CategoryController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка добавления категории (/category/ajax-add-category) без прав модератора");
+            logger.warn("Попытка добавления категории (/category/ajax-add-category) без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
         JSONObject result = new JSONObject();
@@ -74,7 +74,7 @@ public class CategoryController {
                 result.put("title", title);
                 result.put("id", category.getId());
                 result.put("error", false);
-                LogModel.addInfo(activeUser.getEmployeeId(), "Добавлена категория "+title+", id="+category.getId());
+                logger.info("Добавлена категория "+title+", id="+category.getId()+"; служебный номер - " + activeUser.getEmployeeId());
             } else {
                 result.put("error", true);
                 result.put("msg", category.errors);
@@ -102,7 +102,7 @@ public class CategoryController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка переименования категории (/category/ajax-rename) без прав модератора");
+            logger.warn("Попытка переименования категории (/category/ajax-rename) без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
         JSONObject result = new JSONObject();
@@ -113,7 +113,7 @@ public class CategoryController {
             model.update();
             result.put("title", title);
             result.put("error", false);
-            LogModel.addInfo(activeUser.getEmployeeId(), "Категория "+oldTitle+" переименована в "+title+", id="+id);
+            logger.info("Категория "+oldTitle+" переименована в "+title+", id="+id+"; служебный номер - " + activeUser.getEmployeeId());
         } catch (SQLException e) {
             result.put("error", true);
             result.put("msg", e.getMessage());
@@ -139,7 +139,7 @@ public class CategoryController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка изменения сортировки категорий (/category/ajax-update-position) без прав модератора");
+            logger.warn("Попытка изменения сортировки категорий (/category/ajax-update-position) без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
         JSONObject result = new JSONObject();
@@ -150,7 +150,7 @@ public class CategoryController {
                 model.update();
             }
             CategoryModel.updateSortingOfNode(newParentId, id, position);
-            LogModel.addInfo(activeUser.getEmployeeId(), "Изменен порядок подкатегорий у родителя с id="+newParentId);
+            logger.info("Изменен порядок подкатегорий у родителя с id="+newParentId+"; служебный номер - " + activeUser.getEmployeeId());
             result.put("error", false);
         } catch (SQLException e) {
             result.put("error", true);
@@ -173,7 +173,7 @@ public class CategoryController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка удаления категории (/category/ajax-delete) без прав модератора");
+            logger.warn("Попытка удаления категории (/category/ajax-delete) без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
         JSONObject result = new JSONObject();
@@ -181,7 +181,7 @@ public class CategoryController {
             CategoryModel model = CategoryModel.findById(id);
             String title = model.getTitle();
             model.delete();
-            LogModel.addInfo(activeUser.getEmployeeId(), "Категория "+title+" удалена");
+            logger.info("Категория "+title+" удалена; служебный номер - " + activeUser.getEmployeeId());
             result.put("error", false);
         } catch (SQLException e) {
             result.put("error", true);

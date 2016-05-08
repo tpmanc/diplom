@@ -117,7 +117,7 @@
                 <div class="inqbox-content">
                     <div class="form-group">
                         <label class="col-sm-4 control-label">Адрес</label>
-                        <div class="col-sm-8"><input type="text" name="dbUrl" required value="${dbProperties.get("db.url")}" class="form-control"></div>
+                        <div class="col-sm-8"><input type="text" name="log" required value="" class="form-control"></div>
                     </div>
                 </div>
                 <div class="inqbox-content">

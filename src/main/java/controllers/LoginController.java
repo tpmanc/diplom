@@ -2,10 +2,8 @@ package controllers;
 
 import config.IsFilled;
 import config.Settings;
-import exceptions.InternalException;
 import exceptions.NotFoundException;
 import helpers.UserHelper;
-import models.SettingsModel;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;

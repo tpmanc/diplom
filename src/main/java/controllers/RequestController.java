@@ -9,6 +9,7 @@ import helpers.FileHelper;
 import helpers.UserHelper;
 import models.*;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.log4j.Logger;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,6 +33,8 @@ import java.util.HashMap;
  */
 @Controller
 public class RequestController {
+    private static final Logger logger = Logger.getLogger(RequestController.class);
+
     /**
      * Список заявок от пользователя
      */
@@ -94,7 +97,7 @@ public class RequestController {
                     throw new NotFoundException("Пользователь не найден");
                 }
             } else {
-                LogModel.addWarning(activeUser.getEmployeeId(), "Попытка просмотра чужой заявки /request-view без прав модератора");
+                logger.warn("Попытка просмотра чужой заявки /request-view без прав модератора; служебный номер - "+activeUser.getEmployeeId());
                 throw new ForbiddenException("Доступ запрещен");
             }
         }
@@ -244,7 +247,7 @@ public class RequestController {
                     fileModel.add();
                     counter++;
                 }
-                LogModel.addInfo(activeUser.getEmployeeId(), "Добавлена заявка, id="+requestModel.getId());
+                logger.info("Добавлена заявка, id="+requestModel.getId()+"; служебный номер - " + activeUser.getEmployeeId());
                 return "redirect:/request-view?requestId="+requestModel.getId();
             } else{
                 attr.addFlashAttribute("errors", errors);
@@ -271,7 +274,7 @@ public class RequestController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка отклонения заявки (/request-cancel) без прав модератора");
+            logger.warn("Попытка отклонения заявки (/request-cancel) без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
 
@@ -295,7 +298,7 @@ public class RequestController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка отклонения заявки (/request-cancel-handler) без прав модератора");
+            logger.warn("Попытка отклонения заявки (/request-cancel-handler) без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
 
@@ -325,7 +328,7 @@ public class RequestController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка принятия заявки (/request-accept) без прав модератора");
+            logger.warn("Попытка принятия заявки (/request-accept) без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
 
@@ -349,7 +352,7 @@ public class RequestController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка принятия заявки (/request-accept-handler) без прав модератора");
+            logger.warn("Попытка принятия заявки (/request-accept-handler) без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
 

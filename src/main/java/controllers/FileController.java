@@ -13,6 +13,7 @@ import models.helpers.FileCategory;
 import models.helpers.FileFilling;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.security.core.Authentication;
@@ -35,6 +36,8 @@ import java.util.*;
  */
 @Controller
 public class FileController {
+    private static final Logger logger = Logger.getLogger(FileController.class);
+
     /**
      * Список всех файлов, разбитый по страницам
      * @param page Номер страницы
@@ -49,7 +52,7 @@ public class FileController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка доступа на страницу /files без прав модератора");
+            logger.warn("Попытка доступа на страницу /files без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
         int limit = FileModel.PAGE_COUNT;
@@ -96,7 +99,7 @@ public class FileController {
             model.addAttribute("currentVersion", currentVersion);
 
             if (!UserHelper.isModerator(activeUser) && currentVersion.getIsDisabled()) {
-                throw new NotFoundException("Старинца не найдена");
+                throw new NotFoundException("Страница не найдена");
             }
 
             UserModel user = UserModel.findById(currentVersion.getUserId());
@@ -151,7 +154,7 @@ public class FileController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка доступа на страницу /file-add без прав модератора");
+            logger.warn("Попытка доступа на страницу /file-add без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
         model.addAttribute("pageTitle", "Добавить файл");
@@ -170,7 +173,7 @@ public class FileController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка доступа на страницу /file-categories без прав модератора");
+            logger.warn("Попытка доступа на страницу /file-categories без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
         try {
@@ -204,7 +207,7 @@ public class FileController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка запроса /file-title-autocomplete без прав модератора");
+            logger.warn("Попытка запроса /file-title-autocomplete без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
         JSONObject result = new JSONObject();
@@ -236,7 +239,7 @@ public class FileController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка запроса /file-filling без прав модератора");
+            logger.warn("Попытка запроса /file-filling без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
 
@@ -304,7 +307,7 @@ public class FileController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка загрузки файлов (/file-add-handler) без прав модератора");
+            logger.warn("Попытка загрузки файлов (/file-add-handler) без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
 
@@ -410,9 +413,9 @@ public class FileController {
                         }
                         fileVersion.setFileSize(file.getSize());
                         if (fileVersion.add()) {
-                            LogModel.addInfo(activeUser.getEmployeeId(), "Загружена новая версия, id=" + fileVersion.getId());
+                            logger.info("Загружена новая версия, id=" + fileVersion.getId()+"; служебный номер - " + activeUser.getEmployeeId());
                         } else {
-                            LogModel.addError(activeUser.getEmployeeId(), "Ошибка при загрузке новой версии");
+                            logger.error("Ошибка при загрузке новой версии; служебный номер - " + activeUser.getEmployeeId());
                         }
 
                         // добавление остальных свойств версии в БД
@@ -425,9 +428,9 @@ public class FileController {
                                     fileProperty.setPropertyId(propertyId);
                                     fileProperty.setValue(String.valueOf(entry.getValue()));
                                     if (fileProperty.add()) {
-                                        LogModel.addInfo(activeUser.getEmployeeId(), "Версии id=" + fileVersion.getId()+" добавлено новое свойство id="+propertyId+", значение - "+fileProperty.getValue());
+                                        logger.info("Версии id=" + fileVersion.getId()+" добавлено новое свойство id="+propertyId+", значение - "+fileProperty.getValue()+"; служебный номер - " + activeUser.getEmployeeId());
                                     } else {
-                                        LogModel.addError(activeUser.getEmployeeId(), "Ошибка при добавлении свойства id"+propertyId+" версии id="+fileVersion.getId());
+                                        logger.error("Ошибка при добавлении свойства id"+propertyId+" версии id="+fileVersion.getId()+"; служебный номер - " + activeUser.getEmployeeId());
                                     }
                                 }
                             }
@@ -469,7 +472,7 @@ public class FileController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка добавления категорий к файлу (/file-categories-handler) без прав модератора");
+            logger.warn("Попытка добавления категорий к файлу (/file-categories-handler) без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
         try {
@@ -481,9 +484,9 @@ public class FileController {
                 fileCategory.setFileId(fileId);
                 fileCategory.setCategoryId(categoryId);
                 if (fileCategory.add()) {
-                    LogModel.addInfo(activeUser.getEmployeeId(), "Файл "+file.getTitle()+" привязан к категории "+category.getTitle());
+                    logger.info("Файл "+file.getTitle()+" привязан к категории "+category.getTitle()+"; служебный номер - " + activeUser.getEmployeeId());
                 } else {
-                    LogModel.addError(activeUser.getEmployeeId(), "Ошибка при привязке файла "+file.getTitle()+" категории "+category.getTitle());
+                    logger.error("Ошибка при привязке файла "+file.getTitle()+" категории "+category.getTitle()+"; служебный номер - " + activeUser.getEmployeeId());
                 }
             }
             return "redirect:/file-view?id=" + file.getId();
@@ -547,7 +550,7 @@ public class FileController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка удаления версии /file-version-delete без прав модератора");
+            logger.warn("Попытка удаления версии /file-version-delete без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
         JSONObject result = new JSONObject();
@@ -557,10 +560,10 @@ public class FileController {
             model.setIsDisabled(true);
             if (model.update()) {
                 result.put("error", false);
-                LogModel.addInfo(activeUser.getEmployeeId(), "Версия файла id = "+model.getId()+" помечена как удаленная");
+                logger.info("Версия файла id = "+model.getId()+" помечена как удаленная; служебный номер - " + activeUser.getEmployeeId());
             } else {
                 result.put("error", true);
-                LogModel.addError(activeUser.getEmployeeId(), "Ошибка при пометке файла id = "+model.getId()+" как удаленного");
+                logger.error("Ошибка при пометке файла id = "+model.getId()+" как удаленного; служебный номер - " + activeUser.getEmployeeId());
             }
             return result.toJSONString();
         } catch (SQLException e) {
@@ -580,7 +583,7 @@ public class FileController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка восстановления версии /file-version-recover без прав модератора");
+            logger.warn("Попытка восстановления версии /file-version-recover без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
         JSONObject result = new JSONObject();
@@ -590,10 +593,10 @@ public class FileController {
             model.setIsDisabled(false);
             if (model.update()) {
                 result.put("error", false);
-                LogModel.addInfo(activeUser.getEmployeeId(), "Файла id = "+model.getId()+" восстановлен");
+                logger.warn("Файла id = "+model.getId()+" восстановлен; служебный номер - "+activeUser.getEmployeeId());
             } else {
                 result.put("error", true);
-                LogModel.addError(activeUser.getEmployeeId(), "Ошибка при восстановлении файла id = "+model.getId());
+                logger.warn("Ошибка при восстановлении файла id = "+model.getId()+"; служебный номер - "+activeUser.getEmployeeId());
             }
             return result.toJSONString();
         } catch (SQLException e) {
@@ -614,7 +617,7 @@ public class FileController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isAdmin(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка удаления версии /file-version-delete-permanent без прав администратора");
+            logger.warn("Попытка удаления версии /file-version-delete-permanent без прав администратора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
         JSONObject result = new JSONObject();

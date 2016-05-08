@@ -6,8 +6,8 @@ import config.Settings;
 import exceptions.ForbiddenException;
 import exceptions.InternalException;
 import helpers.UserHelper;
-import models.LogModel;
 import models.SettingsModel;
+import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -28,6 +28,8 @@ import java.util.HashMap;
  */
 @Controller
 public class SettingsController {
+    private static final Logger logger = Logger.getLogger(SettingsController.class);
+
     /**
      * Стартовая страница с настройками
      */
@@ -80,7 +82,7 @@ public class SettingsController {
     public String settings(Model model, Principal principal) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isAdmin(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка доступа к настройкам (/settings) без прав администратора");
+            logger.warn("Попытка доступа к настройкам (/settings) без прав администратора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
 
@@ -167,7 +169,6 @@ public class SettingsController {
                             throw new InternalException("Ошибка при сохранении пути в БД");
                         }
                     }
-
                 }
             }
         }

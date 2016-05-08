@@ -9,11 +9,11 @@ import helpers.UserHelper;
 import models.ExportTemplateModel;
 import models.FileModel;
 import models.FileVersionModel;
-import models.LogModel;
 import models.helpers.ExportParam;
 import models.helpers.ExportParamForUse;
 import models.helpers.ExportParams;
 import models.helpers.ExportParamsForUse;
+import org.apache.log4j.Logger;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,18 +23,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.security.Principal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.regex.PatternSyntaxException;
 
 /**
  * Контроллер экспорта файлов
  */
 @Controller
 public class ExportController {
+    private static final Logger logger = Logger.getLogger(ExportController.class);
+
     /**
      * Экспорт файла - выбор шаблона или создание нового
      * @param versionId Id версии файла
@@ -48,7 +48,7 @@ public class ExportController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isAdmin(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка экспорта файла (/file-export-template) без прав администратора");
+            logger.warn("Попытка экспорта файла (/file-export-template) без прав администратора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
 
@@ -81,7 +81,7 @@ public class ExportController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isAdmin(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка экспотра файла (/file-export-template-handler) без прав администратора");
+            logger.warn("Попытка экспотра файла (/file-export-template-handler) без прав администратора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
 
@@ -95,7 +95,7 @@ public class ExportController {
             try {
                 templateModel = ExportTemplateModel.findById(template);
             } catch (SQLException e) {
-                LogModel.addError(activeUser.getEmployeeId(), "Ошибка при чтении шаблона (/file-export-template-handler)");
+                logger.error("Ошибка при чтении шаблона (/file-export-template-handler); служебный номер - " + activeUser.getEmployeeId());
                 throw new InternalException("Ошибка при чтении шаблона");
             }
             ExportParams params = new ExportParams();
@@ -131,7 +131,7 @@ public class ExportController {
     public String fileExport(@RequestParam int versionId, Principal principal, Model model, HttpServletRequest request) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isAdmin(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка экспорта файла (/file-export) без прав администратора");
+            logger.warn("Попытка экспорта файла (/file-export) без прав администратора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
 
@@ -167,7 +167,7 @@ public class ExportController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isAdmin(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка экспотра файла (/file-export-handler) без прав администратора");
+            logger.warn("Попытка экспотра файла (/file-export-handler) без прав администратора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
 
@@ -177,7 +177,7 @@ public class ExportController {
         }
 
         if (names != null && (names.length != values.length || names.length != types.length)) {
-            LogModel.addError(activeUser.getEmployeeId(), "При экспорте файла, на 1 шаге, не все поля были заполнены");
+            logger.error("При экспорте файла, на 1 шаге, не все поля были заполнены; служебный номер - " + activeUser.getEmployeeId());
             throw new InternalException("Ошибка при обработке запроса");
         }
 
@@ -245,7 +245,7 @@ public class ExportController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isAdmin(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка экспотра файла (/file-export-2) без прав администратора");
+            logger.warn("Попытка экспотра файла (/file-export-2) без прав администратора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
 
@@ -277,7 +277,7 @@ public class ExportController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isAdmin(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка экспотра файла (/file-export-handler-2) без прав администратора");
+            logger.warn("Попытка экспотра файла (/file-export-handler-2) без прав администратора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
 
@@ -287,7 +287,7 @@ public class ExportController {
         }
 
         if (names != null && values != null && names.length != values.length) {
-            LogModel.addError(activeUser.getEmployeeId(), "При экспорте файла, на 2 шаге, не все поля были заполнены");
+            logger.error("При экспорте файла, на 2 шаге, не все поля были заполнены; служебный номер - " + activeUser.getEmployeeId());
             throw new InternalException("Ошибка при обработке запроса");
         }
 
@@ -364,7 +364,7 @@ public class ExportController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isAdmin(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка экспотра файла (/file-export-3) без прав администратора");
+            logger.warn("Попытка экспотра файла (/file-export-3) без прав администратора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
 
@@ -400,7 +400,7 @@ public class ExportController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isAdmin(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка экспотра файла (/file-export-handler-3) без прав администратора");
+            logger.warn("Попытка экспотра файла (/file-export-handler-3) без прав администратора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
 
@@ -423,31 +423,31 @@ public class ExportController {
                     savedParameters.setTemplateId(model.getId());
                     savedParametersForUse.setTemplateId(model.getId());
                 } else {
-                    LogModel.addError(activeUser.getEmployeeId(), "Ошибка при добавлении шаблона (/file-export-handler-3)");
+                    logger.error("Ошибка при добавлении шаблона (/file-export-handler-3); служебный номер - " + activeUser.getEmployeeId());
                     throw new InternalException("Ошибка при добавлении шаблона");
                 }
             } catch (SQLException e) {
-                LogModel.addError(activeUser.getEmployeeId(), "Ошибка при добавлении шаблона (/file-export-handler-3)");
+                logger.error("Ошибка при добавлении шаблона (/file-export-handler-3); служебный номер - " + activeUser.getEmployeeId());
                 throw new InternalException("Ошибка при добавлении шаблона");
             }
         } else {
-            LogModel.addError(activeUser.getEmployeeId(), "Ошибка при обновлении шаблона (/file-export-handler-3)");
+            logger.error("Ошибка при обновлении шаблона (/file-export-handler-3); служебный номер - " + activeUser.getEmployeeId());
             ExportTemplateModel model = null;
             try {
                 model = ExportTemplateModel.findById(savedParameters.getTemplateId());
             } catch (SQLException e) {
-                LogModel.addError(activeUser.getEmployeeId(), "Ошибка при обновлении шаблона (/file-export-handler-3)");
+                logger.error("Ошибка при обновлении шаблона (/file-export-handler-3); служебный номер - " + activeUser.getEmployeeId());
                 throw new NotFoundException("Шаблон не найден");
             }
             model.setParameters(savedParameters.getParamJson());
             model.setFinalCommands(savedParameters.getFinalCommand());
             try {
                 if (!model.update()) {
-                    LogModel.addError(activeUser.getEmployeeId(), "Ошибка при сохранении шаблона (/file-export-handler-3)");
+                    logger.error("Ошибка при сохранении шаблона (/file-export-handler-3); служебный номер - " + activeUser.getEmployeeId());
                     throw new InternalException("Ошибка при сохранении шаблона");
                 }
             } catch (SQLException e) {
-                LogModel.addError(activeUser.getEmployeeId(), "Ошибка при сохранении шаблона (/file-export-handler-3)");
+                logger.error("Ошибка при сохранении шаблона (/file-export-handler-3); служебный номер - " + activeUser.getEmployeeId());
                 throw new InternalException("Ошибка при сохранении шаблона");
             }
         }
@@ -475,7 +475,7 @@ public class ExportController {
                 attr.addFlashAttribute("result", errors.get("commands"));
                 return "redirect:/file-export-3?versionId="+versionId;
             }
-            LogModel.addInfo(activeUser.getEmployeeId(), "Экспорт файла id="+versionId+", команды: "+commands+", результат: "+result);
+            logger.info("Экспорт файла id="+versionId+", команды: "+commands+", результат: "+result+"; служебный номер - " + activeUser.getEmployeeId());
 
             attr.addFlashAttribute("result", result);
             return "redirect:/file-export-3?versionId="+versionId;

@@ -18,11 +18,11 @@ public class StartupListener implements ApplicationListener<ContextRefreshedEven
         if (contextParent != null) {
             Properties props = new Properties();
             try {
-                FileInputStream configStream = new FileInputStream("D:/log4j.properties");
+                FileInputStream configStream = new FileInputStream(Settings.getLogPath());
                 props.load(configStream);
                 configStream.close();
             } catch(IOException e) {
-                System.out.println("Error: Cannot laod configuration file ");
+                System.out.println("Error: Cannot load configuration file ");
             }
             LogManager.resetConfiguration();
             PropertyConfigurator.configure(props);

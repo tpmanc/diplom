@@ -6,8 +6,8 @@ import exceptions.NotFoundException;
 import helpers.UserHelper;
 import models.FileModel;
 import models.FilePropertyModel;
-import models.LogModel;
 import models.PropertyModel;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -21,13 +21,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.security.Principal;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Контроллер свойств файла для модератора
  */
 @Controller
 public class FilePropertyController {
+    private static final Logger logger = Logger.getLogger(FilePropertyController.class);
+
     /**
      * Добавление свойства к файлу
      * @param id Id файла
@@ -42,7 +43,7 @@ public class FilePropertyController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка добавления свойства файла (/file-property-add) без прав модератора");
+            logger.warn("Попытка добавления свойства файла (/file-property-add) без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
 
@@ -73,7 +74,7 @@ public class FilePropertyController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка изменения свойства файла (/file-property-edit) без прав модератора");
+            logger.warn("Попытка изменения свойства файла (/file-property-edit) без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
         try {
@@ -100,7 +101,7 @@ public class FilePropertyController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка удаления свойства файла (/file-property-delete) без прав модератора");
+            logger.warn("Попытка удаления свойства файла (/file-property-delete) без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
         JSONObject result = new JSONObject();
@@ -138,7 +139,7 @@ public class FilePropertyController {
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
-            LogModel.addWarning(activeUser.getEmployeeId(), "Попытка добавления/изменения свойства файла (/file-property-handler) без прав модератора");
+            logger.warn("Попытка добавления/изменения свойства файла (/file-property-handler) без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
 
@@ -155,7 +156,7 @@ public class FilePropertyController {
             FilePropertyModel fileProperty = new FilePropertyModel(fileId, propertyId, value);
             try {
                 if (fileProperty.add()) {
-                    LogModel.addInfo(activeUser.getEmployeeId(), "Файлу "+fileModel.getTitle()+", id="+fileModel.getId()+" добавлено свойство "+property.getTitle()+" = "+value);
+                    logger.info("Файлу " + fileModel.getTitle() + ", id=" + fileModel.getId() + " добавлено свойство " + property.getTitle() + " = " + value + "; служебный номер - " + activeUser.getEmployeeId());
                     return "redirect:/file-view?id="+fileId;
                 } else {
                     attr.addFlashAttribute("errors", fileProperty.errors);
@@ -171,7 +172,7 @@ public class FilePropertyController {
                 FilePropertyModel fileProperty = FilePropertyModel.findById(id);
                 fileProperty.setValue(value);
                 if (fileProperty.update()) {
-                    LogModel.addInfo(activeUser.getEmployeeId(), "У файла "+fileModel.getTitle()+", id="+fileModel.getId()+" имзменено значение свойства "+property.getTitle()+" на "+value);
+                    logger.info("У файла "+fileModel.getTitle()+", id="+fileModel.getId()+" имзменено значение свойства "+property.getTitle()+" на "+value+"; служебный номер - "+activeUser.getEmployeeId());
                     return "redirect:/file-view?id="+fileId;
                 } else {
                     attr.addFlashAttribute("errors", fileProperty.errors);
