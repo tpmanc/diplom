@@ -31,6 +31,9 @@ public class Settings {
     private static final String ldapGroupSearchFilter = "ldap.group-search-filter";
     private static final String ldapRole = "ldap.role-attribute";
 
+    public static final String loggersProperty = "log4j.rootLogger";
+    public static final String fileLoggerName = "fileRoll";
+    public static final String syslogLoggerName = "SYSLOG";
     private static final String logFilePath = "log4j.appender.fileRoll.File";
     private static final String logFileMaxSize = "log4j.appender.fileRoll.MaxFileSize";
     private static final String logFileCount = "log4j.appender.fileRoll.MaxBackupIndex";
@@ -191,9 +194,6 @@ public class Settings {
             isFilled = false;
         }
 
-        // todo: log properties
-        HashMap<String, String> logProperties = getLogProperties();
-
         return isFilled;
     }
 
@@ -300,6 +300,11 @@ public class Settings {
             property.load(fis);
             fis.close();
 
+            String loggers = property.getProperty(loggersProperty);
+            if (loggers != null) {
+                res.put(loggersProperty, loggers);
+            }
+
             String filePath = property.getProperty(logFilePath);
             if (filePath != null) {
                 res.put(logFilePath, filePath);
@@ -313,6 +318,16 @@ public class Settings {
             String fileCount = property.getProperty(logFileCount);
             if (fileCount != null) {
                 res.put(logFileCount, fileCount);
+            }
+
+            String syslogHost = property.getProperty(logSyslogHost);
+            if (fileCount != null) {
+                res.put(logSyslogHost, syslogHost);
+            }
+
+            String syslogCategory = property.getProperty(logSyslogCategory);
+            if (syslogCategory != null) {
+                res.put(logSyslogCategory, syslogCategory);
             }
 
             return res;
@@ -402,7 +417,15 @@ public class Settings {
             property.load(fis);
             fis.close();
 
-//            property.setProperty("log4j.appender.fileRoll", "org.apache.log4j.RollingFileAppender");
+            String loggers = property.getProperty(loggersProperty);
+            if (loggers == null) {
+                property.setProperty(loggersProperty, "info");
+                loggers = "info";
+            }
+            if (!loggers.contains(fileLoggerName)) {
+                property.setProperty(loggersProperty, loggers + ", " + fileLoggerName);
+            }
+            property.setProperty("log4j.appender.fileRoll", "org.apache.log4j.RollingFileAppender");
 
             if (path != null && path.length() > 0) {
                 property.setProperty(logFilePath, path);
@@ -414,8 +437,8 @@ public class Settings {
                 property.setProperty(logFileCount, fileCount.toString());
             }
 
-//            property.setProperty("log4j.appender.fileRoll.layout", "org.apache.log4j.PatternLayout");
-//            property.setProperty("log4j.appender.fileRoll.layout.ConversionPattern", "%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n");
+            property.setProperty("log4j.appender.fileRoll.layout", "org.apache.log4j.PatternLayout");
+            property.setProperty("log4j.appender.fileRoll.layout.ConversionPattern", "%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n");
 
             FileOutputStream out = new FileOutputStream(logPath);
             property.store(out, null);
@@ -425,4 +448,97 @@ public class Settings {
         }
     }
 
+    public static void setSyslogProperties(String host, String category) {
+        String logPath = getLogPath();
+
+        FileInputStream fis;
+        Properties property = new Properties();
+        try {
+            fis = new FileInputStream(logPath);
+            property.load(fis);
+            fis.close();
+
+            String loggers = property.getProperty(loggersProperty);
+            if (loggers == null) {
+                property.setProperty(loggersProperty, "info");
+                loggers = "info";
+            }
+            if (!loggers.contains(syslogLoggerName)) {
+                property.setProperty(loggersProperty, loggers + ", " + syslogLoggerName);
+            }
+            property.setProperty("log4j.appender.SYSLOG", "org.apache.log4j.net.SyslogAppender");
+
+            if (host != null && host.length() > 0) {
+                property.setProperty(logSyslogHost, host);
+            }
+            if (category != null && category.length() > 0) {
+                property.setProperty(logSyslogCategory, category);
+            }
+
+            property.setProperty("log4j.appender.SYSLOG.layout", "org.apache.log4j.PatternLayout");
+            property.setProperty("log4j.appender.SYSLOG.layout.conversionPattern", "%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n");
+
+            FileOutputStream out = new FileOutputStream(logPath);
+            property.store(out, null);
+            out.close();
+        } catch (IOException e) {
+            throw new InternalException("Файл "+Settings.getLogPath()+" не найден");
+        }
+    }
+
+    public static void disableFileLogger() {
+        String logPath = getLogPath();
+
+        FileInputStream fis;
+        Properties property = new Properties();
+        try {
+            fis = new FileInputStream(logPath);
+            property.load(fis);
+            fis.close();
+
+            String loggers = property.getProperty(loggersProperty);
+            if (loggers == null) {
+                property.setProperty(loggersProperty, "info");
+                loggers = "info";
+            }
+            if (loggers.contains(fileLoggerName)) {
+                loggers = loggers.replace(", " + fileLoggerName, "");
+                property.setProperty(loggersProperty, loggers);
+            }
+
+            FileOutputStream out = new FileOutputStream(logPath);
+            property.store(out, null);
+            out.close();
+        } catch (IOException e) {
+            throw new InternalException("Файл "+Settings.getLogPath()+" не найден");
+        }
+    }
+
+    public static void disableSyslogLogger() {
+        String logPath = getLogPath();
+
+        FileInputStream fis;
+        Properties property = new Properties();
+        try {
+            fis = new FileInputStream(logPath);
+            property.load(fis);
+            fis.close();
+
+            String loggers = property.getProperty(loggersProperty);
+            if (loggers == null) {
+                property.setProperty(loggersProperty, "info");
+                loggers = "info";
+            }
+            if (loggers.contains(syslogLoggerName)) {
+                loggers = loggers.replace(", " + syslogLoggerName, "");
+                property.setProperty(loggersProperty, loggers);
+            }
+
+            FileOutputStream out = new FileOutputStream(logPath);
+            property.store(out, null);
+            out.close();
+        } catch (IOException e) {
+            throw new InternalException("Файл "+Settings.getLogPath()+" не найден");
+        }
+    }
 }

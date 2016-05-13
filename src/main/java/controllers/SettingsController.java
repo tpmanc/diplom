@@ -19,6 +19,7 @@ import org.springframework.web.context.ContextLoader;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.File;
+import java.io.IOException;
 import java.security.Principal;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -69,8 +70,21 @@ public class SettingsController {
         String adFilePath = Settings.getADPath();
         model.addAttribute("adFilePath", adFilePath);
 
-//        HashMap<String, String> logProperties = Settings.getLogProperties();
-//        model.addAttribute("logProperties", logProperties);
+        HashMap<String, String> logProperties = Settings.getLogProperties();
+        String loggers = logProperties.get(Settings.loggersProperty);
+        boolean isLogFileEnabled = false;
+        boolean isLogSyslogEnabled = false;
+        if (loggers != null) {
+            if (loggers.contains(Settings.fileLoggerName)) {
+                isLogFileEnabled = true;
+            }
+            if (loggers.contains(Settings.syslogLoggerName)) {
+                isLogSyslogEnabled = true;
+            }
+        }
+        model.addAttribute("isLogFileEnabled", isLogFileEnabled);
+        model.addAttribute("isLogSyslogEnabled", isLogSyslogEnabled);
+        model.addAttribute("logProperties", logProperties);
         String logFilePath = Settings.getLogPath();
         model.addAttribute("logFilePath", logFilePath);
 
@@ -122,6 +136,13 @@ public class SettingsController {
             @RequestParam String ldapGroupSearch,
             @RequestParam String ldapGroupFilter,
             @RequestParam String ldapRole,
+            @RequestParam(value="logFileEnable", required=false, defaultValue = "false") boolean logFileEnable,
+            @RequestParam(value="logFilePath", required=false) String logFilePath,
+            @RequestParam(value="logFileCount", required=false) Integer logFileCount,
+            @RequestParam(value="logFileMaxSize", required=false) Integer logFileMaxSize,
+            @RequestParam(value="logSyslogEnable", required=false, defaultValue = "false") boolean logSyslogEnable,
+            @RequestParam(value="logSyslogHost", required=false) String logSyslogHost,
+            @RequestParam(value="logSyslogFacility", required=false) String logSyslogFacility,
             RedirectAttributes attr,
             @RequestParam(value="isFromPanel", required=false, defaultValue = "false") boolean isFromPanel,
             @RequestParam(value="isNoDatabase", required=false, defaultValue = "false") boolean isNoDatabase
@@ -171,6 +192,69 @@ public class SettingsController {
                     }
                 }
             }
+        }
+
+        boolean logFileError = false;
+        if (logFileEnable) {
+            File logFile = new File(logFilePath);
+            if (!logFile.getParentFile().exists() || !logFile.getParentFile().isDirectory()) {
+                errors.put("logFilePath", "Такой путь не найден");
+            } else {
+                try {
+                    boolean isFileCreated = true;
+                    if (!logFile.exists() && !logFile.isDirectory()) {
+                        isFileCreated = logFile.createNewFile();
+                    }
+                    if (!isFileCreated) {
+                        logFileError = true;
+                        errors.put("logFilePath", "Невозможно создать файл");
+                    } else {
+                        if (!logFile.canRead()) {
+                            logFileError = true;
+                            errors.put("logFilePath", "Нет прав на чтение");
+                        } else if (!logFile.canWrite()) {
+                            logFileError = true;
+                            errors.put("logFilePath", "Нет прав на запись");
+                        }
+                    }
+                } catch (IOException e) {
+                    logFileError = true;
+                    errors.put("logFilePath", "Невозможно создать файл");
+                }
+            }
+
+            if (logFileCount != null && logFileCount <= 0) {
+                logFileError = true;
+                errors.put("logFileCount", "Количество файлов должно быть больше 0");
+            }
+            if (logFileMaxSize <= 0) {
+                logFileError = true;
+                errors.put("logFileMaxSize", "Максимальный размер файла должен быть больше 0");
+            }
+
+            if (!logFileError) {
+                 Settings.setFileProperties(logFilePath, logFileCount, logFileMaxSize);
+            }
+        } else {
+            Settings.disableFileLogger();
+        }
+
+        boolean logSyslogError = false;
+        if (logSyslogEnable) {
+            if (logSyslogHost != null && logSyslogHost.length() <= 0) {
+                logSyslogError = true;
+                errors.put("logSyslogHost", "Необходимо указать адрес");
+            }
+            if (logSyslogFacility != null && logSyslogFacility.length() <= 0) {
+                logSyslogError = true;
+                errors.put("logSyslogFacility", "Необходимо указать категорию");
+            }
+            if (!logSyslogError) {
+                Settings.setSyslogProperties(logSyslogHost, logSyslogFacility);
+                // todo Settings.addSyslogLogging(logSyslogHost, logSyslogFacility);
+            }
+        } else {
+            Settings.disableSyslogLogger();
         }
 
         Settings.setDbProperties(dbUrl, dbUser, dbPass, dbPool);

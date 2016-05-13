@@ -5,6 +5,8 @@
 
 <jsp:include page="../layouts/init-settings_top.jsp" />
 
+<script src="<spring:url value="/resources/js/pages/setting/init-settings.js" />"></script>
+
 <h2>${pageTitle}</h2>
 
 <c:if test="${isNeedRestart != null && isNeedRestart == true}">
@@ -116,8 +118,74 @@
                 </div>
                 <div class="inqbox-content">
                     <div class="form-group">
-                        <label class="col-sm-4 control-label">Адрес</label>
-                        <div class="col-sm-8"><input type="text" name="log" required value="" class="form-control"></div>
+                        <div class="col-sm-12">
+                            <div class="i-checks">
+                                <label>
+                                    <input type="checkbox" id="logFileEnable" <c:if test="${isLogFileEnabled}">checked="checked"</c:if> name="logFileEnable">
+                                    <i></i> Включить логи в файл
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="logFileGroup">
+                        <div class="form-group <c:if test="${errors.get(\"logFilePath\") != null}"> has-error</c:if>">
+                            <label class="col-sm-4 control-label">Путь для сохранения логов</label>
+                            <div class="col-sm-8"><input type="text" <c:if test="${!isLogFileEnabled}">disabled="disabled"</c:if> name="logFilePath" required value="${logProperties.get("log4j.appender.fileRoll.File")}" class="form-control"></div>
+                            <c:if test="${errors.get(\"logFilePath\") != null}">
+                                <span class="help-block">
+                                    <div>${errors.get("logFilePath")}</div>
+                                </span>
+                            </c:if>
+                        </div>
+                        <div class="form-group <c:if test="${errors.get(\"logFileCount\") != null}"> has-error</c:if>">
+                            <label class="col-sm-4 control-label">Максимальное количество файлов</label>
+                            <div class="col-sm-8"><input type="number" <c:if test="${!isLogFileEnabled}">disabled="disabled"</c:if> name="logFileCount" required value="${logProperties.get("log4j.appender.fileRoll.MaxFileSize")}" class="form-control"></div>
+                            <c:if test="${errors.get(\"logFileCount\") != null}">
+                                <span class="help-block">
+                                    <div>${errors.get("logFileCount")}</div>
+                                </span>
+                            </c:if>
+                        </div>
+                        <div class="form-group <c:if test="${errors.get(\"logFileMaxSize\") != null}"> has-error</c:if>">
+                            <label class="col-sm-4 control-label">Максимальный размер файла (Мб)</label>
+                            <div class="col-sm-8"><input type="number" <c:if test="${!isLogFileEnabled}">disabled="disabled"</c:if> name="logFileMaxSize" required value="${logProperties.get("log4j.appender.fileRoll.MaxBackupIndex")}" class="form-control"></div>
+                            <c:if test="${errors.get(\"logFileMaxSize\") != null}">
+                                <span class="help-block">
+                                    <div>${errors.get("logFileMaxSize")}</div>
+                                </span>
+                            </c:if>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <div class="i-checks">
+                                <label>
+                                    <input type="checkbox" id="logSyslogEnable" <c:if test="${isLogSyslogEnabled}">checked="checked"</c:if> name="logSyslogEnable">
+                                    <i></i> Включить логи в Syslog
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="logSyslogGroup">
+                        <div class="form-group <c:if test="${errors.get(\"logSyslogHost\") != null}"> has-error</c:if>">
+                            <label class="col-sm-4 control-label">Адрес Syslog сервера</label>
+                            <div class="col-sm-8"><input type="text" <c:if test="${!isLogSyslogEnabled}">disabled="disabled"</c:if> name="logSyslogHost" required value="${logProperties.get("log4j.appender.SYSLOG.syslogHost")}" class="form-control"></div>
+                            <c:if test="${errors.get(\"logSyslogHost\") != null}">
+                                <span class="help-block">
+                                    <div>${errors.get("logSyslogHost")}</div>
+                                </span>
+                            </c:if>
+                        </div>
+                        <div class="form-group <c:if test="${errors.get(\"logSyslogFacility\") != null}"> has-error</c:if>">
+                            <label class="col-sm-4 control-label">Категория записей в Syslog</label>
+                            <div class="col-sm-8"><input type="text" <c:if test="${!isLogSyslogEnabled}">disabled="disabled"</c:if> name="logSyslogFacility" required value="${logProperties.get("log4j.appender.SYSLOG.facility")}" class="form-control"></div>
+                            <c:if test="${errors.get(\"logSyslogFacility\") != null}">
+                                <span class="help-block">
+                                    <div>${errors.get("logSyslogFacility")}</div>
+                                </span>
+                            </c:if>
+                        </div>
                     </div>
                 </div>
                 <div class="inqbox-content">
