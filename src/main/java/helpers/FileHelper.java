@@ -1,10 +1,12 @@
 package helpers;
 
+import org.apache.commons.codec.binary.Base64InputStream;
 import org.apache.commons.codec.binary.Base64OutputStream;
 
 import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 
 /**
  * Получение хэша файла
@@ -107,7 +109,23 @@ public class FileHelper {
             output.write(buffer, 0, n);
             n = inputStream.read(buffer, 0, BUFFER_SIZE);
         }
-//        inputStream.close();
+        output.close();
+    }
+
+    /**
+     * Декодирование файла из Base64
+     */
+    public static void decodeBase64(String base64FileName, String outPath) throws IOException {
+        int BUFFER_SIZE = 4096;
+        byte[] buffer = new byte[BUFFER_SIZE];
+        InputStream input = new Base64InputStream(new FileInputStream(base64FileName));
+        OutputStream output = new FileOutputStream(outPath);
+        int n = input.read(buffer, 0, BUFFER_SIZE);
+        while (n >= 0) {
+            output.write(buffer, 0, n);
+            n = input.read(buffer, 0, BUFFER_SIZE);
+        }
+        input.close();
         output.close();
     }
 }

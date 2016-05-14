@@ -6,6 +6,7 @@ import exceptions.ForbiddenException;
 import exceptions.InternalException;
 import exceptions.NotFoundException;
 import helpers.FileHelper;
+import helpers.PEProperties;
 import helpers.UserHelper;
 import models.*;
 import org.apache.commons.io.FilenameUtils;
@@ -27,6 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Контроллер заявок
@@ -379,8 +381,7 @@ public class RequestController {
             @RequestParam int requestId,
             @RequestParam String comment,
             Principal principal,
-            RedirectAttributes attr,
-            Model model
+            RedirectAttributes attr
     ) {
         CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         if (!UserHelper.isModerator(activeUser)) {
@@ -393,6 +394,114 @@ public class RequestController {
         request.setStatus(RequestModel.ACCEPTED);
         try {
             if (request.update()) {
+                ArrayList<RequestFileModel> files = request.getFiles();
+                String catalogDirectory = Settings.getUploadPath();
+                String requestDirectory = Settings.getRequestUploadPath();
+                for (RequestFileModel file : files) {
+                    String firstDir = file.getHash().substring(0, 2);
+                    String secondDir = file.getHash().substring(2, 4);
+                    StringBuilder requestFile = new StringBuilder();
+                    requestFile
+                            .append(requestDirectory)
+                            .append(File.separator)
+                            .append(firstDir)
+                            .append(File.separator)
+                            .append(secondDir)
+                            .append(File.separator)
+                            .append(file.getFileName());
+                    StringBuilder catalogFile = new StringBuilder();
+                    catalogFile
+                            .append(catalogDirectory)
+                            .append(File.separator)
+                            .append(firstDir)
+                            .append(File.separator)
+                            .append(secondDir)
+                            .append(File.separator);
+
+                    // проверка существования пути до файла
+                    File uploadDir = new File(String.valueOf(catalogFile));
+                    if (!uploadDir.exists()) {
+                        uploadDir.mkdirs();
+                    }
+
+                    String resultFilename = FilenameUtils.removeExtension(file.getFileName()) + "." + file.getExtension();
+                    String resultFilePath = catalogFile.toString() + resultFilename;
+                    try {
+                        FileHelper.decodeBase64(requestFile.toString(), resultFilePath);
+
+                        // получение свойств файла
+                        Map<Integer, String> properties = null;
+                        try {
+                            properties = PEProperties.parse(resultFilePath);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        boolean isFilled = false;
+                        String fileTitle = null;
+                        String versionValue = null;
+                        if (properties != null) {
+                            fileTitle = properties.get(PropertyModel.PRODUCT_NAME);
+                            versionValue = properties.get(PropertyModel.FILE_VERSION);
+                            if (fileTitle != null && !fileTitle.trim().equals("") && versionValue != null && !versionValue.trim().equals("")) {
+                                isFilled = true;
+                            }
+                        }
+
+                        // сохранение файла в бд, если свойства заполненены
+                        FileModel fileModel = null;
+                        if (isFilled) {
+                            fileModel = FileModel.findByTitle(fileTitle);
+                            if (fileModel == null) {
+                                fileModel = new FileModel();
+                                fileModel.setTitle(fileTitle);
+                                fileModel.add();
+                            }
+                        }
+
+                        // добавленией новой версии файла
+                        FileVersionModel fileVersion = new FileVersionModel();
+                        if (fileModel == null) {
+                            fileVersion.setFileId(0);
+                        } else {
+                            fileVersion.setFileId(fileModel.getId());
+                        }
+                        fileVersion.setFileName(resultFilename);
+                        fileVersion.setHash(file.getHash());
+                        fileVersion.setIsFilled(isFilled);
+                        fileVersion.setUserId(activeUser.getEmployeeId());
+                        long time = new Date().getTime();
+                        fileVersion.setDate(time);
+                        if (versionValue != null && !versionValue.trim().equals("")) {
+                            fileVersion.setVersion(versionValue);
+                        }
+                        fileVersion.setFileSize(file.getFileSize());
+                        if (fileVersion.add()) {
+                            logger.info("Добавлена версия из заявки, id=" + fileVersion.getId()+"; служебный номер - " + activeUser.getEmployeeId());
+                        } else {
+                            logger.error("Ошибка при добавлении версии из заявки; служебный номер - " + activeUser.getEmployeeId());
+                        }
+
+                        // добавление остальных свойств версии в БД
+                        if (properties != null) {
+                            for (Map.Entry entry : properties.entrySet()) {
+                                int propertyId = (Integer) entry.getKey();
+                                if (propertyId != PropertyModel.FILE_VERSION && propertyId != PropertyModel.PRODUCT_NAME) {
+                                    FileVersionPropertyModel fileProperty = new FileVersionPropertyModel();
+                                    fileProperty.setFileVersionId(fileVersion.getId());
+                                    fileProperty.setPropertyId(propertyId);
+                                    fileProperty.setValue(String.valueOf(entry.getValue()));
+                                    if (fileProperty.add()) {
+                                        logger.info("Версии id=" + fileVersion.getId()+" добавлено новое свойство id="+propertyId+", значение - "+fileProperty.getValue()+"; служебный номер - " + activeUser.getEmployeeId());
+                                    } else {
+                                        logger.error("Ошибка при добавлении свойства id"+propertyId+" версии id="+fileVersion.getId()+"; служебный номер - " + activeUser.getEmployeeId());
+                                    }
+                                }
+                            }
+                        }
+                    } catch (IOException e) {
+                        throw new InternalException(e.getMessage());
+                    }
+                }
                 return "redirect:/request-view?requestId="+request.getId();
             } else {
                 attr.addFlashAttribute("errors", true);
