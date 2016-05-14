@@ -100,6 +100,10 @@ public class RequestController {
                 logger.warn("Попытка просмотра чужой заявки /request-view без прав модератора; служебный номер - "+activeUser.getEmployeeId());
                 throw new ForbiddenException("Доступ запрещен");
             }
+        } else {
+            if (UserHelper.isModerator(activeUser)) {
+                isModerator = true;
+            }
         }
         model.addAttribute("user", user);
         model.addAttribute("requestModel", requestModel);
@@ -314,6 +318,34 @@ public class RequestController {
             }
         } catch (SQLException e) {
             throw new InternalException("Ошибка при сохранении");
+        }
+    }
+
+    /**
+     * Обработчик удаления заявки
+     */
+    @RequestMapping(value = {"/request-delete"}, method = RequestMethod.GET)
+    public String requestDelete(
+            @RequestParam int requestId,
+            Principal principal,
+            RedirectAttributes attr
+    ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isModerator(activeUser)) {
+            logger.warn("Попытка удаления заявки (/request-delete) без прав модератора; служебный номер - "+activeUser.getEmployeeId());
+            throw new ForbiddenException("Доступ запрещен");
+        }
+
+        RequestModel request = RequestModel.findById(requestId);
+        try {
+            if (request.delete()) {
+                return "redirect:/request-list";
+            } else {
+                attr.addFlashAttribute("errors", true);
+                return "redirect:/request-view?requestId="+request.getId();
+            }
+        } catch (SQLException e) {
+            throw new InternalException("Ошибка при удалении");
         }
     }
 

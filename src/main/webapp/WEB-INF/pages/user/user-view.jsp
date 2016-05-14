@@ -35,10 +35,6 @@
             <td>${user.phone}</td>
         </tr>
         <tr>
-            <td>Факс</td>
-            <td>${user.fax}</td>
-        </tr>
-        <tr>
             <td>Отдел</td>
             <td>${user.department}</td>
         </tr>

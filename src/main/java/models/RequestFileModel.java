@@ -1,22 +1,23 @@
 package models;
 
+import config.Settings;
 import db.Database2;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class RequestFileModel implements ModelInterface {
     private static final String saveNew = "INSERT INTO requestFile(requestId, hash, fileName, fileSize, extension) VALUES(:requestId, :hash, :fileName, :fileSize, :extension)";
     private static final String isFileExist = "SELECT count(id) FROM requestFile WHERE hash = :hash AND fileSize = :fileSize";
-    private static final String getAll = "SELECT * FROM request";
-    private static final String getById = "SELECT * FROM request WHERE id = :id";
-    private static final String updateById = "UPDATE request SET text = :text, status = :status WHERE id = :id";
+    private static final String deleteById = "DELETE FROM requestFile WHERE id = :id";
 
     private int id;
     private int requestId;
@@ -64,8 +65,25 @@ public class RequestFileModel implements ModelInterface {
     }
 
     public boolean delete() throws SQLException {
-        // nothing
-        return false;
+        String uploadPath = Settings.getRequestUploadPath();
+        String firstDir = hash.substring(0, 2);
+        String secondDir = hash.substring(2, 4);
+        StringBuilder newFileName = new StringBuilder();
+        newFileName
+                .append(uploadPath)
+                .append(File.separator)
+                .append(firstDir)
+                .append(File.separator)
+                .append(secondDir)
+                .append(File.separator)
+                .append(fileName);
+        File file = new File(newFileName.toString());
+        boolean isDeleted = file.delete();
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("id", id);
+        int rows = template.update(deleteById, parameters);
+        return rows > 0;
     }
 
     /**
