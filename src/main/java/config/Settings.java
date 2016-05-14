@@ -312,7 +312,7 @@ public class Settings {
 
             String fileSize = property.getProperty(logFileMaxSize);
             if (fileSize != null) {
-                res.put(logFileMaxSize, fileSize);
+                res.put(logFileMaxSize, fileSize.replace("MB", ""));
             }
 
             String fileCount = property.getProperty(logFileCount);
@@ -431,7 +431,7 @@ public class Settings {
                 property.setProperty(logFilePath, path);
             }
             if (fileSize != null && fileSize > 0) {
-                property.setProperty(logFileMaxSize, fileSize.toString());
+                property.setProperty(logFileMaxSize, fileSize.toString() + "MB");
             }
             if (fileCount != null && fileCount > 0) {
                 property.setProperty(logFileCount, fileCount.toString());

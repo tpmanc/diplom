@@ -113,9 +113,31 @@ public class SettingsController {
 
         HashMap<String, String> dbProperties = Settings.getDbProperties();
         model.addAttribute("dbProperties", dbProperties);
+        String dbFilePath = Settings.getDbPath();
+        model.addAttribute("dbFilePath", dbFilePath);
 
         HashMap<String, String> adProperties = Settings.getADProperties();
         model.addAttribute("adProperties", adProperties);
+        String adFilePath = Settings.getADPath();
+        model.addAttribute("adFilePath", adFilePath);
+
+        HashMap<String, String> logProperties = Settings.getLogProperties();
+        String loggers = logProperties.get(Settings.loggersProperty);
+        boolean isLogFileEnabled = false;
+        boolean isLogSyslogEnabled = false;
+        if (loggers != null) {
+            if (loggers.contains(Settings.fileLoggerName)) {
+                isLogFileEnabled = true;
+            }
+            if (loggers.contains(Settings.syslogLoggerName)) {
+                isLogSyslogEnabled = true;
+            }
+        }
+        model.addAttribute("isLogFileEnabled", isLogFileEnabled);
+        model.addAttribute("isLogSyslogEnabled", isLogSyslogEnabled);
+        model.addAttribute("logProperties", logProperties);
+        String logFilePath = Settings.getLogPath();
+        model.addAttribute("logFilePath", logFilePath);
 
         model.addAttribute("pageTitle", "Настройки");
         return "setting/settings";
@@ -251,7 +273,6 @@ public class SettingsController {
             }
             if (!logSyslogError) {
                 Settings.setSyslogProperties(logSyslogHost, logSyslogFacility);
-                // todo Settings.addSyslogLogging(logSyslogHost, logSyslogFacility);
             }
         } else {
             Settings.disableSyslogLogger();
