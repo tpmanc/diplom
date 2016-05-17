@@ -4,7 +4,7 @@
 
 <jsp:include page="../layouts/layout_top.jsp" />
 
-<script src="<spring:url value="/resources/js/pages/file/file-form.js" />"></script>
+<script src="<spring:url value="/resources/js/pages/request/request-view.js" />"></script>
 
 <h2>${pageTitle}</h2>
 
@@ -22,6 +22,7 @@
     <p>
         <a class="btn btn-success" href="<spring:url value="/request-accept?requestId=${requestModel.id}" />">Принять</a>
         <a class="btn btn-danger" href="<spring:url value="/request-cancel?requestId=${requestModel.id}" />">Отклонить</a>
+        <a class="btn btn-danger" id="requestDeleteBtn" href="<spring:url value="/request-delete?requestId=${requestModel.id}" />">Удалить</a>
     </p>
 </c:if>
 

@@ -89,6 +89,10 @@ public class RequestModel implements ModelInterface {
     }
 
     public boolean delete() throws SQLException {
+        ArrayList<RequestFileModel> files = getFiles();
+        for (RequestFileModel file : files) {
+            file.delete();
+        }
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("id", id);
