@@ -1,6 +1,10 @@
 package helpers;
 
 import models.helpers.ExportParam;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.PumpStreamHandler;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -37,6 +41,22 @@ public class CommandHelper {
     }
 
     public static ArrayList<String> executeLinux(String command, String regexp) throws IOException, InterruptedException {
+
+//        new DefaultExecutor().execute(cmd);
+
+        ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+        PumpStreamHandler psh = new PumpStreamHandler(stdout);
+//        CommandLine cmd = CommandLine.parse("/usr/bin/php \n $arr = [1,2,3]; \n var_dump($arr);");
+        CommandLine cmd = new CommandLine("/usr/bin/php");
+        cmd.addArguments(new String[] {
+                "-c",
+                "'$arr = [1,2,3]; \n var_dump($arr);'"
+        }, false);
+        DefaultExecutor exec = new DefaultExecutor();
+        exec.setStreamHandler(psh);
+        exec.execute(cmd);
+        System.out.println(stdout.toString());
+
         ArrayList<String> result = new ArrayList<String>();
         Process p = null;
         p = Runtime.getRuntime().exec(command);
