@@ -41,7 +41,7 @@
 <br>
 
 <p>
-    <button class="btn btn-success" id="addNewTree">Добавить дерево</button>
+    <button class="btn btn-success" id="addNewTree">Добавить категорию</button>
 </p>
 
 <div id="treesHolder">
