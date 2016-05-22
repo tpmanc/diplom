@@ -19,25 +19,28 @@ import java.util.Map;
  * Модель шаблонов экспорта
  */
 public class ExportTemplateModel implements ModelInterface {
-    private static final String saveNew = "INSERT INTO exportTemplate(title, parameters, finalCommands) VALUES (:title, :parameters, :finalCommands)";
+    private static final String saveNew = "INSERT INTO exportTemplate(title, parameters, finalCommands, finalCommandsInterpreter) VALUES (:title, :parameters, :finalCommands, :finalCommandsInterpreter)";
     private static final String getAll = "SELECT * FROM exportTemplate";
     private static final String getById = "SELECT * FROM exportTemplate WHERE id = :id";
     private static final String getCountByTitle = "SELECT count(id) FROM exportTemplate WHERE title = :title";
     private static final String deleteById = "DELETE FROM exportTemplate WHERE id = :id";
-    private static final String updateById = "UPDATE exportTemplate SET parameters = :parameters, finalCommands = :finalCommands WHERE id = :id";
+    private static final String updateById = "UPDATE exportTemplate SET parameters = :parameters, finalCommands = :finalCommands, finalCommandsInterpreter = :finalCommandsInterpreter WHERE id = :id";
 
     private int id;
     private String title;
     private String parameters;
     private String finalCommands;
 
+    private int finalCommandsInterpreter;
+
     public ExportTemplateModel() {}
 
-    public ExportTemplateModel(int id, String title, String parameters, String finalCommands) {
+    public ExportTemplateModel(int id, String title, String parameters, String finalCommands, int finalCommandsInterpreter) {
         this.id = id;
         this.title = title;
         this.parameters = parameters;
         this.finalCommands = finalCommands;
+        this.finalCommandsInterpreter = finalCommandsInterpreter;
     }
 
     public boolean update() throws SQLException {
@@ -47,6 +50,7 @@ public class ExportTemplateModel implements ModelInterface {
             queryParameters.addValue("id", id);
             queryParameters.addValue("parameters", parameters);
             queryParameters.addValue("finalCommands", finalCommands);
+            queryParameters.addValue("finalCommandsInterpreter", finalCommandsInterpreter);
             int rows = template.update(updateById, queryParameters);
             if (rows > 0) {
                 return true;
@@ -62,6 +66,7 @@ public class ExportTemplateModel implements ModelInterface {
             queryParameters.addValue("title", title);
             queryParameters.addValue("parameters", parameters);
             queryParameters.addValue("finalCommands", finalCommands);
+            queryParameters.addValue("finalCommandsInterpreter", finalCommandsInterpreter);
             KeyHolder keyHolder = new GeneratedKeyHolder();
             template.update(saveNew, queryParameters, keyHolder);
             id = keyHolder.getKey().intValue();
@@ -94,7 +99,8 @@ public class ExportTemplateModel implements ModelInterface {
             String title = (String) result.get("title");
             String params = (String) result.get("parameters");
             String finalCommands = (String) result.get("finalCommands");
-            return new ExportTemplateModel(templateId, title, params, finalCommands);
+            Integer finalCommandsInterpreter = (Integer) result.get("finalCommandsInterpreter");
+            return new ExportTemplateModel(templateId, title, params, finalCommands, finalCommandsInterpreter);
         }
         throw new NotFoundException("Шаблон не найден", "404");
     }
@@ -118,7 +124,8 @@ public class ExportTemplateModel implements ModelInterface {
             String title = (String) row.get("title");
             String params = (String) row.get("parameters");
             String finalCommands = (String) row.get("finalCommands");
-            result.add(new ExportTemplateModel(templateId, title, params, finalCommands));
+            Integer finalCommandsInterpreter = (Integer) row.get("finalCommandsInterpreter");
+            result.add(new ExportTemplateModel(templateId, title, params, finalCommands, finalCommandsInterpreter));
         }
         return result;
     }
@@ -153,4 +160,13 @@ public class ExportTemplateModel implements ModelInterface {
     public void setFinalCommands(String finalCommands) {
         this.finalCommands = finalCommands;
     }
+
+    public int getFinalCommandsInterpreter() {
+        return finalCommandsInterpreter;
+    }
+
+    public void setFinalCommandsInterpreter(int finalCommandsInterpreter) {
+        this.finalCommandsInterpreter = finalCommandsInterpreter;
+    }
+
 }

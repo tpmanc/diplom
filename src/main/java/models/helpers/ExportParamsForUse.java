@@ -10,6 +10,7 @@ public class ExportParamsForUse {
     private Integer templateId;
     private String templateTitle;
     private String finalCommand;
+    private Integer finalCommandInterpreter;
 
     public Integer getTemplateId() {
         return templateId;
@@ -41,5 +42,13 @@ public class ExportParamsForUse {
 
     public void setFinalCommand(String finalCommand) {
         this.finalCommand = finalCommand;
+    }
+
+    public Integer getFinalCommandInterpreter() {
+        return finalCommandInterpreter;
+    }
+
+    public void setFinalCommandInterpreter(Integer finalCommandInterpreter) {
+        this.finalCommandInterpreter = finalCommandInterpreter;
     }
 }

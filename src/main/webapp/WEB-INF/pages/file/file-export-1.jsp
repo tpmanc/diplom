@@ -22,7 +22,7 @@
                         </select>\
                     </div>\
                     <div class="select">\
-                        <select class="interpreter-select" name="interpreter[]">\
+                        <select class="interpreter-select hidden" name="interpreter[]">\
                             <option value="1">cmd</option>\
                             <option value="2">PowerShell</option>\
                             <option value="3">JScript</option>\

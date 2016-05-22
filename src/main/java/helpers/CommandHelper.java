@@ -31,7 +31,7 @@ public class CommandHelper {
             String line = "";
             while ((line = reader.readLine()) != null) {
                 String value = new String(line.getBytes("ISO-8859-1"), "UTF-8");
-                sb.append(value + "\n");
+                sb.append(value).append("\n");
             }
             reader.close();
             Pattern pattern = Pattern.compile(regexp);
@@ -52,7 +52,7 @@ public class CommandHelper {
             String line = "";
             while ((line = reader.readLine()) != null) {
                 String value = new String(line.getBytes("ISO-8859-1"), "UTF-8");
-                sb.append(value + "\n");
+                sb.append(value).append("\n");
             }
             reader.close();
             Pattern pattern = Pattern.compile(regexp);
@@ -73,7 +73,7 @@ public class CommandHelper {
             String line = "";
             while ((line = reader.readLine()) != null) {
                 String value = new String(line.getBytes("ISO-8859-1"), "UTF-8");
-                sb.append(value + "\n");
+                sb.append(value).append("\n");
             }
             reader.close();
             Pattern pattern = Pattern.compile(regexp);
@@ -94,7 +94,7 @@ public class CommandHelper {
             String line = "";
             while ((line = reader.readLine()) != null) {
                 String value = new String(line.getBytes("ISO-8859-1"), "UTF-8");
-                sb.append(value + "\n");
+                sb.append(value).append("\n");
             }
             reader.close();
             Pattern pattern = Pattern.compile(regexp);
@@ -104,6 +104,79 @@ public class CommandHelper {
             }
         }
         return result;
+    }
+
+    public static String executeWindows(String command, int interpreter) throws IOException, InterruptedException {
+        if (interpreter == 1) {
+            String path = createFile(command, ".bat");
+            String[] cmd = {"cmd.exe", "/C", path};
+
+            Process p =  Runtime.getRuntime().exec(cmd);
+            p.waitFor();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+            StringBuilder sb = new StringBuilder();
+            String line = "";
+            while ((line = reader.readLine()) != null) {
+                String value = new String(line.getBytes("ISO-8859-1"), "UTF-8");
+                sb.append(value).append("\n");
+            }
+            reader.close();
+            return sb.toString();
+        } else if (interpreter == 2) {
+            String path = createFile(command, ".ps1");
+            String[] cmd = {"powershell", path};
+
+            Process p =  Runtime.getRuntime().exec(cmd);
+            p.waitFor();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+            StringBuilder sb = new StringBuilder();
+            String line = "";
+            while ((line = reader.readLine()) != null) {
+                String value = new String(line.getBytes("ISO-8859-1"), "UTF-8");
+                sb.append(value).append("\n");
+            }
+            reader.close();
+            return sb.toString();
+        } else if (interpreter == 3) {
+            String path = createFile(command, ".js");
+            String[] cmd = {"cscript", "/nologo", path};
+
+            Process p =  Runtime.getRuntime().exec(cmd);
+            p.waitFor();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+            StringBuilder sb = new StringBuilder();
+            String line = "";
+            while ((line = reader.readLine()) != null) {
+                String value = new String(line.getBytes("ISO-8859-1"), "UTF-8");
+                sb.append(value).append("\n");
+            }
+            reader.close();
+            return sb.toString();
+        } else if (interpreter == 4) {
+            String path = createFile(command, ".vbs");
+            String[] cmd = {"cscript", "/nologo", path};
+
+            Process p =  Runtime.getRuntime().exec(cmd);
+            p.waitFor();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+            StringBuilder sb = new StringBuilder();
+            String line = "";
+            while ((line = reader.readLine()) != null) {
+                String value = new String(line.getBytes("ISO-8859-1"), "UTF-8");
+                sb.append(value).append("\n");
+            }
+            reader.close();
+            return sb.toString();
+        }
+        return "";
     }
 
     private static String createFile(String text, String extension) throws IOException {
@@ -130,7 +203,7 @@ public class CommandHelper {
         StringBuilder sb = new StringBuilder();
         String line = "";
         while ((line = reader.readLine())!= null) {
-            sb.append(line + "\n");
+            sb.append(line).append("\n");
         }
         reader.close();
         Pattern pattern = Pattern.compile(regexp);
@@ -142,8 +215,10 @@ public class CommandHelper {
     }
 
     public static String executeLinux(String command) throws IOException, InterruptedException {
-        Process p = null;
-        p = Runtime.getRuntime().exec(command);
+        String path = createFile(command, ".sh");
+        ArrayList<String> result = new ArrayList<String>();
+        Process p;
+        p = Runtime.getRuntime().exec(path);
         p.waitFor();
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
@@ -153,6 +228,7 @@ public class CommandHelper {
         while ((line = reader.readLine())!= null) {
             sb.append(line).append("\n");
         }
+        reader.close();
         return sb.toString();
     }
 }

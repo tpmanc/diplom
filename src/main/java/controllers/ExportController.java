@@ -104,6 +104,7 @@ public class ExportController {
             params.setTemplateTitle(templateModel.getTitle());
             params.setParams(templateModel.getParameters());
             params.setFinalCommand(templateModel.getFinalCommands());
+            params.setFinalCommandInterpreter(templateModel.getFinalCommandsInterpreter());
             request.getSession().setAttribute("export"+versionId, params);
         } else {
             if (ExportTemplateModel.isTitleExist(templateTitle)) {
@@ -210,7 +211,6 @@ public class ExportController {
                             errors.put(names[i], ex.getMessage());
                         }
                     } else if (types[i] == 3) {
-                        // todo: windows commands
                         try {
                             commandResult = CommandHelper.executeWindows(values[i], regexps[commandsCounter], interpreters[commandsCounter]);
                             params.setVariants(commandResult);
@@ -335,6 +335,9 @@ public class ExportController {
             if (savedParameters.getFinalCommand() != null) {
                 parameters.setFinalCommand(savedParameters.getFinalCommand());
             }
+            if (savedParameters.getFinalCommandInterpreter() != null) {
+                parameters.setFinalCommandInterpreter(savedParameters.getFinalCommandInterpreter());
+            }
 
             if (errors.size() > 0) {
                 attr.addFlashAttribute("errors", errors);
@@ -401,6 +404,7 @@ public class ExportController {
     @RequestMapping(value = {"/file-export-handler-3" }, method = RequestMethod.POST)
     public String fileExportHandler3(
             @RequestParam String commands,
+            @RequestParam Integer commandsInterpreter,
             @RequestParam int versionId,
             Principal principal,
             HttpServletRequest request,
@@ -419,13 +423,16 @@ public class ExportController {
         }
 
         savedParameters.setFinalCommand(commands);
+        savedParameters.setFinalCommandInterpreter(commandsInterpreter);
         savedParametersForUse.setFinalCommand(commands);
+        savedParametersForUse.setFinalCommandInterpreter(commandsInterpreter);
 
         if (savedParametersForUse.getTemplateId() == null) {
             ExportTemplateModel model = new ExportTemplateModel();
             model.setTitle(savedParameters.getTemplateTitle());
             model.setParameters(savedParameters.getParamJson());
             model.setFinalCommands(savedParameters.getFinalCommand());
+            model.setFinalCommandsInterpreter(savedParameters.getFinalCommandInterpreter());
             try {
                 if (model.add()) {
                     savedParameters.setTemplateId(model.getId());
@@ -449,6 +456,7 @@ public class ExportController {
             }
             model.setParameters(savedParameters.getParamJson());
             model.setFinalCommands(savedParameters.getFinalCommand());
+            model.setFinalCommandsInterpreter(savedParameters.getFinalCommandInterpreter());
             try {
                 if (!model.update()) {
                     logger.error("Ошибка при сохранении шаблона (/file-export-handler-3); служебный номер - " + activeUser.getEmployeeId());
@@ -474,7 +482,11 @@ public class ExportController {
 
             String result = null;
             try {
-                result = CommandHelper.executeLinux(resultCommand);
+                if (commandsInterpreter == 1 || commandsInterpreter == 2 || commandsInterpreter == 3 || commandsInterpreter == 4) {
+                    result = CommandHelper.executeWindows(resultCommand, commandsInterpreter);
+                } else {
+                    result = CommandHelper.executeLinux(resultCommand);
+                }
             } catch (Exception e) {
                 errors.put("commands", e.getMessage());
             }

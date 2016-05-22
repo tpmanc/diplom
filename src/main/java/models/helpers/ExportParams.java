@@ -16,6 +16,7 @@ public class ExportParams {
     private Integer templateId;
     private String templateTitle;
     private String finalCommand;
+    private Integer finalCommandInterpreter;
 
     public Integer getTemplateId() {
         return templateId;
@@ -100,5 +101,13 @@ public class ExportParams {
             result.add(obj);
         }
         return result.toString();
+    }
+
+    public Integer getFinalCommandInterpreter() {
+        return finalCommandInterpreter;
+    }
+
+    public void setFinalCommandInterpreter(Integer finalCommandInterpreter) {
+        this.finalCommandInterpreter = finalCommandInterpreter;
     }
 }
