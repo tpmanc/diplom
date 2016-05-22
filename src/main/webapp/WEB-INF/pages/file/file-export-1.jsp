@@ -21,6 +21,14 @@
                             <option value="3">Команды Windows</option>\
                         </select>\
                     </div>\
+                    <div class="select">\
+                        <select class="interpreter-select" name="interpreter[]">\
+                            <option value="1">cmd</option>\
+                            <option value="2">PowerShell</option>\
+                            <option value="3">JScript</option>\
+                            <option value="4">VBS</option>\
+                        </select>\
+                    </div>\
                 </td>\
                 <td class="param-commands">\
                     <div class="section">\
@@ -80,6 +88,14 @@
                                     <option value="1">Значение</option>
                                     <option value="2" <c:if test="${item.type == 2}">selected</c:if>>Команды Linux</option>
                                     <option value="3" <c:if test="${item.type == 3}">selected</c:if>>Команды Windows</option>
+                                </select>
+                            </div>
+                            <div class="select">
+                                <select class="interpreter-select" name="interpreter[]">\
+                                    <option value="1" <c:if test="${item.interpreter == 1}">selected</c:if>>cmd</option>
+                                    <option value="2" <c:if test="${item.interpreter == 2}">selected</c:if>>PowerShell</option>
+                                    <option value="3" <c:if test="${item.interpreter == 3}">selected</c:if>>JScript</option>
+                                    <option value="4" <c:if test="${item.interpreter == 4}">selected</c:if>>VBS</option>
                                 </select>
                             </div>
                         </td>

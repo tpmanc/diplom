@@ -59,6 +59,9 @@ public class ExportParams {
                 if (((JSONObject) obj).get("regexp") != null) {
                     param.setRegexp(String.valueOf(((JSONObject) obj).get("regexp")));
                 }
+                if (((JSONObject) obj).get("interpreter") != null) {
+                    param.setInterpreter(Integer.parseInt(String.valueOf(((JSONObject) obj).get("interpreter"))));
+                }
                 params.add(param);
             }
         } catch (ParseException e) {
@@ -90,6 +93,9 @@ public class ExportParams {
             }
             if (param.getRegexp() != null) {
                 obj.put("regexp", param.getRegexp());
+            }
+            if (param.getInterpreter() > 0) {
+                obj.put("interpreter", param.getInterpreter());
             }
             result.add(obj);
         }

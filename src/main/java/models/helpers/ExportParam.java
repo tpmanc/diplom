@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class ExportParam {
     private String name;
     private int type;
+    private int interpreter;
     private String value;
     private ArrayList<String> variants;
     private String commands;
@@ -59,5 +60,13 @@ public class ExportParam {
 
     public void setRegexp(String regexp) {
         this.regexp = regexp;
+    }
+
+    public int getInterpreter() {
+        return interpreter;
+    }
+
+    public void setInterpreter(int interpreter) {
+        this.interpreter = interpreter;
     }
 }

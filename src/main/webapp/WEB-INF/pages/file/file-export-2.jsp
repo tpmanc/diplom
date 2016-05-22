@@ -47,6 +47,18 @@
                                     </span>
                                 </div>
                             </c:when>
+                            <c:when test="${item.type == 3}">
+                                <div class="select form-group <c:if test="${errors.get(item.name) != null}">has-error</c:if>">
+                                    <select class="form-control" required name="values[]">\
+                                        <c:forEach items="${item.variants}" var="value" varStatus="valueStat">
+                                            <option value="${value}">${value}</option>
+                                        </c:forEach>
+                                    </select>
+                                <span class="help-block">
+                                    <div>${errors.get(item.name)}</div>
+                                </span>
+                                </div>
+                            </c:when>
                             <c:otherwise>
                                 <div class="form-group <c:if test="${errors.get(item.name) != null}">has-error</c:if>">
                                     <input type="text" class="form-control disabled" readonly name="values[]" value="${item.value}">

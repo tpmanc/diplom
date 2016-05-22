@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.security.Principal;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -159,6 +160,7 @@ public class ExportController {
             @RequestParam(value="types[]", required=false) int[] types,
             @RequestParam(value="values[]", required=false) String[] values,
             @RequestParam(value="regexps[]", required=false) String[] regexps,
+            @RequestParam(value="interpreter[]", required=false) int[] interpreters,
             @RequestParam int versionId,
             Principal principal,
             HttpServletRequest request,
@@ -209,7 +211,13 @@ public class ExportController {
                         }
                     } else if (types[i] == 3) {
                         // todo: windows commands
-                        commandResult = CommandHelper.execute(values[i]);
+                        try {
+                            commandResult = CommandHelper.executeWindows(values[i], regexps[commandsCounter], interpreters[commandsCounter]);
+                            params.setVariants(commandResult);
+                            params.setInterpreter(interpreters[commandsCounter]);
+                        } catch (Exception ex) {
+                            errors.put(names[i], ex.getMessage());
+                        }
                     }
                     commandsCounter++;
                 } else {
@@ -301,7 +309,7 @@ public class ExportController {
                 for (int i = 0; i < count; i++) {
                     for (ExportParam param : savedParameters.getParams()) {
                         if (param.getName().equals(names[i])) {
-                            if (param.getType() == 2) {
+                            if (param.getType() == 2 || param.getType() == 3) {
                                 boolean isFind = false;
                                 for (String valueVariant : param.getVariants()) {
                                     if (valueVariant.equals(values[i])) {
