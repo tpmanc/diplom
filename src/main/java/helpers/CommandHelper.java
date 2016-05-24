@@ -188,11 +188,14 @@ public class CommandHelper {
         bw.close();
         boolean t = temp.setExecutable(true);
         System.out.println(t);
-        return temp.getAbsolutePath();
+        String path = temp.getAbsolutePath();
+        return path;
     }
 
     public static ArrayList<String> executeLinux(String command, String regexp) throws IOException, InterruptedException {
-        String path = createFile(command, ".sh");
+        String com = command.replaceAll("\\r", "\n");
+        com = com.replaceAll("\\r\\n", "\n");
+        String path = createFile(com, ".sh");
         ArrayList<String> result = new ArrayList<String>();
         Process p;
         p = Runtime.getRuntime().exec(path);
@@ -215,7 +218,9 @@ public class CommandHelper {
     }
 
     public static String executeLinux(String command) throws IOException, InterruptedException {
-        String path = createFile(command, ".sh");
+        String com = command.replaceAll("\\r", "\n");
+        com = com.replaceAll("\\r\\n", "\n");
+        String path = createFile(com, ".sh");
         ArrayList<String> result = new ArrayList<String>();
         Process p;
         p = Runtime.getRuntime().exec(path);
