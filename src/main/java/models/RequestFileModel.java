@@ -60,7 +60,7 @@ public class RequestFileModel implements ModelInterface {
     }
 
     public boolean validate() {
-        // todo
+        // nothing
         return true;
     }
 

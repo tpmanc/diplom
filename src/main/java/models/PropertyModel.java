@@ -271,6 +271,8 @@ public class PropertyModel implements ModelInterface {
         if (isRequired(id)) {
             return false;
         }
+        FilePropertyModel.deleteByProperty(id);
+        FileVersionPropertyModel.deleteByProperty(id);
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("id", id);

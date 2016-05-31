@@ -66,7 +66,6 @@ public class ExportParams {
                 params.add(param);
             }
         } catch (ParseException e) {
-            // todo log
             throw new InternalException("Ошибка при чтенни json");
         }
         this.params = params;

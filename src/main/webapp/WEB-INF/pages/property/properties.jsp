@@ -6,6 +6,11 @@
     <jsp:param name="activePage" value="property" />
 </jsp:include>
 
+<script src="<spring:url value="/resources/js/pages/property/properties.js" />"></script>
+<script>
+    var propertyDeleteUrl = "<spring:url value="/property-delete" />";
+</script>
+
 <h2>${pageTitle}</h2>
 
 <ol class="breadcrumb">
@@ -41,6 +46,11 @@
                 <c:if test="${item.custom == true}">
                     <a href="<spring:url value="/property-edit?id=" />${item.id}" class="icon">
                         <i class="fa fa-edit"></i>
+                    </a>
+                </c:if>
+                <c:if test="${item.custom == true}">
+                    <a data-id="${item.id}" class="icon remove-property">
+                        <i class="fa fa-trash"></i>
                     </a>
                 </c:if>
             </td>

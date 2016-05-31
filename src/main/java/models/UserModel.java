@@ -134,7 +134,7 @@ public class UserModel implements ModelInterface {
      * @return Результат валидации
      */
     public boolean validate() {
-        // TODO
+        // nothing
         return true;
     }
 

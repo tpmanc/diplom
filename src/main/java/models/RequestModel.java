@@ -84,7 +84,7 @@ public class RequestModel implements ModelInterface {
     }
 
     public boolean validate() {
-        // todo
+        // nothing
         return true;
     }
 

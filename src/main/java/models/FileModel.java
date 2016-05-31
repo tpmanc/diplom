@@ -45,7 +45,7 @@ public class FileModel implements ModelInterface {
     public static final int PAGE_COUNT = 10;
 
     public boolean update() throws SQLException {
-        // TODO: update data
+        // nothing
         return false;
     }
 

@@ -4,8 +4,10 @@ import auth.CustomUserDetails;
 import exceptions.ForbiddenException;
 import exceptions.NotFoundException;
 import helpers.UserHelper;
+import models.FilePropertyModel;
 import models.PropertyModel;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -193,7 +195,7 @@ public class PropertyController {
      * @return json строка
      */
     @RequestMapping(value = {"/property-delete" }, method = RequestMethod.POST)
-    public @ResponseBody boolean deleteHandler(
+    public @ResponseBody String deleteHandler(
             @RequestParam("id") int id,
             Model model,
             Principal principal
@@ -203,8 +205,22 @@ public class PropertyController {
             logger.warn("Попытка удаления свойства (/property-delete) без прав модератора; служебный номер - "+activeUser.getEmployeeId());
             throw new ForbiddenException("Доступ запрещен");
         }
-        // TODO: обработка удаления свойства
-        return false;
+
+        JSONObject result = new JSONObject();
+        boolean error = true;
+
+        try {
+            PropertyModel property = PropertyModel.findById(id);
+            if (property.delete()) {
+                error = false;
+                logger.info("Свойство id="+id+" (/property-delete) удалено; служебный номер - "+activeUser.getEmployeeId());
+            }
+        } catch (SQLException e) {
+            throw new NotFoundException("Свойство файла не найдено");
+        }
+
+        result.put("error", error);
+        return result.toJSONString();
     }
 
 }
