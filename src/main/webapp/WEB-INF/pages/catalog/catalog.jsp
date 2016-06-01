@@ -37,8 +37,19 @@
     <div class="col-md-4 catalog-holder" id="treesHolder"></div>
     <div class="col-md-8" id="filesHolder">
         <c:forEach items="${categoryFiles}" var="file" varStatus="itemStat">
-            <c:set var="file" value="${file}" scope="request" />
-            <jsp:include page="../file/_listing-element.jsp" />
+            <div class="file-box">
+                <div class="file">
+                    <a href="<spring:url value="/file-view?id=${file.id}" />">
+                        <span class="corner"></span>
+                        <div class="file-name">${file.title}
+                            <br>
+                            <small>Дата: ${file.date}</small>
+                            <br>
+                            <small>Загрузил: ${file.userDN}</small>
+                        </div>
+                    </a>
+                </div>
+            </div>
         </c:forEach>
     </div>
 </div>
