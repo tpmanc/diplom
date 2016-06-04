@@ -121,6 +121,9 @@ public class UserModel implements ModelInterface {
             parameters.addValue("phone", phone);
             parameters.addValue("email", email);
             parameters.addValue("displayName", displayName);
+            parameters.addValue("department", department);
+            parameters.addValue("departmentNumber", departmentNumber);
+            parameters.addValue("address", address);
             int rows = template.update(saveNew, parameters);
             if (rows > 0) {
                 return true;
