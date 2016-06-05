@@ -202,11 +202,12 @@ public class FileModel implements ModelInterface {
         return count;
     }
 
-    public FileVersionModel getLastVersion() {
-        String sql = "SELECT * FROM fileVersion WHERE fileId = :fileId ORDER BY CONVERT(version, decimal) DESC LIMIT 1;";
+    public FileVersionModel getLastEnabledVersion() {
+        String sql = "SELECT * FROM fileVersion WHERE fileId = :fileId AND isDisabled = :isDisabled ORDER BY CONVERT(version, decimal) DESC LIMIT 1;";
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("fileId", id);
+        parameters.addValue("isDisabled", false);
         List<Map<String, Object>> rows = template.queryForList(sql, parameters);
         for (Map row : rows) {
             Integer id = (Integer) row.get("id");
@@ -223,6 +224,8 @@ public class FileModel implements ModelInterface {
         }
         throw new NotFoundException("Версия не найдена");
     }
+
+
 
     public ArrayList<FileVersionModel> getVersionList(boolean onlyEnabled) {
         ArrayList<FileVersionModel> result = new ArrayList<FileVersionModel>();

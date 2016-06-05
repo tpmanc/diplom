@@ -104,6 +104,14 @@
         <label for="ldapRole">Аттрибут роли</label>
         <input type="text" class="form-control" name="ldapRole" required id="ldapRole" value="${adProperties.get("ldap.role-attribute")}">
     </div>
+    <div class="form-group">
+        <label for="ldapAdminGroup">Название группы администраторов</label>
+        <input type="text" class="form-control" name="ldapAdminGroup" required id="ldapAdminGroup" value="${adProperties.get("ldap.admin")}">
+    </div>
+    <div class="form-group">
+        <label for="ldapModeratorGroup">Название группы модераторов</label>
+        <input type="text" class="form-control" name="ldapModeratorGroup" required id="ldapModeratorGroup" value="${adProperties.get("ldap.moderator")}">
+    </div>
 
     <h2>Логи</h2>
     <code>Файл: ${logFilePath}</code>

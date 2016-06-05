@@ -4011,9 +4011,26 @@ ul.notes li div {
     font-size:70px;
     color:#dadada
 }
+#filesHolder {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+
+    -webkit-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
+
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+
+    border-left: 1px solid #e7eaec;
+    margin-left: -1px;
+}
 .file .file-name {
     padding:10px;
-    height: 120px;
     background-color:#f8f8f8;
     border-top:1px solid #e7eaec
 }

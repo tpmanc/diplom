@@ -1,3 +1,4 @@
+<%@ page import="helpers.UserHelper" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
@@ -7,7 +8,7 @@
     <jsp:param name="activePage" value="file" />
 </jsp:include>
 
-<sec:authorize access="hasAnyRole('ROLE_FR-ADMIN', 'ROLE_FR-MODERATOR')">
+<sec:authorize access="<%= UserHelper.checkBoth() %>">
     <script src="<spring:url value="/resources/js/pages/file/file-view.js" />"></script>
     <script>
         var filePropertyDeleteUrl = "<spring:url value="/file-property-delete" />";
@@ -18,7 +19,7 @@
         var fileVersionDeleteRedirectUrl = "<spring:url value="/files" />";
     </script>
 </sec:authorize>
-<sec:authorize access="!hasRole('ROLE_FR-ADMIN') && !hasRole('ROLE_FR-MODERATOR')">
+<sec:authorize access="<%= UserHelper.checkNoModeratorAndAdmin() %>">
     <script src="<spring:url value="/resources/js/pages/catalog/file-view.js" />"></script>
 </sec:authorize>
 
@@ -26,7 +27,7 @@
 
 <ol class="breadcrumb">
     <li><a href="<spring:url value="/" />">Главная</a></li>
-    <sec:authorize access="hasAnyRole('ROLE_FR-ADMIN', 'ROLE_FR-MODERATOR')">
+    <sec:authorize access="<%= UserHelper.checkBoth() %>">
         <li><a href="<spring:url value="/files" />">Файлы</a></li>
     </sec:authorize>
     <li class="active">
@@ -37,24 +38,24 @@
 <br>
 
 <p>
-    <sec:authorize access="hasAnyRole('ROLE_FR-ADMIN', 'ROLE_FR-MODERATOR')">
+    <sec:authorize access="<%= UserHelper.checkBoth() %>">
         <a href="<spring:url value="/file-categories?fileId=${file.id}" />" class="btn btn-info">Редактировать категории</a>
         <a href="<spring:url value="/file-filling?versionId=${currentVersion.id}" />" class="btn btn-warning">Изменить</a>
     </sec:authorize>
     <a href="<spring:url value="/file-download?id=${currentVersion.id}" />" class="btn btn-primary">Скачать файл</a>
 </p>
 
-<sec:authorize access="hasAnyRole('ROLE_FR-ADMIN', 'ROLE_FR-MODERATOR')">
+<sec:authorize access="<%= UserHelper.checkBoth() %>">
 <p>
     <a href="<spring:url value="/file-property-add?id=${file.id}" />" class="btn btn-success">Добавить свойство файла</a>
     <a href="<spring:url value="/file-version-property-add?id=${currentVersion.id}" />" class="btn btn-success">Добавить свойство версии</a>
-    <sec:authorize access="hasRole('ROLE_FR-ADMIN')">
+    <sec:authorize access="<%= UserHelper.checkAdmin() %>">
         <a href="<spring:url value="/file-export-template?versionId=${currentVersion.id}" />" class="btn btn-warning">Экспорт</a>
     </sec:authorize>
 </p>
 <p>
     <a href="#" id="deleteVersionBtn" data-versionid="${currentVersion.id}" class="btn btn-danger">Удалить версию</a>
-    <sec:authorize access="hasRole('ROLE_FR-ADMIN')">
+    <sec:authorize access="<%= UserHelper.checkAdmin() %>">
         <c:if test="${currentVersion.isDisabled}">
             <a href="#" id="deleteVersionPermanentBtn" data-versionid="${currentVersion.id}" class="btn btn-danger">Удалить окончательно</a>
         </c:if>
@@ -84,7 +85,7 @@
             <td>Название</td>
             <td>${file.title}</td>
         </tr>
-        <sec:authorize access="hasAnyRole('ROLE_FR-ADMIN', 'ROLE_FR-MODERATOR')">
+        <sec:authorize access="<%= UserHelper.checkBoth() %>">
             <tr>
                 <td>Загрузил</td>
                 <td><a href="<spring:url value="/user-view?id=${user.id}" />">${user.displayName}</a></td>
@@ -123,7 +124,7 @@
         <tr class="file-property-holder">
             <td>${item.title}</td>
             <td>${item.value}</td>
-            <sec:authorize access="hasAnyRole('ROLE_FR-ADMIN', 'ROLE_FR-MODERATOR')">
+            <sec:authorize access="<%= UserHelper.checkBoth() %>">
                 <td>
                     <a href="<spring:url value="/file-property-edit?id=" />${item.id}" class="icon">
                         <i class="fa fa-edit"></i>
@@ -152,7 +153,7 @@
             <tr class="file-version-property">
                 <td>${item.title}</td>
                 <td>${item.value}</td>
-                <sec:authorize access="hasAnyRole('ROLE_FR-ADMIN', 'ROLE_FR-MODERATOR')">
+                <sec:authorize access="<%= UserHelper.checkBoth() %>">
                     <td>
                         <a href="<spring:url value="/file-version-property-edit?id=" />${item.id}" class="icon">
                             <i class="fa fa-edit"></i>

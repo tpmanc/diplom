@@ -1,9 +1,10 @@
+<%@ page import="helpers.UserHelper" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
-<sec:authorize access="hasAnyRole('ROLE_FR-ADMIN', 'ROLE_FR-MODERATOR')">
+<sec:authorize access="<%= UserHelper.checkBoth() %>">
     <nav class="navbar-default navbar-static-side fixed-menu" role="navigation">
         <div class="sidebar-collapse">
             <div id="hover-menu"></div>
@@ -51,7 +52,7 @@
                                 <li <c:if test="${param.activePage == 'user'}"> class="active" </c:if>>
                                     <a href="<spring:url value="/users" />"><i class="fa fa-user"></i> <span class="nav-label">Пользователи</span></a>
                                 </li>
-                                <sec:authorize access="hasRole('ROLE_FR-ADMIN')">
+                                <sec:authorize access="<%= UserHelper.checkAdmin() %>">
                                     <li <c:if test="${param.activePage == 'settings'}"> class="active" </c:if>>
                                         <a href="<spring:url value="/settings" />"><i class="fa fa-cog"></i> <span class="nav-label">Настройки</span></a>
                                     </li>
@@ -67,12 +68,12 @@
 
 <div id="page-wrapper"
      class="gray-bg
-            <sec:authorize access="!hasRole('ROLE_FR-ADMIN') && !hasRole('ROLE_FR-MODERATOR')">
+            <sec:authorize access="<%= UserHelper.checkNoModeratorAndAdmin() %>">
                 user-page
             </sec:authorize>
     ">
 
-    <sec:authorize access="!hasRole('ROLE_FR-ADMIN') && !hasRole('ROLE_FR-MODERATOR')">
+    <sec:authorize access="<%= UserHelper.checkNoModeratorAndAdmin() %>">
         <div>
             <nav class="navbar navbar-fixed-top white-bg show-menu-full" id="nav" role="navigation" style="margin-bottom: 0">
                 <div class="navbar-header">

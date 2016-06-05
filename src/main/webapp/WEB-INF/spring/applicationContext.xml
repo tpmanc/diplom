@@ -34,5 +34,10 @@
         <property name="poolSize" value="${db.poolSize}"/>
     </bean>
 
+    <bean id="rolesConfig" class="helpers.RolesHelper">
+        <property name="admin" value="${ldap.admin}"/>
+        <property name="moderator" value="${ldap.moderator}"/>
+    </bean>
+
     <!--<bean id="ldapConfiguration" class="config.LdapConfiguration"/>-->
 </beans>

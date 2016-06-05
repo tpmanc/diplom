@@ -41,11 +41,10 @@
                 <div class="file">
                     <a href="<spring:url value="/file-view?id=${file.id}" />">
                         <span class="corner"></span>
-                        <div class="file-name">${file.title}
+                        <div class="file-name">
+                            <div class="file-title">${file.title}</div>
                             <br>
                             <small>Дата: ${file.date}</small>
-                            <br>
-                            <small>Загрузил: ${file.userDN}</small>
                         </div>
                     </a>
                 </div>

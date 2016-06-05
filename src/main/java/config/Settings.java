@@ -30,6 +30,8 @@ public class Settings {
     private static final String ldapGroupSearchBase = "ldap.group-search-base";
     private static final String ldapGroupSearchFilter = "ldap.group-search-filter";
     private static final String ldapRole = "ldap.role-attribute";
+    private static final String ldapAdminGroup = "ldap.admin";
+    private static final String ldapModeratorGroup = "ldap.moderator";
 
     public static final String loggersProperty = "log4j.rootLogger";
     public static final String fileLoggerName = "fileRoll";
@@ -283,6 +285,16 @@ public class Settings {
             if (role != null) {
                 res.put(ldapRole, role);
             }
+
+            String adminGroup = property.getProperty(ldapAdminGroup);
+            if (adminGroup != null) {
+                res.put(ldapAdminGroup, adminGroup);
+            }
+
+            String moderatorGroup = property.getProperty(ldapModeratorGroup);
+            if (moderatorGroup != null) {
+                res.put(ldapModeratorGroup, moderatorGroup);
+            }
             return res;
         } catch (IOException e) {
             throw new InternalException("Файл "+Settings.getADPath()+" не найден");
@@ -367,7 +379,17 @@ public class Settings {
         }
     }
 
-    public static void setAdProperties(String url, String manager, String pass, String userSearch, String groupSearch, String groupFilter, String role) {
+    public static void setAdProperties(
+            String url,
+            String manager,
+            String pass,
+            String userSearch,
+            String groupSearch,
+            String groupFilter,
+            String role,
+            String adminGroup,
+            String moderatorGroup
+    ) {
         String adFilePath = getADPath();
 
         FileInputStream fis;
@@ -397,6 +419,12 @@ public class Settings {
             }
             if (role != null && role.length() > 0) {
                 property.setProperty(ldapRole, role);
+            }
+            if (adminGroup != null && adminGroup.length() > 0) {
+                property.setProperty(ldapAdminGroup, adminGroup);
+            }
+            if (moderatorGroup != null && moderatorGroup.length() > 0) {
+                property.setProperty(ldapModeratorGroup, moderatorGroup);
             }
 
             FileOutputStream out = new FileOutputStream(adFilePath);

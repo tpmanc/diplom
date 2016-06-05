@@ -10,6 +10,7 @@
 
 <ol class="breadcrumb">
     <li><a href="<spring:url value="/" />">Главная</a></li>
+    <li><a href="<spring:url value="/files" />">Файлы</a></li>
     <li class="active">
         <strong>${pageTitle}</strong>
     </li>
@@ -18,8 +19,14 @@
 <br>
 
 <p>
-    <a href="<spring:url value="/file-add" />" class="btn btn-success">Добавить файлы</a>
-    <a href="<spring:url value="/file-search" />" class="btn btn-info">Поиск</a>
+    <form role="search" action="<spring:url value="/file-search" />" method="get" class="navbar-form-custom">
+        <div class="input-group">
+            <input type="text" name="text" class="form-control" value="${text}" placeholder="Поиск">
+            <span class="input-group-btn">
+                <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
+            </span>
+        </div>
+    </form>
 </p>
 
 <table class="table table-striped models-view">
@@ -44,10 +51,5 @@
     </c:forEach>
     </tbody>
 </table>
-
-<c:if test="${pageCount > 1}">
-    <c:set var="pageUrl" value="files" scope="request" />
-    <jsp:include page="../widgets/paginator.jsp" />
-</c:if>
 
 <jsp:include page="../layouts/layout_bottom.jsp" />

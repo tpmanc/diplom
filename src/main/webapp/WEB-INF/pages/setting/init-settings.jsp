@@ -110,6 +110,14 @@
                         <label class="col-sm-4 control-label">Аттрибут роли</label>
                         <div class="col-sm-8"><input type="text" name="ldapRole" required value="${adProperties.get("ldap.role-attribute")}" class="form-control"></div>
                     </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Название группы администраторов</label>
+                        <div class="col-sm-8"><input type="text" name="ldapAdminGroup" required value="${adProperties.get("ldap.admin")}" class="form-control"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Название группы модераторов</label>
+                        <div class="col-sm-8"><input type="text" name="ldapModeratorGroup" required value="${adProperties.get("ldap.moderator")}" class="form-control"></div>
+                    </div>
                 </div>
                 <div class="inqbox-title">
                     <h5>Логи</h5>

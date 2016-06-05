@@ -9,6 +9,7 @@ import helpers.FileHelper;
 import helpers.PEProperties;
 import helpers.UserHelper;
 import models.*;
+import models.helpers.CategoryFile;
 import models.helpers.FileCategory;
 import models.helpers.FileFilling;
 import org.apache.commons.io.FilenameUtils;
@@ -92,7 +93,7 @@ public class FileController {
             FileVersionModel currentVersion;
             // если id версии не указан, то берем последнюю
             if (versionId == 0) {
-                currentVersion = file.getLastVersion();
+                currentVersion = file.getLastEnabledVersion();
             } else {
                 currentVersion = FileVersionModel.findByIdAndFile(versionId, id);
             }
@@ -159,6 +160,34 @@ public class FileController {
         }
         model.addAttribute("pageTitle", "Добавить файл");
         return "file/file-add";
+    }
+
+    /**
+     * Поиск файлов
+     * @param model
+     * @return Путь до представления
+     */
+    @RequestMapping(value = {"/file-search" }, method = RequestMethod.GET)
+    public String fileSearch(
+            @RequestParam(value="text", required=false, defaultValue = "") String text,
+            Model model,
+            Principal principal
+    ) {
+        CustomUserDetails activeUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        if (!UserHelper.isModerator(activeUser)) {
+            logger.warn("Попытка доступа на страницу /file-search без прав модератора; служебный номер - "+activeUser.getEmployeeId());
+            throw new ForbiddenException("Доступ запрещен");
+        }
+
+        ArrayList<CategoryFile> files = null;
+        if (text.length() > 0) {
+            files = FileModel.findFilesByTitles(text);
+        }
+        model.addAttribute("files", files);
+
+        model.addAttribute("text", text);
+        model.addAttribute("pageTitle", "Поиск");
+        return "file/file-search";
     }
 
     /**

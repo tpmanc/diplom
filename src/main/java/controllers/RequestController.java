@@ -233,7 +233,7 @@ public class RequestController {
                             .append(hash);
                     String extension = FilenameUtils.getExtension(uploadedFileName);
                     if (!extension.equals("")) {
-                        fileName.append(".txt");
+                        fileName.append(".b64");
                     }
                     newFileName.append(File.separator).append(fileName);
 

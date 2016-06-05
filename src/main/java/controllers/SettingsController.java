@@ -158,6 +158,8 @@ public class SettingsController {
             @RequestParam String ldapGroupSearch,
             @RequestParam String ldapGroupFilter,
             @RequestParam String ldapRole,
+            @RequestParam String ldapAdminGroup,
+            @RequestParam String ldapModeratorGroup,
             @RequestParam(value="logFileEnable", required=false, defaultValue = "false") boolean logFileEnable,
             @RequestParam(value="logFilePath", required=false) String logFilePath,
             @RequestParam(value="logFileCount", required=false) Integer logFileCount,
@@ -280,7 +282,7 @@ public class SettingsController {
 
         Settings.setDbProperties(dbUrl, dbUser, dbPass, dbPool);
 
-        Settings.setAdProperties(ldapUrl, ldapManager, ldapPassword, ldapUserFilter, ldapGroupSearch, ldapGroupFilter, ldapRole);
+        Settings.setAdProperties(ldapUrl, ldapManager, ldapPassword, ldapUserFilter, ldapGroupSearch, ldapGroupFilter, ldapRole, ldapAdminGroup, ldapModeratorGroup);
 
         if (errors.size() > 0) {
             attr.addFlashAttribute("errors", errors);
