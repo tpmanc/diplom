@@ -93,7 +93,11 @@ public class FileController {
             FileVersionModel currentVersion;
             // если id версии не указан, то берем последнюю
             if (versionId == 0) {
-                currentVersion = file.getLastEnabledVersion();
+                if (UserHelper.isModerator(activeUser)) {
+                    currentVersion = file.getLastVersion(false);
+                } else {
+                    currentVersion = file.getLastVersion(true);
+                }
             } else {
                 currentVersion = FileVersionModel.findByIdAndFile(versionId, id);
             }

@@ -3,7 +3,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 
 <jsp:include page="../layouts/layout_top.jsp">
-    <jsp:param name="activePage" value="property" />
+    <jsp:param name="activePage" value="settings" />
 </jsp:include>
 
 <script src="<spring:url value="/resources/js/pages/setting/init-settings.js" />"></script>

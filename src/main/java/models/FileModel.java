@@ -202,8 +202,13 @@ public class FileModel implements ModelInterface {
         return count;
     }
 
-    public FileVersionModel getLastEnabledVersion() {
-        String sql = "SELECT * FROM fileVersion WHERE fileId = :fileId AND isDisabled = :isDisabled ORDER BY CONVERT(version, decimal) DESC LIMIT 1;";
+    public FileVersionModel getLastVersion(boolean enabledOnly) {
+        String sql;
+        if (enabledOnly) {
+            sql = "SELECT * FROM fileVersion WHERE fileId = :fileId AND isDisabled = :isDisabled ORDER BY CONVERT(version, decimal) DESC LIMIT 1;";
+        } else {
+            sql = "SELECT * FROM fileVersion WHERE fileId = :fileId ORDER BY CONVERT(version, decimal) DESC LIMIT 1;";
+        }
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(Database2.getInstance().getBds());
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("fileId", id);
