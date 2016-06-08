@@ -7,6 +7,7 @@ import exceptions.InternalException;
 import exceptions.NotFoundException;
 import helpers.FileHelper;
 import helpers.PEProperties;
+import helpers.TriggerHelper;
 import helpers.UserHelper;
 import models.*;
 import models.helpers.CategoryFile;
@@ -404,12 +405,13 @@ public class FileController {
                         try {
                             properties = PEProperties.parse(newFileName.toString());
                         } catch (Exception e) {
-                            e.printStackTrace();
+//                            e.printStackTrace();
+                            properties = TriggerHelper.getProperties(extension, newFileName.toString());
                         }
                         boolean isFilled = false;
                         String fileTitle = null;
                         String versionValue = null;
-                        if (properties != null) {
+                        if (properties != null && properties.size() > 0) {
                             fileTitle = properties.get(PropertyModel.PRODUCT_NAME);
                             versionValue = properties.get(PropertyModel.FILE_VERSION);
                             if (fileTitle != null && !fileTitle.trim().equals("") && versionValue != null && !versionValue.trim().equals("")) {

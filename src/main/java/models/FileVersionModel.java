@@ -35,6 +35,7 @@ public class FileVersionModel implements ModelInterface {
     private long date;
     private boolean isFilled;
     private boolean isDisabled = false;
+    private String bits = null;
 
     public HashMap<String, List<String>> errors = new HashMap<String, List<String>>();
 
@@ -75,6 +76,20 @@ public class FileVersionModel implements ModelInterface {
         this.isFilled = isFilled;
         this.fileName = fileName;
         this.isDisabled = isDisabled;
+    }
+
+    public FileVersionModel(int id, int fileId, int userId, String version, String hash, long fileSize, long date, boolean isFilled, String fileName, boolean isDisabled, String bits) {
+        this.id = id;
+        this.fileId = fileId;
+        this.userId = userId;
+        this.version = version;
+        this.hash = hash;
+        this.fileSize = fileSize;
+        this.date = date;
+        this.isFilled = isFilled;
+        this.fileName = fileName;
+        this.isDisabled = isDisabled;
+        this.bits = bits;
     }
 
     public boolean add() throws SQLException {
@@ -320,5 +335,9 @@ public class FileVersionModel implements ModelInterface {
 
     public boolean getIsDisabled() {
         return isDisabled;
+    }
+
+    public String getBits() {
+        return bits;
     }
 }

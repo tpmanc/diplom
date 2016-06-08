@@ -17,6 +17,7 @@ public class PropertyModel implements ModelInterface {
     private static HashMap<String, Integer> defaultProperties = new HashMap<String, Integer>();
     public static final int PRODUCT_NAME = 9;
     public static final int FILE_VERSION = 3;
+    public static final int FILE_BITS = 11;
     static {
         defaultProperties.put("FileDescription", 1);
         defaultProperties.put("OriginalFilename", 2);
@@ -28,13 +29,14 @@ public class PropertyModel implements ModelInterface {
         defaultProperties.put("InternalName", 8);
         defaultProperties.put("ProductName", PRODUCT_NAME);
         defaultProperties.put("Comments", 10);
+        defaultProperties.put("Bits", 11);
     }
 
     private static final String saveNew = "INSERT INTO property(title) VALUES(:title)";
     private static final String getAll = "SELECT * FROM property";
-    private static final String getAllCustom = "SELECT * FROM property WHERE id > 10";
-    private static final String getAllCustomByPage = "SELECT * FROM property WHERE id > 10 LIMIT :limit OFFSET :offset";
-    private static final String getCount = "SELECT count(id) FROM property WHERE id > 10";
+    private static final String getAllCustom = "SELECT * FROM property WHERE id > 11";
+    private static final String getAllCustomByPage = "SELECT * FROM property WHERE id > 11 LIMIT :limit OFFSET :offset";
+    private static final String getCount = "SELECT count(id) FROM property WHERE id > 11";
     private static final String getById = "SELECT * FROM property WHERE id = :id";
     private static final String deleteById = "DELETE FROM property WHERE id = :id";
     private static final String updateById = "UPDATE property SET title = :title WHERE id = :id";

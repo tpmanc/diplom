@@ -48,6 +48,15 @@ public class UserHelper {
         return res.toString();
     }
 
+    public static String checkNoAdmin() {
+        StringBuilder res = new StringBuilder();
+        res
+                .append("!hasRole('")
+                .append(ADMIN_ROLE)
+                .append("')");
+        return res.toString();
+    }
+
     public static String checkNoModeratorAndAdmin() {
         StringBuilder res = new StringBuilder();
         res

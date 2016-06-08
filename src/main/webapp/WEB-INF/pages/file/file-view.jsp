@@ -98,7 +98,7 @@
                     <input type="hidden" name="id" value="${file.id}">
                     <select id="versionSelect" name="versionId">
                         <c:forEach items="${versionList}" var="item" varStatus="itemStat">
-                            <option <c:if test="${currentVersion.id == item.id}"> selected="selected" </c:if> value="${item.id}">${item.version} <c:if test="${item.isDisabled}">(удален)</c:if></option>
+                            <option <c:if test="${currentVersion.id == item.id}"> selected="selected" </c:if> value="${item.id}">${item.version} ${item.bits} <c:if test="${item.isDisabled}">(удален)</c:if></option>
                         </c:forEach>
                     </select>
                 </form>
