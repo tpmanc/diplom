@@ -24,8 +24,8 @@ public class FileModel implements ModelInterface {
     private static final String getCount = "SELECT count(id) FROM file";
     private static final String getVersionCountExclude = "SELECT count(id) FROM fileVersion WHERE fileId = :fileId AND id <> :id";
     private static final String getTitles = "SELECT id, title FROM file WHERE title LIKE :str";
-    private static final String getVersions = "SELECT * FROM fileVersion WHERE fileId = :fileId ORDER BY CONVERT(version, decimal) DESC";
-    private static final String getEnabledVersions = "SELECT * FROM fileVersion WHERE fileId = :fileId AND isDisabled = :isDisabled ORDER BY CONVERT(version, decimal) DESC";
+    private static final String getVersions = "SELECT fileVersion.*, fileVersionProperty.`value` as `bits` FROM fileVersion LEFT JOIN fileVersionProperty ON fileVersionProperty.fileVersionId = fileVersion.id AND fileVersionProperty.propertyId = 11 WHERE fileId = :fileId ORDER BY CONVERT(version, decimal) DESC";
+    private static final String getEnabledVersions = "SELECT fileVersion.*, fileVersionProperty.`value` as `bits` FROM fileVersion LEFT JOIN fileVersionProperty ON fileVersionProperty.fileVersionId = fileVersion.id AND fileVersionProperty.propertyId = 11 WHERE fileId = :fileId AND isDisabled = :isDisabled ORDER BY CONVERT(version, decimal) DESC";
     private static final String deleteById = "DELETE FROM file WHERE id = :id";
     private static final String getAllUnfilled = "SELECT id,fileName as title, 0 as isNoCategory FROM fileVersion WHERE isFilled = :isFilled " +
                                                 " UNION " +
@@ -255,7 +255,8 @@ public class FileModel implements ModelInterface {
             Long date = (Long) row.get("date");
             Boolean isFilled = (Integer) row.get("isFilled") == 1;
             Boolean isDisabled = (Integer) row.get("isDisabled") == 1;
-            result.add(new FileVersionModel(modelId, fileId, userId, version, hash, fileSize, date, isFilled, fileName, isDisabled));
+            String bits = (String) row.get("bits");
+            result.add(new FileVersionModel(modelId, fileId, userId, version, hash, fileSize, date, isFilled, fileName, isDisabled, bits));
         }
         return result;
     }

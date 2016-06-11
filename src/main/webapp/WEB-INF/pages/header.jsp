@@ -22,7 +22,12 @@
                         <div class="media-body profile-name">
                             <h4 class="media-heading"><sec:authentication property="principal.fullname" /></h4>
                             Служебный номер: <sec:authentication property="principal.employeeId" /> <br>
-                            <span><sec:authentication property="principal.authorities"/></span>
+                            <sec:authorize access="<%= UserHelper.checkAdmin() %>">
+                                <span>Администратор</span>
+                            </sec:authorize>
+                            <sec:authorize access="<%= UserHelper.checkNoAdmin() %>">
+                                <span>Модератор</span>
+                            </sec:authorize>
                             <div><a href="<c:url value="/j_spring_security_logout" />" class="logout-btn"><i class="fa fa-sign-out"></i> Выйти</a></div>
                         </div>
                     </div>
@@ -53,6 +58,9 @@
                                     <a href="<spring:url value="/users" />"><i class="fa fa-user"></i> <span class="nav-label">Пользователи</span></a>
                                 </li>
                                 <sec:authorize access="<%= UserHelper.checkAdmin() %>">
+                                    <li <c:if test="${param.activePage == 'trigger'}"> class="active" </c:if>>
+                                        <a href="<spring:url value="/file-triggers" />"><i class="fa fa-flash"></i> <span class="nav-label">Триггеры</span></a>
+                                    </li>
                                     <li <c:if test="${param.activePage == 'settings'}"> class="active" </c:if>>
                                         <a href="<spring:url value="/settings" />"><i class="fa fa-cog"></i> <span class="nav-label">Настройки</span></a>
                                     </li>

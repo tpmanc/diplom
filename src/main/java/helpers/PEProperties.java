@@ -33,6 +33,11 @@ public class PEProperties {
             if (pe.getSignature() != null) {
                 ResourceDirectory rd = pe.getImageData().getResourceTable();
 
+                if (pe.is64()) {
+                    properties.put(PropertyModel.FILE_BITS, "x64");
+                } else {
+                    properties.put(PropertyModel.FILE_BITS, "x86");
+                }
                 ResourceEntry[] entries = ResourceHelper.findResources(rd, ResourceType.VERSION_INFO);
                 for (ResourceEntry entry : entries) {
                     byte[] data = entry.getData();
