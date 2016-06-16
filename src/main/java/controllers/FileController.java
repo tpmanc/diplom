@@ -405,7 +405,6 @@ public class FileController {
                         try {
                             properties = PEProperties.parse(newFileName.toString());
                         } catch (Exception e) {
-//                            e.printStackTrace();
                             properties = TriggerHelper.getProperties(extension, newFileName.toString());
                         }
                         boolean isFilled = false;
